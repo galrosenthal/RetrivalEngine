@@ -1,5 +1,6 @@
 /target/classes/sample/Controller.class
 /target/classes/readFile/ReadFile.class
+/target/*
 
 *.iml
 misc.xml

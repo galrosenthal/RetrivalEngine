@@ -55,6 +55,14 @@
             <version>2.12.1</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.openjfx/javafx -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx</artifactId>
+            <version>11</version>
+            <type>pom</type>
+        </dependency>
+
     </dependencies>
 
     
