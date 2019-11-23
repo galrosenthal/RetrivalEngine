@@ -20,7 +20,7 @@ public class ReadFile {
             else{
                 try {
                     doc = Jsoup.parse(folder,"UTF8");
-                    String body = doc.body().text();
+                    String body = doc.getElementsByTag("TEXT").text();
                     //for (Element sentence : doc.getElementsByTag("DOCNO"))
                      //   System.out.print(sentence);
                    // System.out.println(doc.getElementsByTag("DOCNO").text());
