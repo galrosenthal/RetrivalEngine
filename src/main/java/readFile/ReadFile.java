@@ -1,5 +1,6 @@
 package readFile;
 
+import Parser.parseDates;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,12 +25,15 @@ public class ReadFile {
                 try {
                     doc = Jsoup.parse(folder,"UTF8");
                     String body = doc.body().text();
-
+                    //for (Element sentence : doc.getElementsByTag("DOCNO"))
+                     //   System.out.print(sentence);
+                   // System.out.println(doc.getElementsByTag("DOCNO").text());
                     Elements docs = doc.getElementsByTag("doc");
-                    for (Element fileDoc:
+                    for (Element fileDoc :
                             docs) {
-                        numOfCorpusFiles++;
-//                        Document d = new Document(fileDoc);
+                        IR.Document document = new IR.Document(fileDoc);
+                        //parseDates pDate = new parseDates();
+                        //pDate.parse(document);
                     }
 
 

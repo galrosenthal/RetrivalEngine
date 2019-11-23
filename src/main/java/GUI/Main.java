@@ -6,6 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.File;
+import java.net.URL;
+
 public class Main extends Application {
 
     @Override
@@ -13,6 +16,7 @@ public class Main extends Application {
 
         Parent root = null;
         String pathTofxml = "../irgui.fxml";
+
         root = FXMLLoader.load(getClass().getResource(pathTofxml));
 
         primaryStage.setTitle("Hello World");
