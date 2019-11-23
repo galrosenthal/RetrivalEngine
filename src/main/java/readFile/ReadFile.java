@@ -1,5 +1,6 @@
 package readFile;
 
+import Parser.parseDates;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +28,13 @@ public class ReadFile {
                     //for (Element sentence : doc.getElementsByTag("DOCNO"))
                      //   System.out.print(sentence);
                    // System.out.println(doc.getElementsByTag("DOCNO").text());
-                    System.out.println(folder.getName());
+                    Elements docs = doc.getElementsByTag("doc");
+                    for (Element fileDoc :
+                            docs) {
+                        IR.Document document = new IR.Document(fileDoc);
+                        //parseDates pDate = new parseDates();
+                        //pDate.parse(document);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
