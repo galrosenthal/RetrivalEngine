@@ -29,6 +29,7 @@ public class ReadFile {
                     for (Element fileDoc:
                             docs) {
                         numOfCorpusFiles++;
+//                        Document d = new Document(fileDoc);
                     }
 
 
