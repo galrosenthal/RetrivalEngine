@@ -9,12 +9,12 @@ public class test {
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
 
 
-//        String test = "1010.56";
-////        test = test.substring(0,test.indexOf("."));
-//        test = test.replaceAll(",","");
-//
-//
-//        Double testValue = Double.valueOf(test);
+        String test = "-1010.56";
+//        test = test.substring(0,test.indexOf("."));
+        test = test.replaceAll(",","");
+
+
+        Double testValue = Double.valueOf(test);
 
 
 

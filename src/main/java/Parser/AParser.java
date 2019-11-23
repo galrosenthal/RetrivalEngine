@@ -32,11 +32,11 @@ public abstract class AParser{
     }
 
 
-    protected String chopDownLastChar(String word) {
+    protected String chopDownLastCharPunc(String word) {
 
         if(word != null && word.length() >= 1)
         {
-            word = word.toLowerCase();
+//            word = word.toLowerCase();
             if(isLastCharPunctuation(word))
             {
                 word = word.substring(0,word.length()-1);

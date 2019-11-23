@@ -22,33 +22,34 @@ public class parseNumbers extends AParser {
         if(docText == null || docText.length == 0)
             throw new Exception("There is no text in this Document");
 
-        int wordIndexInText = 0;
-        for (String word :
-                docText) {
+        for (int wordIndexInText = 0; wordIndexInText < docText.length;)
+        {
 
-            if(isLastCharPunctuation(word))
+            String word = docText[wordIndexInText];
+            Double wordIsNumber;
+            word = chopDownLastCharPunc(word);
+            // Check if the next word is relevant
+            if(wordIndexInText < docText.length && isNextWordRelevantToNumber(docText[wordIndexInText+1]))
             {
-                chopDownLastChar(word);
-            }
-
-            if(isFirstCharNumberAndNotZero(word))
-            {
-                Double wordIsNumber;
-                if(isNumberSeperatedComma(word))
-                {
-                    word = word.replaceAll(",","");
-                }
-                try{
-                    wordIsNumber = Double.valueOf(word);
-
-                    Term numberTerm = createTermFromNumber(wordIsNumber);
-
-                }
-                catch (NumberFormatException e)
+                
+                wordIsNumber = checkNumberReleveance(word);
+                if(wordIsNumber == 0)
                 {
                     continue;
                 }
+                Term numberAndQuntify = createTermFromNumberAndQuntify(wordIsNumber,docText[wordIndexInText+1]);
             }
+            else
+            {
+                wordIsNumber = checkNumberReleveance(word);
+                if(wordIsNumber == 0)
+                {
+                    continue;
+                }
+                Term numberTerm = createTermFromNumber(wordIsNumber);
+            }
+
+
 
 
 
@@ -63,6 +64,65 @@ public class parseNumbers extends AParser {
 
     }
 
+    private Term createTermFromNumberAndQuntify(Double wordIsNumber, String quntify) {
+        //Create Term from 2 strings
+        return null;
+    }
+
+
+    /**
+     * Checks whether or not the number is a number or not
+     * @param word - string that is number
+     * @return 0 if the the string is not a valid number and the number itself if it is valid
+     */
+    private double checkNumberReleveance(String word)
+    {
+        double wordIsNumber = 0 ;
+        if(isFirstCharNumberAndNotZeroOrNegative(word))
+        {
+            if(isNumberSeperatedComma(word))
+            {
+                word = word.replaceAll(",","");
+            }
+            try
+            {
+                wordIsNumber = Double.parseDouble(word);
+            }
+            catch (NumberFormatException e)
+            {
+            }
+        }
+
+        return wordIsNumber;
+    }
+
+    /**
+     * Check if the quntify is a word representing a size (B,M,T)
+     * or if it is a fraction
+     * @return true if the string is a size(B,M,T) or if it is a fraction else returns false
+     */
+    private boolean isNextWordRelevantToNumber(String quntify) {
+        quntify = chopDownLastCharPunc(quntify);
+        if(quntify.equalsIgnoreCase("thousand") || quntify.equalsIgnoreCase("million") || quntify.equalsIgnoreCase("billion"))
+        {
+            return true;
+        }
+        else if(quntify.contains("/"))
+        {
+            if(quntify.matches("^\\d\\/\\d$");
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a new Term from the word in the text
+     *
+     * @param wordIsNumber number to create for the term
+     * @return a term from the number
+     */
     private Term createTermFromNumber(Double wordIsNumber) {
         double numToSave;
         String termNum;
@@ -90,6 +150,10 @@ public class parseNumbers extends AParser {
         return numberTerm;
     }
 
+    /**
+     * Check if there are commas in the word,
+     * @return true if there are commas in the word
+     */
     private boolean isNumberSeperatedComma(String word) {
         if(word == null)
             return false;
@@ -103,8 +167,15 @@ public class parseNumbers extends AParser {
         return false;
     }
 
-    private boolean isFirstCharNumberAndNotZero(String word) {
+    /**
+     * Check if the first char is number not 0 or if it is a negative number
+     * @return true if it is
+     */
+    private boolean isFirstCharNumberAndNotZeroOrNegative(String word) {
         char[] number19 = {'1','2','3','4','5','6','7','8','9'};
+
+        if(word.charAt(0) == '-')
+            return true;
 
         for (char num:
                 number19) {
