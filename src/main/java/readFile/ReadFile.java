@@ -1,6 +1,5 @@
 package readFile;
 
-import Parser.parseDates;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,6 +30,7 @@ public class ReadFile {
                     Elements docs = doc.getElementsByTag("doc");
                     for (Element fileDoc :
                             docs) {
+                        numOfCorpusFiles++;
                         IR.Document document = new IR.Document(fileDoc);
                         //parseDates pDate = new parseDates();
                         //pDate.parse(document);
