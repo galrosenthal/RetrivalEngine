@@ -24,34 +24,37 @@ public class Document {
     private HashMap<Term,Integer> termsDictonary;// Each IR.Term has an Integer that presets how many times this IR.Term is present in the IR.Document
 
     private Elements allDocElements;
-    private Element docText;
-    private Element docNo;
+    private Elements docText;
+    private Elements docNo;
 
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
         this.allDocElements = fileDocInCorpus.getAllElements();
+        docText = fileDocInCorpus.getElementsByTag("text");
+        docNo = fileDocInCorpus.getElementsByTag("docno");
 
         /**
          * searches for the element \"Text\" and \"docNo\"
          */
-        for (Element elem :
-                allDocElements) {
-            if (elem.tag().equals("text"))
-            {
-                docText = elem;
-            }
-            else if(elem.tag().equals("docno"))
-            {
-                docNo = elem;
-            }
-        }
+//        for (Element elem :
+//                allDocElements) {
+//            if (elem.tag().equals("text"))
+//            {
+//                docText = elem;
+//            }
+//            else if(elem.tag().equals("docno"))
+//            {
+//                docNo = elem;
+//            }
+//        }
+
     }
 
-    public Element getDocText() {
+    public Elements getDocText() {
         return docText;
     }
 
-    public Element getDocNo() {
+    public Elements getDocNo() {
         return docNo;
     }
 
