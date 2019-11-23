@@ -83,24 +83,6 @@ public class Tokenizer {
 //    }
 
 
-    private String chopDownLastChar(String word) {
-        char[] punctuations = {',','.',';',':','?'};
-        if(word != null && word.length() >= 2)
-        {
-            word = word.toLowerCase();
-            for (char punc :
-                    punctuations) {
-                if(word.charAt(word.length()-1) == punc)
-                {
-                    word = word.substring(0,word.length()-1);
-                    break;
-                }
-            }
-            return word;
-        }
-        return null;
-    }
-
 //
 //    @Override
 //    public boolean equals(Object o) {

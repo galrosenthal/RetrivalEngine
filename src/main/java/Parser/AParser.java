@@ -4,12 +4,11 @@ import IR.Document;
 import IR.Term;
 import Tokenizer.Tokenizer;
 
-import java.util.List;
+public abstract class AParser{
 
-public abstract class AParser <E>{
-
-    private Tokenizer toknizr = Tokenizer.getInstance();
-    public abstract List<E> parse(Document d);
+    protected String[] docText;
+    protected Tokenizer toknizr = Tokenizer.getInstance();
+    public abstract void parse(Document d);
 
 
 
@@ -18,6 +17,36 @@ public abstract class AParser <E>{
         return toknizr.getTokenList().containsKey(term);
     }
 
+
+    protected void splitDocText(Document d)
+    {
+        if (d != null)
+        {
+           docText = d.getDocText().text().split(" ");
+        }
+
+        docText = null;
+//        return wordsInDoc;
+    }
+
+
+    protected String chopDownLastChar(String word) {
+        char[] punctuations = {',','.',';',':','?'};
+        if(word != null && word.length() >= 2)
+        {
+            word = word.toLowerCase();
+            for (char punc :
+                    punctuations) {
+                if(word.charAt(word.length()-1) == punc)
+                {
+                    word = word.substring(0,word.length()-1);
+                    break;
+                }
+            }
+            return word;
+        }
+        return null;
+    }
 
 
 }

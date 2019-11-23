@@ -29,7 +29,6 @@ public class ReadFile {
                     for (Element fileDoc:
                             docs) {
                         numOfCorpusFiles++;
-                        theTokenizer.tokenizingText(fileDoc.getElementsByTag("docno"),fileDoc.getElementsByTag("text"));
                     }
 
 
