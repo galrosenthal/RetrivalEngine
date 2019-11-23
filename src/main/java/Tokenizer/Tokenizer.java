@@ -1,8 +1,7 @@
 package Tokenizer;
 
-import org.jsoup.select.Elements;
+import IR.Term;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +12,12 @@ public class Tokenizer {
 
 
     private static volatile Tokenizer mInstance;
-    private Map<String, ArrayList<String>> tokenList;
-//    private Map<String, String> tokenList;
+    private Map<Term, String> tokenList; // Term -> Path of posting file
+    //    private Map<String, String> tokenList;
     private Tokenizer() {
 
 //        tokenList = new HashMap<>();
-        tokenList = new HashMap<String, ArrayList<String>>();
+        tokenList = new HashMap<Term,String>();
     }
     public static Tokenizer getInstance() {
         if (mInstance == null) {
@@ -31,55 +30,74 @@ public class Tokenizer {
         return mInstance;
     }
 
-    private Map<String, ArrayList<String>> getTokenList() {
+    public Map<Term, String> getTokenList() {
         return tokenList;
     }
-    private void setTokenList(Map<String, ArrayList<String>> tokenList) {
-        this.tokenList = tokenList;
-    }
-
-    /**
-     * This Functino Creates Token list from text of a document in the corpus
-     * @param docNo - the Number of the Document in the corpus
-     * @param docText - the Text of the Document
-     * @return - A token map of Word->{Documents List} where DocumentList is all Documents number that the word is shown in,
-     * seperated by ;.
-     */
-    public Map<String,ArrayList<String>> tokenizingText(Elements docNo, Elements docText)
-    {
-        /**
-         * Split the text into seperate words by " "
-         * maybe it shoud be in a seperate function so we could seperate by different chars
-         */
-        String[] wordsInDoc = docText.text().split(" ");
-        ArrayList<String> docsList = null;
-        for (String word :
-                wordsInDoc) {
 
 
-//            tokenList.put(word,docNo.text());
-            if(!tokenList.containsKey(word))
-            {
-                docsList = new ArrayList<>();
-                docsList.add(docNo.text());
-                tokenList.put(word,docsList);
-            }
-            else
-            {
-                if(!tokenList.get(word).contains(docNo.text()))
+
+//    /**
+//     * This Functino Creates Token list from text of a document in the corpus
+//     * @param docNo - the Number of the IR.Document in the corpus
+//     * @param docText - the Text of the IR.Document
+//     * @return - A token map of Word->{Documents List} where DocumentList is all Documents number that the word is shown in,
+//     * seperated by ;.
+//     */
+//    public Map<String,ArrayList<String>> tokenizingText(Elements docNo, Elements docText)
+//    {
+//        /**
+//         * Split the text into seperate words by " "
+//         * maybe it shoud be in a seperate function so we could seperate by different chars
+//         */
+//        String[] wordsInDoc = docText.text().split(" ");
+//        ArrayList<String> docsList = null;
+//        for (String word :
+//                wordsInDoc) {
+//            word = chopDownLastChar(word);
+//
+//
+////            tokenList.put(word,docNo.text());
+//            if(!tokenList.containsKey(word))
+//            {
+//                docsList = new ArrayList<>();
+//                docsList.add(docNo.text());
+//                tokenList.put(word,docsList);
+//            }
+//            else
+//            {
+//                if(!tokenList.get(word).contains(docNo.text()))
+//                {
+//                    tokenList.get(word).add(docNo.text());
+//
+//                }
+//
+//
+//
+////                tokenList.put(word,);
+//
+//            }
+//
+//        }
+//
+//        return null;
+//    }
+
+
+    private String chopDownLastChar(String word) {
+        char[] punctuations = {',','.',';',':','?'};
+        if(word != null && word.length() >= 2)
+        {
+            word = word.toLowerCase();
+            for (char punc :
+                    punctuations) {
+                if(word.charAt(word.length()-1) == punc)
                 {
-                    tokenList.get(word).add(docNo.text());
-
+                    word = word.substring(0,word.length()-1);
+                    break;
                 }
-
-
-
-//                tokenList.put(word,);
-
             }
-
+            return word;
         }
-
         return null;
     }
 
