@@ -1,18 +1,21 @@
 package readFile;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
 import java.io.File;
 import java.io.IOException;
 
 public class ReadFile {
 
-
+    public static int numOfCorpusFiles = 0;
+    private Tokenizer theTokenizer = Tokenizer.getInstance();
     public void readCorpus(File corpus){
         Document doc;
+
         for (File folder : corpus.listFiles()){
             if(folder.isDirectory()){
                 readCorpus(folder);
@@ -20,7 +23,7 @@ public class ReadFile {
             else{
                 try {
                     doc = Jsoup.parse(folder,"UTF8");
-                    String body = doc.getElementsByTag("TEXT").text();
+                    String body = doc.body().text();
                     //for (Element sentence : doc.getElementsByTag("DOCNO"))
                      //   System.out.print(sentence);
                    // System.out.println(doc.getElementsByTag("DOCNO").text());
@@ -33,18 +36,4 @@ public class ReadFile {
     }
 
 
-    public static void main(String[] args) {
-
-        File a = new File("C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus\\FB396001\\FB396001");
-        Document b;
-
-        //readCorpus();
-        {
-            try {
-                b = Jsoup.parse(a,"UTF8");
-            } catch (IOException e) {
-
-            }
-        }
-    }
 }
