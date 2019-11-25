@@ -1,6 +1,7 @@
 package readFile;
 
 import Parser.parseDates;
+import Parser.parsePercentage;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,6 +36,8 @@ public class ReadFile {
                         IR.Document document = new IR.Document(fileDoc);
                         parseDates pDate = new parseDates();
                         pDate.parse(document);
+                        parsePercentage pp = new parsePercentage();
+                        pp.parse(document);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

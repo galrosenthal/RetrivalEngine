@@ -43,7 +43,7 @@ public class parseDates extends AParser{
                         String month;
                         String year;
 
-                        if(i > 0 && i < wordsInDoc.length-1){
+                        if(i > 0 && i < word.length()-1){
                             if(NumberUtils.isDigits(wordsInDoc[i-1])){
                                 month = String.format("%02d",getMonthNumber(word));
                                 day = String.format("%02d",Integer.parseInt(wordsInDoc[i-1]));
