@@ -31,9 +31,10 @@ public class ReadFile {
                     Elements docs = doc.getElementsByTag("doc");
                     for (Element fileDoc :
                             docs) {
+                        numOfCorpusFiles++;
                         IR.Document document = new IR.Document(fileDoc);
-                        //parseDates pDate = new parseDates();
-                        //pDate.parse(document);
+                        parseDates pDate = new parseDates();
+                        pDate.parse(document);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -41,6 +42,4 @@ public class ReadFile {
             }
         }
     }
-
-
 }

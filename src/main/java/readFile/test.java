@@ -13,7 +13,6 @@ public class test {
         f.readCorpus(corpus);
         endTime = System.nanoTime();
 
-
         System.out.println("There are "+f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
     }
 }
