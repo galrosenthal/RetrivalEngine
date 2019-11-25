@@ -6,7 +6,7 @@ import Tokenizer.Tokenizer;
 
 public abstract class AParser{
 
-    protected char[] punctuations = {',','.',';',':','?'};
+    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
     public abstract void parse(Document d) throws Exception;
@@ -37,11 +37,11 @@ public abstract class AParser{
         if(word != null && word.length() >= 1)
         {
 //            word = word.toLowerCase();
-            if(isLastCharPunctuation(word))
+            while(isLastCharPunctuation(word))
             {
                 word = word.substring(0,word.length()-1);
-                return word;
             }
+            return word;
         }
         return null;
     }

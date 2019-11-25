@@ -26,8 +26,8 @@ public class ReadFile {
                     doc = Jsoup.parse(folder,"UTF8");
                     String body = doc.body().text();
                     //for (Element sentence : doc.getElementsByTag("DOCNO"))
-                     //   System.out.print(sentence);
-                   // System.out.println(doc.getElementsByTag("DOCNO").text());
+                    //   System.out.print(sentence);
+                    // System.out.println(doc.getElementsByTag("DOCNO").text());
                     Elements docs = doc.getElementsByTag("doc");
                     for (Element fileDoc :
                             docs) {
@@ -36,6 +36,12 @@ public class ReadFile {
                         parseNumbers prsNums = new parseNumbers();
                         prsNums.parse(document);
                     }
+//                    if(docs.isEmpty())
+//                        continue;
+//                    IR.Document docu = new IR.Document(docs.first());
+//                    parseNumbers prsNums = new parseNumbers();
+//                    prsNums.parse(docu);
+//                    return;
 
 
 
