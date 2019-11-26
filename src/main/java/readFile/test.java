@@ -25,6 +25,8 @@ public class test {
         startTime = System.nanoTime();
         f.readCorpus(corpus);
         endTime = System.nanoTime();
+        //HashMap<String,Integer> testNumInAllCorpus = f.prsNums.getNumbersInText();
+
 
 
         System.out.println("There are "+f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");

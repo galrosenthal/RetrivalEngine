@@ -14,6 +14,7 @@ public class ReadFile {
 
     public static int numOfCorpusFiles = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
+    public parseNumbers prsNums = new parseNumbers();
     public void readCorpus(File corpus){
         Document doc;
 
@@ -24,7 +25,7 @@ public class ReadFile {
             else{
                 try {
                     doc = Jsoup.parse(folder,"UTF8");
-                    String body = doc.body().text();
+//                    String body = doc.body().text();
                     //for (Element sentence : doc.getElementsByTag("DOCNO"))
                     //   System.out.print(sentence);
                     // System.out.println(doc.getElementsByTag("DOCNO").text());
@@ -33,16 +34,8 @@ public class ReadFile {
                             docs) {
                         numOfCorpusFiles++;
                         IR.Document document = new IR.Document(fileDoc);
-                        parseNumbers prsNums = new parseNumbers();
                         prsNums.parse(document);
                     }
-//                    if(docs.isEmpty())
-//                        continue;
-//                    IR.Document docu = new IR.Document(docs.first());
-//                    parseNumbers prsNums = new parseNumbers();
-//                    prsNums.parse(docu);
-//                    return;
-
 
 
                 } catch (IOException e) {
@@ -51,6 +44,8 @@ public class ReadFile {
             }
         }
     }
+
+
 
 
 }
