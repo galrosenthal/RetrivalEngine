@@ -15,6 +15,7 @@ public class parseNumbers extends AParser {
     private HashMap<String,Integer> allNumbersInText;
 
     public parseNumbers() {
+        super();
         numbersInText = new HashMap<>();
         allNumbersInText = new HashMap<>();
     }
@@ -27,8 +28,12 @@ public class parseNumbers extends AParser {
         docText = d.getDocText().text().split(" ");
 
         int countNumberMatch=0,allNumbers=0;
-        for (String word :
-                docText) {
+        for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
+            String word = docText[wordIndex];
+            if(stopWords.contains(word.toLowerCase()))
+            {
+                continue;
+            }
             if(word.matches("^\\d.*")) {
                 if (word.charAt(word.length() - 1) == '.') {
                     word = word.substring(0, word.length() - 1);
