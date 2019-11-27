@@ -36,11 +36,11 @@ public class ReadFile {
                             docs) {
                         numOfCorpusFiles++;
                         IR.Document document = new IR.Document(fileDoc);
-                        parseDates pDate = new parseDates();
-                        pDate.parse(document);
-                        parsePercentage pp = new parsePercentage();
-                        pp.parse(document);
-                        prsNums.parse(document);
+                        //parseDates pDate = new parseDates();
+                        //pDate.parse(document);
+                        //parsePercentage pp = new parsePercentage();
+                        //pp.parse(document);
+                        //prsNums.parse(document);
                     }
 
 

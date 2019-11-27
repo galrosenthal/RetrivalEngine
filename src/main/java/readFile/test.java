@@ -5,7 +5,7 @@ import java.io.File;
 public class test {
 
     public static void main(String[] args) {
-        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
+        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
         //String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 

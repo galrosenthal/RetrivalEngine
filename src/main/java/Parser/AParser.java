@@ -116,24 +116,33 @@ public abstract class AParser{
 
         if(word != null && word.length() >= 2)
         {
-            word = word.toLowerCase();
-            for (char punc :
-                    punctuations) {
-                if(word.charAt(0) == punc)
-                {
-                    word = word.substring(1);
-                    break;
-                }
+            while(isFirstCharPunctuation(word)){
+                word = word.substring(1);
             }
         }
         return word;
     }
 
+    protected  boolean isFirstCharPunctuation(String word) {
+        if(word != null && word.length() >= 2)
+        {
+            word = word.toLowerCase();
+            for (char punc :
+                    punctuations) {
+                if(word.charAt(0) == punc)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     protected boolean isFraction(String word){
         boolean isFraction = false;
 
-        if(NumberUtils.isNumber(word.substring(0,0)) && NumberUtils.isNumber(word.substring(2,2)) &&
-                word.substring(2,2).equals("/")){
+        if(word.length()> 2 && NumberUtils.isNumber(Character.toString(word.charAt(0))) && NumberUtils.isNumber(Character.toString(word.charAt(2))) &&
+                Character.toString(word.charAt(1)).equals("/")){
             isFraction = true;
         }
 

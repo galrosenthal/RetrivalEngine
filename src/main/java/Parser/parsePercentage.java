@@ -19,31 +19,44 @@ public class parsePercentage extends AParser {
             String[] wordsInDoc = d.getDocText().text().split(" ");
             for (String word :
                     wordsInDoc) {
-                chopDownLastCharPunc(word);
-                String newWord = word.substring(word.length()-1);
-                if(word.length() >0 && newWord.equals("%")){
-                    word = chopDownFisrtChar(word);
-                    if(NumberUtils.isNumber(word.substring(0,word.length()-1))){
-                        //double num = Double.parseDouble(word.substring(0, word.length() - 1));
-                        Term newTerm = new Term(word);
-                        //System.out.println(newTerm.getWordValue());
-                    }
-                    else if(isFraction(newWord)){
-                        Term newTerm = new Term(word);
-                        System.out.println(newTerm.getWordValue());
-                    }
-                }
-                else if(word.equals("percentage") || word.equals("percent")){
+                word = chopDownFisrtChar(word);
+                word = chopDownLastCharPunc(word);
 
-                    if(NumberUtils.isNumber(wordsInDoc[i-1])){
-                        Term newTerm = new Term(wordsInDoc[i-1]+"%");
-                        count++;
-                        System.out.println(newTerm.getWordValue());
+                if(word != null) {
 
-                    }
-                    else if(isFraction(newWord)){
-                        Term newTerm = new Term(word);
-                        System.out.println(newTerm.getWordValue());
+                    if (word.length() > 0 && word.substring(word.length() - 1).equals("%")) {
+                        word = chopDownFisrtChar(word);
+                        if (NumberUtils.isNumber(word.substring(0, word.length() - 1))) {
+                            //double num = Double.parseDouble(word.substring(0, word.length() - 1));
+                            Term newTerm = new Term(word);
+                            //System.out.println(newTerm.getWordValue());
+                        } else if (isFraction(word.substring(0, word.length() - 1))) {
+                            if (i > 2 && NumberUtils.isDigits(wordsInDoc[i - 1])) {
+                                Term newTerm = new Term(wordsInDoc[i - 1] + " " + word);
+                                //System.out.println(newTerm.getWordValue());
+                            } else {
+                                Term newTerm = new Term(word);
+                                //System.out.println(newTerm.getWordValue());
+                            }
+
+                        }
+                    } else if (word.equals("percentage") || word.equals("percent")) {
+                        String lastWord = chopDownLastCharPunc(wordsInDoc[i - 1]);
+                        lastWord = chopDownFisrtChar(wordsInDoc[i - 1]);
+                        if (NumberUtils.isNumber(lastWord)) {
+                            Term newTerm = new Term(lastWord + "%");
+                            count++;
+                            //System.out.println(newTerm.getWordValue());
+
+                        } else if (isFraction(lastWord)) {
+                            if (i > 2 && NumberUtils.isDigits(wordsInDoc[i - 2])) {
+                                Term newTerm = new Term(wordsInDoc[i - 2] + " " + word);
+                                //System.out.println(newTerm.getWordValue());
+                            } else {
+                                Term newTerm = new Term(word);
+                                //System.out.println(newTerm.getWordValue());
+                            }
+                        }
                     }
                 }
 

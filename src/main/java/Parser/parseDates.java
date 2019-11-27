@@ -34,10 +34,12 @@ public class parseDates extends AParser{
                 for (String word :
                      wordsInDoc) {
 
+                    //word = chopDownFisrtChar(word);
+                    //word = chopDownLastCharPunc(word);
                     //pattern = Pattern.compile(dayFirstPattern);
                     //matcher = pattern.matcher(word.toLowerCase());
 
-                    if(equalsMonth(word)){
+                    if(word != null && equalsMonth(word)){
                         String day;
                         Term newTerm;
                         String month;
