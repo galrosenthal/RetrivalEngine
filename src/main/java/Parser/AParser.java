@@ -90,9 +90,9 @@ public abstract class AParser{
             {
                 word = word.substring(0,word.length()-1);
             }
-            return word;
+
         }
-        return null;
+        return word;
     }
 
     protected boolean isLastCharPunctuation(String word) {

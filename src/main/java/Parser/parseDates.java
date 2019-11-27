@@ -17,12 +17,13 @@ public class parseDates extends AParser{
     Pattern pattern;
     Matcher matcher;
 
-
     public parseDates() {
         super();
 
         this.dayFirstPattern = "(((january)|(jan)|(march)|(mar)|(february)|(feb)|(april)|(apr)|(may)|(june)|(jun)|" +
                 "(july)|(jul)|(august)|(aug)|(october)|(oct)|(september)|(sept)|(sep)|(november)|(nov)|(december)|(dec)))";
+        //pattern = Pattern.compile(dayFirstPattern);
+        //matcher = pattern.matcher(word.toLowerCase());
     }
 
     @Override
@@ -30,14 +31,12 @@ public class parseDates extends AParser{
         if(d != null){
             int i = 0;
                 String docText = d.getDocText().text();
+                //matcher = pattern.matcher(docText);
                 String[] wordsInDoc = d.getDocText().text().split(" ");
                 for (String word :
                      wordsInDoc) {
-
                     //word = chopDownFisrtChar(word);
                     //word = chopDownLastCharPunc(word);
-                    //pattern = Pattern.compile(dayFirstPattern);
-                    //matcher = pattern.matcher(word.toLowerCase());
 
                     if(word != null && equalsMonth(word)){
                         String day;
@@ -45,7 +44,7 @@ public class parseDates extends AParser{
                         String month;
                         String year;
 
-                        if(i > 0 && i < word.length()-1){
+                        if(i > 0 && i < wordsInDoc.length-1){
                             if(NumberUtils.isDigits(wordsInDoc[i-1])){
                                 month = String.format("%02d",getMonthNumber(word));
                                 day = String.format("%02d",Integer.parseInt(wordsInDoc[i-1]));
@@ -54,24 +53,31 @@ public class parseDates extends AParser{
                                 //System.out.println(newTerm.getWordValue());
                             }
 
-                            if(NumberUtils.isDigits(wordsInDoc[i+1])){
-                                String fixYear;
+                            year = chopDownLastCharPunc(wordsInDoc[i+1]);
+                            if(NumberUtils.isDigits(year)){
                                 month = String.format("%02d",getMonthNumber(word));
-                                fixYear = chopDownLastCharPunc(wordsInDoc[i+1]);
-                                if(fixYear != null){
-                                    year = fixYear;
+
+                                //If the year is a day in the month
+                                if(Integer.parseInt(year) <= 31){
+                                    year = String.format("%02d",Integer.parseInt(year));
+                                    newTerm = new Term(month +"-"+year);
                                 }
                                 else{
-                                    year = wordsInDoc[i+1];
+                                    newTerm = new Term(year +"-"+month);
                                 }
-                                year = String.format("%02d",Integer.parseInt(year));
-                                newTerm = new Term(year +"-"+month);
+
                                 //System.out.println(newTerm.getWordValue());
+                                //System.out.println(month);
                             }
+
                         }
                     }
+
                     i++;
                 }
+          //  while(matcher.find()){
+                //System.out.println(matcher.group());
+            //}
 
 
             /**
@@ -93,7 +99,7 @@ public class parseDates extends AParser{
                         fixDay = String.format("%02d",Integer.parseInt(day));
                         newTerm = new Term(fixDay+"-"+month);
                         //System.out.println(newTerm.getWordValue());
-                    }
+                    }`
 
                     if(matcher.group(1) != null){
                         day = matcher.group(1).substring(matcher.group(3).length()+1);
@@ -134,10 +140,6 @@ public class parseDates extends AParser{
 
     }
 
-    public void findAllMatches(Matcher matcher){
-
-    }
-
     private int getMonthNumber(String monthName) {
         if(monthName.equalsIgnoreCase("Jan")){
             monthName = "January";
@@ -175,9 +177,17 @@ public class parseDates extends AParser{
         return Month.valueOf(monthName.toUpperCase()).getValue();
     }
 
+
     private boolean equalsMonth(String word){
-        boolean isMonth = false;
-        if(word.equalsIgnoreCase("Jan")){
+        if(word.equals("jan") || word.equals("feb") || word.equals("mar") || word.equals("apr") || word.equals("may") || word.equals("jun") ||
+        word.equals("jul") || word.equals("aug") || word.equals("sep") || word.equals("sept") || word.equals("oct") || word.equals("nov") ||
+                word.equals("dec") || word.equals("january") || word.equals("february") || word.equals("march") || word.equals("april") || word.equals("november") ||
+                word.equals("june") || word.equals("july") || word.equals("august") || word.equals("september") || word.equals("october") || word.equals("december")){
+            return true;
+        }
+        return false;
+
+        /*if(word.equalsIgnoreCase("Jan")){
             isMonth = true;
         }
         else if(word.equalsIgnoreCase("Feb")){
@@ -187,6 +197,9 @@ public class parseDates extends AParser{
             isMonth = true;
         }
         else if (word.equalsIgnoreCase("Apr")){
+            isMonth = true;
+        }
+        else if(word.equalsIgnoreCase("May")){
             isMonth = true;
         }
         else if(word.equalsIgnoreCase("Jun")){
@@ -242,7 +255,8 @@ public class parseDates extends AParser{
         }
         else if(word.equalsIgnoreCase("December")){
             isMonth = true;
-        }
-        return isMonth;
+        }*/
     }
+
+
 }
