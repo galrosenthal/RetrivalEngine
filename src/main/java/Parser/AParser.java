@@ -5,12 +5,60 @@ import IR.Term;
 import Tokenizer.Tokenizer;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 public abstract class AParser{
 
     protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
-    public abstract void parse(Document d) throws Exception;
+    protected String stopWords;
+
+    protected AParser()
+    {
+        stopWords = "";
+        createStopWords();
+    }
+
+    /**
+     * Creates a String that contains all the stopwords from the file <b>resources/stopWords.txt</b>
+     */
+    protected void createStopWords()
+    {
+        File stopWordsFile = new File("./src/main/resources/stopWords.txt");
+        if(!stopWordsFile.exists())
+        {
+            System.out.println(stopWordsFile.getAbsolutePath());
+        }
+
+        try
+        {
+            BufferedReader stopWordsReader = new BufferedReader(new FileReader(stopWordsFile));
+
+            String word = stopWordsReader.readLine();
+            while(word != null)
+            {
+                stopWords += " "+word.toLowerCase();
+                word = stopWordsReader.readLine();
+            }
+
+            stopWordsReader.close();
+//            this.stopWords = (List<String>) Fileo.readObject();
+
+//            Filer.close();
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public abstract void parse(Document d);
+
+
 
 
 
