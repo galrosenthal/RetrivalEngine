@@ -7,9 +7,10 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public abstract class AParser{
 
+    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
-    public abstract void parse(Document d);
+    public abstract void parse(Document d) throws Exception;
 
 
 
@@ -25,28 +26,41 @@ public abstract class AParser{
         {
            docText = d.getDocText().text().split(" ");
         }
-
-        docText = null;
-//        return wordsInDoc;
+        else
+        {
+            docText = null;
+        }
     }
 
 
-    protected String chopDownLastChar(String word) {
-        char[] punctuations = {',','.',';',':','?','|'};
-        if(word != null && word.length() >= 2)
+    protected String chopDownLastCharPunc(String word) {
+
+        if(word != null && word.length() >= 1)
         {
-            word = word.toLowerCase();
-            for (char punc :
-                    punctuations) {
-                if(word.charAt(word.length()-1) == punc)
-                {
-                    word = word.substring(0,word.length()-1);
-                    break;
-                }
+//            word = word.toLowerCase();
+            while(isLastCharPunctuation(word))
+            {
+                word = word.substring(0,word.length()-1);
             }
             return word;
         }
         return null;
+    }
+
+    protected boolean isLastCharPunctuation(String word) {
+        if(word == null)
+        {
+            return false;
+        }
+
+        for (char punc :
+                punctuations) {
+            if(word.length()> 0 && word.charAt(word.length()-1) == punc)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected String chopDownFisrtChar(String word) {
@@ -67,7 +81,7 @@ public abstract class AParser{
         return word;
     }
 
-    protected boolean checkIfFraction(String word){
+    protected boolean isFraction(String word){
         boolean isFraction = false;
 
         if(NumberUtils.isNumber(word.substring(0,0)) && NumberUtils.isNumber(word.substring(2,2)) &&

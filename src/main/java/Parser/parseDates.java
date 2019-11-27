@@ -55,7 +55,7 @@ public class parseDates extends AParser{
                             if(NumberUtils.isDigits(wordsInDoc[i+1])){
                                 String fixYear;
                                 month = String.format("%02d",getMonthNumber(word));
-                                fixYear = chopDownLastChar(wordsInDoc[i+1]);
+                                fixYear = chopDownLastCharPunc(wordsInDoc[i+1]);
                                 if(fixYear != null){
                                     year = fixYear;
                                 }

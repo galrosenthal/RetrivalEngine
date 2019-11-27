@@ -2,6 +2,7 @@ package readFile;
 
 import Parser.parseDates;
 import Parser.parsePercentage;
+import Parser.parseNumbers;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,6 +16,7 @@ public class ReadFile {
 
     public static int numOfCorpusFiles = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
+    public parseNumbers prsNums = new parseNumbers();
     public void readCorpus(File corpus){
         Document doc;
 
@@ -25,10 +27,10 @@ public class ReadFile {
             else{
                 try {
                     doc = Jsoup.parse(folder,"UTF8");
-                    String body = doc.body().text();
+//                    String body = doc.body().text();
                     //for (Element sentence : doc.getElementsByTag("DOCNO"))
-                     //   System.out.print(sentence);
-                   // System.out.println(doc.getElementsByTag("DOCNO").text());
+                    //   System.out.print(sentence);
+                    // System.out.println(doc.getElementsByTag("DOCNO").text());
                     Elements docs = doc.getElementsByTag("doc");
                     for (Element fileDoc :
                             docs) {
@@ -38,11 +40,18 @@ public class ReadFile {
                         pDate.parse(document);
                         parsePercentage pp = new parsePercentage();
                         pp.parse(document);
+                        prsNums.parse(document);
                     }
+
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
+
+
+
+
 }
