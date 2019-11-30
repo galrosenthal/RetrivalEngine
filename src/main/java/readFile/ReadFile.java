@@ -1,5 +1,7 @@
 package readFile;
 
+import Parser.parseDates;
+import Parser.parsePercentage;
 import Parser.parseNumbers;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
@@ -34,7 +36,11 @@ public class ReadFile {
                             docs) {
                         numOfCorpusFiles++;
                         IR.Document document = new IR.Document(fileDoc);
-                        prsNums.parse(document);
+                        parseDates pDate = new parseDates();
+                        pDate.parse(document);
+                        //parsePercentage pp = new parsePercentage();
+                        //pp.parse(document);
+                        //prsNums.parse(document);
                     }
 
 
