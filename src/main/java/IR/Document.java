@@ -54,8 +54,9 @@ public class Document {
         return docText;
     }
 
-    public Elements getDocNo() {
-        return docNo;
+    public String getDocNo() {
+
+        return docNo.text();
     }
 
     /**

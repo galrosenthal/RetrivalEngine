@@ -11,10 +11,11 @@ public class parseNumbers extends AParser {
     private final double MILLION = 1000000;
     private final double THOUSAND = 1000;
 //    private List<String> numbersInText;
-    private HashMap<String,Integer> numbersInText;
+    private HashMap<String,String> numbersInText;
 //    private List<String> allNumbersInText;
     private HashMap<String,Integer> allNumbersInText;
     private DecimalFormat format3Decimals;
+    private Document currentDoc;
 
     public parseNumbers() {
         super();
@@ -28,6 +29,7 @@ public class parseNumbers extends AParser {
     {
 
 //        this.splitDocText(d);
+        currentDoc = d;
         docText = d.getDocText().text().split(" ");
 
         int countNumberMatch=0,allNumbers=0;
@@ -37,11 +39,11 @@ public class parseNumbers extends AParser {
             {
                 continue;
             }
-            if(word.matches("^\\d.*|\\(\\d.*")) {
-                word = chopDownLastCharPunc(word);
+            word = chopDownLastCharPunc(word);
+            word = chopDownFisrtChar(word);
+            if(word.matches("^\\d.*")) {
                 if(wordIndex < docText.length-1 && nextWordIsQuntifier(docText[wordIndex+1]))
                 {
-
                     String theWordParsed = quantifiedWordForDic(word,docText[wordIndex + 1]);
                     if(theWordParsed == null)
                     {
@@ -220,17 +222,25 @@ public class parseNumbers extends AParser {
      * @param parsedNum
      */
     private void parsedNumInsert(String parsedNum) {
+        //TODO: Change value of the Hashmap to String,String (word,docNo and other stuff)
         if (numbersInText.containsKey(parsedNum)) {
+            //TODO: check if the stored doc is the same as current doc, if yes increase count else create another doc string
+//            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
             numbersInText.put(parsedNum, numbersInText.get(parsedNum) + 1);
         } else {
-            numbersInText.put(parsedNum, 1);
+            numbersInText.put(parsedNum, currentDoc.getDocNo()+",1");
         }
     }
 
     /**
      * @return the Dictionary of this parser
      */
-    public HashMap<String, Integer> getNumbersInText() {
-        return numbersInText;
+    public HashMap<String, String> getCopyOfNumbersInText() {
+        return new HashMap<String,String>(numbersInText);
+    }
+
+    @Override
+    public void clearDic() {
+        this.numbersInText.clear();
     }
 }

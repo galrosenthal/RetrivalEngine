@@ -1,13 +1,17 @@
 package readFile;
 
+import Indexer.Indexer;
+
 import java.io.File;
 
 public class test {
 
     public static void main(String[] args) {
-        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
+//        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-        //String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
+        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
+        String postfilePath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\posts";
+//        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 
 
         String test = "-1010.56";
@@ -16,10 +20,11 @@ public class test {
         Double testValue = Double.valueOf(test);
 
 
+        Indexer.getInstance().setPathToPostFiles(postfilePath);
 
 
         ReadFile f = new ReadFile();
-        File corpus = new File(path);
+        File corpus = new File(corpusPath);
         long startTime,endTime;
         startTime = System.nanoTime();
         f.readCorpus(corpus);

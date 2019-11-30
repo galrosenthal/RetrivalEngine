@@ -159,4 +159,5 @@ public abstract class AParser{
         return value;
     }
 
+    public abstract void clearDic() ;
 }

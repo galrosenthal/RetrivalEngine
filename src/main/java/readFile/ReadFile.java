@@ -1,7 +1,6 @@
 package readFile;
 
-import Parser.parseDates;
-import Parser.parsePercentage;
+import Indexer.Indexer;
 import Parser.parseNumbers;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
@@ -14,9 +13,12 @@ import java.io.IOException;
 
 public class ReadFile {
 
-    public static int numOfCorpusFiles = 0;
+    public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
     public parseNumbers prsNums = new parseNumbers();
+    private Indexer myIndexer = Indexer.getInstance();
+    private final int numberOfDocsToPost = 1000;
+
     public void readCorpus(File corpus){
         Document doc;
 
@@ -35,9 +37,17 @@ public class ReadFile {
                     for (Element fileDoc :
                             docs) {
                         numOfCorpusFiles++;
+                        numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
-                        parseDates pDate = new parseDates();
-                        pDate.parse(document);
+                        prsNums.parse(document);
+                        if(numOfParsedDocs > numberOfDocsToPost)
+                        {
+                            myIndexer.enqueue(prsNums.getCopyOfNumbersInText());
+                            prsNums.clearDic();
+                            numOfParsedDocs = 0;
+                        }
+//                        parseDates pDate = new parseDates();
+//                        pDate.parse(document);
                         //parsePercentage pp = new parsePercentage();
                         //pp.parse(document);
                         //prsNums.parse(document);
