@@ -10,7 +10,7 @@ public class parseWords extends AParser {
     }
 
     @Override
-    public void parse(Document d) {
+    public void parse(String[] wordsInDoc) {
 
 
     }

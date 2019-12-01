@@ -21,11 +21,11 @@ public class parseNumbers extends AParser {
     }
 
     @Override
-    public void parse(Document d)
+    public void parse(String[] wordsInDoc)
     {
 
 //        this.splitDocText(d);
-        docText = d.getDocText().text().split(" ");
+        docText = wordsInDoc;
 
         int countNumberMatch=0,allNumbers=0;
         for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {

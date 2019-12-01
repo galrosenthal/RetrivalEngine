@@ -3,6 +3,7 @@ package readFile;
 import Parser.parseDates;
 import Parser.parsePercentage;
 import Parser.parseNumbers;
+import Parser.parseRanges;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -13,10 +14,14 @@ import java.io.File;
 import java.io.IOException;
 
 public class ReadFile {
-
+    public static int numOfTerms = 0;
     public static int numOfCorpusFiles = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
     public parseNumbers prsNums = new parseNumbers();
+    public parseDates prsDate = new parseDates();
+    public parsePercentage prsPercent = new parsePercentage();
+    public parseRanges prsRanges = new parseRanges();
+
     public void readCorpus(File corpus){
         Document doc;
 
@@ -32,14 +37,15 @@ public class ReadFile {
                     //   System.out.print(sentence);
                     // System.out.println(doc.getElementsByTag("DOCNO").text());
                     Elements docs = doc.getElementsByTag("doc");
+
                     for (Element fileDoc :
                             docs) {
                         numOfCorpusFiles++;
                         IR.Document document = new IR.Document(fileDoc);
-                        parseDates pDate = new parseDates();
-                        pDate.parse(document);
-                        //parsePercentage pp = new parsePercentage();
-                        //pp.parse(document);
+                        String[] wordsInDoc = document.getDocText().text().split(" ");
+                        //prsDate.parse(wordsInDoc);
+                        prsRanges.parse(document);
+                        //prsPercent.parse(wordsInDoc);
                         //prsNums.parse(document);
                     }
 
@@ -49,9 +55,10 @@ public class ReadFile {
                 }
             }
         }
+        numOfTerms = prsRanges.getNumOfTerms();
     }
 
-
-
-
+    public static int getNumOfTerms() {
+        return numOfTerms;
+    }
 }
