@@ -11,7 +11,6 @@ public class parseNumbers extends AParser {
     private final double MILLION = 1000000;
     private final double THOUSAND = 1000;
 //    private List<String> numbersInText;
-    private HashMap<String,String> numbersInText;
 //    private List<String> allNumbersInText;
     private HashMap<String,Integer> allNumbersInText;
     private DecimalFormat format3Decimals;
@@ -19,7 +18,6 @@ public class parseNumbers extends AParser {
 
     public parseNumbers() {
         super();
-        numbersInText = new HashMap<>();
         allNumbersInText = new HashMap<>();
         format3Decimals = new DecimalFormat("#.###");
     }
@@ -53,7 +51,7 @@ public class parseNumbers extends AParser {
                     else
                     {
                         countNumberMatch++;
-                        parsedNumInsert(theWordParsed);
+                        parsedTermInsert(theWordParsed,currentDoc.getDocNo());
                         wordIndex++;
                         continue;
                     }
@@ -64,8 +62,8 @@ public class parseNumbers extends AParser {
                 if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$"))
                 {
                     String[] splitHifWord = word.split("-");
-                    parsedNumInsert(splitHifWord[0]);
-                    parsedNumInsert(splitHifWord[1]);
+                    parsedTermInsert(splitHifWord[0],currentDoc.getDocNo());
+                    parsedTermInsert(splitHifWord[1],currentDoc.getDocNo());
 
                     continue;
                 }
@@ -83,13 +81,13 @@ public class parseNumbers extends AParser {
                 else if(word.matches("^\\d+/\\d+$"))
                 {
                     countNumberMatch++;
-                    parsedNumInsert(word);
+                    parsedTermInsert(word,currentDoc.getDocNo());
                     continue;
                 }
                 else
                 {
                     countNumberMatch++;
-                    parsedNumInsert(quantifiedWordForDic(word));
+                    parsedTermInsert(quantifiedWordForDic(word),currentDoc.getDocNo());
                 }
 
 
@@ -217,30 +215,14 @@ public class parseNumbers extends AParser {
         return false;
     }
 
-    /**
-     * Gets a parsed number and inserting it to the Dictionary
-     * @param parsedNum
-     */
-    private void parsedNumInsert(String parsedNum) {
-        //TODO: Change value of the Hashmap to String,String (word,docNo and other stuff)
-        if (numbersInText.containsKey(parsedNum)) {
-            //TODO: check if the stored doc is the same as current doc, if yes increase count else create another doc string
-//            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
-            numbersInText.put(parsedNum, numbersInText.get(parsedNum) + 1);
-        } else {
-            numbersInText.put(parsedNum, currentDoc.getDocNo()+",1");
-        }
-    }
+
 
     /**
      * @return the Dictionary of this parser
      */
     public HashMap<String, String> getCopyOfNumbersInText() {
-        return new HashMap<String,String>(numbersInText);
+        return new HashMap<String,String>(termsInText);
     }
 
-    @Override
-    public void clearDic() {
-        this.numbersInText.clear();
-    }
+
 }
