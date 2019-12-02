@@ -10,14 +10,18 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ReadFile {
 
+    private static final int MAX_NUMBER_OF_THREADS = 4;
     public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
     public parseNumbers prsNums = new parseNumbers();
     private Indexer myIndexer = Indexer.getInstance();
     private final int numberOfDocsToPost = 1000;
+    private ExecutorService indexerThreads = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
 
     public void readCorpus(File corpus){
         Document doc;
@@ -39,7 +43,7 @@ public class ReadFile {
                         numOfCorpusFiles++;
                         numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
-                        prsNums.parse(document);
+                        new Thread(()-> prsNums.parse(document)).start();
                         if(numOfParsedDocs > numberOfDocsToPost)
                         {
                             myIndexer.enqueue(prsNums.getCopyOfTermInText());
