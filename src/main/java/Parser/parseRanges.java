@@ -23,15 +23,13 @@ public class parseRanges extends AParser {
             matcher = p.matcher(text);
 
             while (matcher.find()){
-                //Term newTerm;
                 numOfTerms++;
                 //System.out.println(matcher.group(1));
                 String match = matcher.group(1);
-                //String[] values = StringUtils.split(match,'-');
-                //if(NumberUtils.isDigits(values[0]) && NumberUtils.isDigits(values[2])){
-                    // newTerm = new Term(values[0]);
-                  //   newTerm = new Term(values[1]);
-                //}
+                String[] values = StringUtils.split(match,'-');
+                if(NumberUtils.isDigits(values[0]) && NumberUtils.isDigits(values[2])){
+
+                }
 
                // newTerm = new Term(match);
 
@@ -48,6 +46,6 @@ public class parseRanges extends AParser {
 
     @Override
     public void clearDic() {
-        
+
     }
 }
