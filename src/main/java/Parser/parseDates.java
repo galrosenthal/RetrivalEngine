@@ -33,7 +33,8 @@ public class parseDates extends AParser{
     }
 
     @Override
-    public void parse(String[] wordsInDoc) {
+    public void parse(Document document) {
+        String[] wordsInDoc = document.getTextArray();
         if(wordsInDoc != null){
             int i = 0;
             //matcher = pattern.matcher(docText);
@@ -267,5 +268,8 @@ public class parseDates extends AParser{
         return isMonth;
     }
 
+    @Override
+    public void clearDic() {
 
+    }
 }

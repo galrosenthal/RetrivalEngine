@@ -56,7 +56,7 @@ public abstract class AParser{
         }
     }
 
-    public abstract void parse(String[] wordsInDoc);
+    public abstract void parse(Document document);
 
 
 

@@ -1,5 +1,7 @@
 package IR;
 
+import org.apache.commons.lang3.StringUtils;
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -26,13 +28,14 @@ public class Document {
     private Elements allDocElements;
     private Elements docText;
     private Elements docNo;
+    private String[] textArray;
 
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
         this.allDocElements = fileDocInCorpus.getAllElements();
         docText = fileDocInCorpus.getElementsByTag("text");
         docNo = fileDocInCorpus.getElementsByTag("docno");
-
+        textArray = StringUtils.split(docText.text());
         /**
          * searches for the element \"Text\" and \"docNo\"
          */
@@ -57,6 +60,10 @@ public class Document {
     public String getDocNo() {
 
         return docNo.text();
+    }
+
+    public String[] getTextArray() {
+        return textArray;
     }
 
     /**

@@ -20,7 +20,8 @@ public class parsePercentage extends AParser {
     }
 
     @Override
-    public void parse(String[] wordsInDoc) {
+    public void parse(Document document) {
+        String[] wordsInDoc = document.getTextArray();
         if(wordsInDoc != null) {
             int i = 0;
             char lsatChar;
@@ -88,5 +89,10 @@ public class parsePercentage extends AParser {
 
     public static int getNumOfTerms() {
         return numOfTerms;
+    }
+
+    @Override
+    public void clearDic() {
+
     }
 }

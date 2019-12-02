@@ -17,10 +17,6 @@ public class parseRanges extends AParser {
     int numOfTerms = 0;
 
     @Override
-    public void parse(String[] wordsInDoc) {
-
-    }
-
     public void parse(Document document) {
         try {
             text= new StringBuilder(document.getDocText().text());
@@ -48,5 +44,10 @@ public class parseRanges extends AParser {
 
     public int getNumOfTerms() {
         return numOfTerms;
+    }
+
+    @Override
+    public void clearDic() {
+        
     }
 }
