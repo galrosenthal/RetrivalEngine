@@ -8,6 +8,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashMap;
 
 public abstract class AParser{
 
@@ -15,10 +16,13 @@ public abstract class AParser{
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
     protected String stopWords;
+    protected HashMap<String,String> termsInText;
+
 
     protected AParser()
     {
         stopWords = "";
+        termsInText = new HashMap<>();
         createStopWords();
     }
 
@@ -159,5 +163,48 @@ public abstract class AParser{
         return value;
     }
 
-    public abstract void clearDic() ;
+    public void clearDic() {
+        this.termsInText.clear();
+    }
+
+    /**
+     * Gets a parsed number and inserting it to the Dictionary
+     * @param term
+     */
+    protected void parsedTermInsert(String term, String currentDocNo) {
+        //TODO: Change value of the Hashmap to String,String (word,docNo and other stuff)
+        if (termsInText.containsKey(term)) {
+            //TODO: check if the stored doc is the same as current doc, if yes increase count else create another doc string
+//            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
+            String docList = termsInText.get(term);
+            String[] docsSplitted =  docList.split(";");
+            boolean docAlreadyParsed = false;
+            int oldtf = 0;
+            String lastDocList = "";
+
+            for (String docParams:
+                 docsSplitted) {
+                String[] docAndtf = docParams.split(",");
+                oldtf = Integer.parseInt(docAndtf[1]);
+                if(docAndtf[0].equals(currentDocNo))
+                {
+                    oldtf += 1;
+                    docAlreadyParsed = true;
+                }
+                lastDocList += docAndtf + "," + oldtf + ";";
+            }
+            if(docAlreadyParsed)
+            {
+                lastDocList += currentDocNo + ",1;";
+            }
+            lastDocList = lastDocList.substring(0,lastDocList.length()-1);
+
+            termsInText.replace(term,docList,lastDocList);
+
+
+
+        } else {
+            termsInText.put(term, currentDocNo+",1;");
+        }
+    }
 }
