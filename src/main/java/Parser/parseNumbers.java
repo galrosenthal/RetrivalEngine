@@ -217,12 +217,6 @@ public class parseNumbers extends AParser {
 
 
 
-    /**
-     * @return the Dictionary of this parser
-     */
-    public HashMap<String, String> getCopyOfNumbersInText() {
-        return new HashMap<String,String>(termsInText);
-    }
 
 
 }

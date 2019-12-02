@@ -42,7 +42,7 @@ public class ReadFile {
                         prsNums.parse(document);
                         if(numOfParsedDocs > numberOfDocsToPost)
                         {
-                            myIndexer.enqueue(prsNums.getCopyOfNumbersInText());
+                            myIndexer.enqueue(prsNums.getCopyOfTermInText());
                             prsNums.clearDic();
                             numOfParsedDocs = 0;
                         }

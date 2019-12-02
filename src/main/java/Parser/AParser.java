@@ -205,4 +205,12 @@ public abstract class AParser{
             termsInText.put(term, currentDocNo+",1;");
         }
     }
+
+    /**
+     * @return the Dictionary of this parser
+     */
+    public HashMap<String, String> getCopyOfTermInText() {
+        return new HashMap<String,String>(termsInText);
+    }
+
 }
