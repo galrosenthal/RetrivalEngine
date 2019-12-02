@@ -9,19 +9,21 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public abstract class AParser{
 
     protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
-    protected String stopWords;
+//    protected String stopWords;
+    protected HashSet<String> stopWords;
     protected HashMap<String,String> termsInText;
 
 
     protected AParser()
     {
-        stopWords = "";
+        stopWords = new HashSet<>();
         termsInText = new HashMap<>();
         createStopWords();
     }
@@ -44,7 +46,9 @@ public abstract class AParser{
             String word = stopWordsReader.readLine();
             while(word != null)
             {
-                stopWords += " "+word.toLowerCase();
+                stopWords.add(word.toLowerCase());
+                stopWords.add(word);
+                stopWords.add(word.toUpperCase());
                 word = stopWordsReader.readLine();
             }
 
