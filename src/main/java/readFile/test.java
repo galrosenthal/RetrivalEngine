@@ -1,5 +1,7 @@
 package readFile;
 
+import Indexer.Indexer;
+
 import java.io.File;
 
 public class test {
@@ -12,6 +14,7 @@ public class test {
         Double testValue = Double.valueOf(test);
 
 
+        Indexer.getInstance().setPathToPostFiles(path);
 
 
         ReadFile f = new ReadFile();

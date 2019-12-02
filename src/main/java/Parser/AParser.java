@@ -96,7 +96,7 @@ public abstract class AParser{
     }
 
     protected boolean isLastCharPunctuation(String word) {
-        if(word == null)
+        if(word == null||word.length() == 0)
         {
             return false;
         }
@@ -159,4 +159,5 @@ public abstract class AParser{
         return value;
     }
 
+    public abstract void clearDic() ;
 }
