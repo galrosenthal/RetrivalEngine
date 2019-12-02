@@ -172,9 +172,7 @@ public abstract class AParser{
      * @param term
      */
     protected void parsedTermInsert(String term, String currentDocNo) {
-        //TODO: Change value of the Hashmap to String,String (word,docNo and other stuff)
         if (termsInText.containsKey(term)) {
-            //TODO: check if the stored doc is the same as current doc, if yes increase count else create another doc string
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
             String docList = termsInText.get(term);
             String[] docsSplitted =  docList.split(";");
@@ -191,7 +189,7 @@ public abstract class AParser{
                     oldtf += 1;
                     docAlreadyParsed = true;
                 }
-                lastDocList += docAndtf + "," + oldtf + ";";
+                lastDocList += docAndtf[0] + "," + oldtf + ";";
             }
             if(docAlreadyParsed)
             {
