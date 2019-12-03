@@ -43,7 +43,8 @@ public class ReadFile {
                         numOfCorpusFiles++;
                         numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
-                        new Thread(()-> prsNums.parse(document)).start();
+//                        new Thread(()-> prsNums.parse(document)).start();
+                        prsNums.parse(document);
                         if(numOfParsedDocs > numberOfDocsToPost)
                         {
                             myIndexer.enqueue(prsNums.getCopyOfTermInText());

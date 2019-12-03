@@ -26,14 +26,10 @@ public class test {
 
         Indexer.getInstance().setPathToPostFiles(postfilePath);
         ExecutorService indexerThreads = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
-        indexerThreads.execute(Indexer.getInstance());
-        indexerThreads.execute(Indexer.getInstance());
-        indexerThreads.execute(Indexer.getInstance());
-        indexerThreads.execute(Indexer.getInstance());
-        indexerThreads.execute(Indexer.getInstance());
-        indexerThreads.execute(Indexer.getInstance());
-        indexerThreads.execute(Indexer.getInstance());
-        indexerThreads.execute(Indexer.getInstance());
+        for (int i = 0; i < MAX_NUMBER_OF_THREADS; i++) {
+            indexerThreads.execute(Indexer.getInstance());
+        }
+
 
 
         ReadFile f = new ReadFile();
@@ -45,6 +41,7 @@ public class test {
         //HashMap<String,Integer> testNumInAllCorpus = f.prsNums.getNumbersInText();
 
         Indexer.stopThreads = true;
+        indexerThreads.shutdownNow();
 
         System.out.println("There are "+f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
     }

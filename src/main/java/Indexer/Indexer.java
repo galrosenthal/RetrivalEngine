@@ -2,6 +2,7 @@ package Indexer;
 
 import java.io.BufferedWriter;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Indexer implements Runnable{
@@ -10,9 +11,11 @@ public class Indexer implements Runnable{
     private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
+    public ConcurrentHashMap<String,String> corpusDictionary;
 
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
+        corpusDictionary = new ConcurrentHashMap<>();
     }
 
     public static Indexer getInstance() {
@@ -49,12 +52,19 @@ public class Indexer implements Runnable{
         {
             createPostFiles();
         }
+
     }
 
     private synchronized void createPostFiles() {
         while (!this.parsedWordsQueue.isEmpty())
         {
+            //TODO: For each word check if exists in the CorpusDictionary,
+            // find the relevant posting file (from the Dictionary or by first letter),
+            // append the relevant data to the posting file in the relevant line
             HashMap<String,String> dqdHshMap = dequeue();
+
+
+
             if(dqdHshMap == null)
             {
                 return;
