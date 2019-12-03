@@ -10,8 +10,12 @@ public class parseWords extends AParser {
     }
 
     @Override
-    public void parse(String[] wordsInDoc) {
+    public void parse(Document document) {
 
+    }
+
+    @Override
+    public void clearDic() {
 
     }
 }

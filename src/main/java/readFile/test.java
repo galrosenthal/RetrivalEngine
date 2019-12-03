@@ -7,7 +7,7 @@ import java.io.File;
 public class test {
 
     public static void main(String[] args) {
-        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
+        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest2";
         String test = "-1010.56";
 //        test = test.substring(0,test.indexOf("."));
         test = test.replaceAll(",","");
