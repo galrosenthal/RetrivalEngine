@@ -13,10 +13,13 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ReadFile {
     public static int numOfTerms = 0;
 
+    private static final int MAX_NUMBER_OF_THREADS = 4;
     public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
     public parseNumbers prsNums = new parseNumbers();
@@ -26,6 +29,7 @@ public class ReadFile {
 
     private Indexer myIndexer = Indexer.getInstance();
     private final int numberOfDocsToPost = 1000;
+    private ExecutorService indexerThreads = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
 
     public void readCorpus(File corpus){
         Document doc;
@@ -47,21 +51,21 @@ public class ReadFile {
                             docs) {
                         numOfCorpusFiles++;
                         numOfParsedDocs++;
-                        IR.Document document = new IR.Document(fileDoc);
-                        prsNums.parse(document);
-                        if(numOfParsedDocs > numberOfDocsToPost)
-                        {
-                            myIndexer.enqueue(prsNums.getCopyOfNumbersInText());
-                            prsNums.clearDic();
-                            numOfParsedDocs = 0;
-                        }
+                       IR.Document document = new IR.Document(fileDoc);
+//                        new Thread(()-> prsNums.parse(document)).start();
+//                        if(numOfParsedDocs > numberOfDocsToPost)
+//                        {
+//                            //myIndexer.enqueue(prsNums.getCopyOfTermInText());
+//                            prsNums.clearDic();
+//                            numOfParsedDocs = 0;
+//                        }
 //                        parseDates pDate = new parseDates();
 //                        pDate.parse(document);
                         //parsePercentage pp = new parsePercentage();
                         //pp.parse(document);
-                        String[] wordsInDoc = document.getDocText().text().split(" ");
+                        //String[] wordsInDoc = document.getDocText().text().split(" ");
                         //prsDate.parse(wordsInDoc);
-                        prsRanges.parse(document);
+                        //prsRanges.parse(document);
                         //prsPercent.parse(wordsInDoc);
                         //prsNums.parse(document);
                     }

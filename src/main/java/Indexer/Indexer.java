@@ -1,5 +1,6 @@
 package Indexer;
 
+import java.io.BufferedWriter;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -7,6 +8,8 @@ public class Indexer implements Runnable{
     private static volatile Indexer mInstance;
     private ConcurrentLinkedQueue<HashMap<String,String>> parsedWordsQueue;
     private String postFiles;
+    private BufferedWriter fileWriter;
+    public static volatile boolean stopThreads = false;
 
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
@@ -31,7 +34,7 @@ public class Indexer implements Runnable{
 
     private synchronized HashMap<String,String> dequeue()
     {
-        return parsedWordsQueue.remove();
+        return parsedWordsQueue.poll();
     }
 
     public void setPathToPostFiles(String path)
@@ -42,16 +45,30 @@ public class Indexer implements Runnable{
 
     @Override
     public void run() {
-        while(true)
+        while(!stopThreads)
         {
             createPostFiles();
         }
     }
 
     private synchronized void createPostFiles() {
-        if(!this.parsedWordsQueue.isEmpty())
+        while (!this.parsedWordsQueue.isEmpty())
         {
+            HashMap<String,String> dqdHshMap = dequeue();
+            if(dqdHshMap == null)
+            {
+                return;
+            }
+            else
+            {
+                //System.out.println("test");
+            }
 
+//            for (String term :
+//                    dqdHshMap.keySet()) {
+//
+//
+//            }
         }
 
     }

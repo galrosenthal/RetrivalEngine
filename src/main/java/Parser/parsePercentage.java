@@ -36,13 +36,13 @@ public class parsePercentage extends AParser {
                     //if (word.length() > 0 && word.matches("\\b(?<!\\.)(?!0+(?:\\.0+)?%)(?:\\d|[1-9]\\d|100)(?:(?<!100)\\.\\d+)?%")) {
                         numOfTerms++;
                         //word = chopDownFisrtChar(word);
-                       if (NumberUtils.isNumber(word.substring(0, word.length() - 1))) {
+                       if ((word.substring(0, word.length() - 1)).matches("^\\d+(\\.\\d+)?")) {
                             //double num = Double.parseDouble(word.substring(0, word.length() - 1));
                             Term newTerm = new Term(word);
                             numOfTerms++;
                             //System.out.println(newTerm.getWordValue());
                         } else if (isFraction(word.substring(0, word.length() - 1))) {
-                            if (i > 2 && NumberUtils.isDigits(wordsInDoc[i - 1])) {
+                            if (i > 2 && wordsInDoc[i - 1].matches("^\\d+(\\.\\d+)?")) {
                                 Term newTerm = new Term(wordsInDoc[i - 1] + " " + word);
                                 numOfTerms++;
                                 //System.out.println(newTerm.getWordValue());
@@ -51,7 +51,6 @@ public class parsePercentage extends AParser {
                                 numOfTerms++;
                                 //System.out.println(newTerm.getWordValue());
                             }
-
                         }
                     } else if (word.equalsIgnoreCase("percentage") || word.equalsIgnoreCase("percent") ||
                             word.equalsIgnoreCase("percentages") || word.equalsIgnoreCase("percents")) {
@@ -75,7 +74,6 @@ public class parsePercentage extends AParser {
                                 numOfTerms++;
                                 //System.out.println(newTerm.getWordValue());
                                 }
-
                             }
                         }
                     }

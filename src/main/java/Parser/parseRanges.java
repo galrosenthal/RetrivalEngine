@@ -10,29 +10,38 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class parseRanges extends AParser {
-    String pattern = "((([0-9]+\\-[0-9]+)|([[:alpha:]]+-[[:alpha:]]+))|(between [0-9]+ and [0-9]+))";
+    String pattern = "(([0-9]+\\-[0-9]+)|(between [0-9]+ and [0-9]+)|([[:alpha:]]+-[[:alpha:]]+-[[:alpha:]]+)|([[:alpha:]]+-[[:alpha:]]+))";
     Pattern p = Pattern.compile(pattern);
     Matcher matcher;
-    StringBuilder text;
     int numOfTerms = 0;
-
+    String[] splitedText;
     @Override
     public void parse(Document document) {
         try {
-            text= new StringBuilder(document.getDocText().text());
-            matcher = p.matcher(text);
+            splitedText = document.getDocText().text().split("\\r?\\n");
 
-            while (matcher.find()){
-                numOfTerms++;
-                //System.out.println(matcher.group(1));
-                String match = matcher.group(1);
-                String[] values = StringUtils.split(match,'-');
-                if(NumberUtils.isDigits(values[0]) && NumberUtils.isDigits(values[2])){
+            for (String line: splitedText) {
+                matcher = p.matcher(line);
+                while (matcher.find()) {
 
+                    //System.out.println(matcher.group(1));
+                    String match = matcher.group(1);
+
+                    String[] values = StringUtils.split(match, '-');
+                    if (values[0].matches("^\\d+") && values[2].matches("^\\d+")) {
+                        parsedTermInsert(values[2],document.getDocNo());
+                        parsedTermInsert(match,document.getDocNo());
+                    }
+                    else{
+                        String[] words = StringUtils.split(match, ' ');
+                        if(words.length > 3 && words[0].equals("between") && words[2].equals("and")){
+                            parsedTermInsert(words[1],document.getDocNo());
+                            parsedTermInsert(words[3],document.getDocNo());
+                        }
+                    }
+
+                    parsedTermInsert(match,document.getDocNo());
                 }
-
-               // newTerm = new Term(match);
-
             }
 
         } catch (Exception e) {
