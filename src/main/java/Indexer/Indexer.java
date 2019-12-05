@@ -16,6 +16,10 @@ public class Indexer implements Runnable{
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
         corpusDictionary = new ConcurrentHashMap<>();
     }
+    public boolean isQEmpty()
+    {
+        return parsedWordsQueue.isEmpty();
+    }
 
     public static Indexer getInstance() {
         if (mInstance == null) {
@@ -47,10 +51,12 @@ public class Indexer implements Runnable{
 
     @Override
     public void run() {
+        System.out.println("Indexer has Started...");
         while(!stopThreads)
         {
             createPostFiles();
         }
+        System.out.println("Indexer has stopped...");
 //        createPostFiles();
 
     }
@@ -71,6 +77,7 @@ public class Indexer implements Runnable{
             }
             else
             {
+//                System.out.println("cleared " + dqdHshMap.size());
                 dqdHshMap.clear();
                 dqdHshMap = null;
 
@@ -87,12 +94,13 @@ public class Indexer implements Runnable{
         {
             try
             {
-                Thread.sleep(1/2);
+                long l = 1/2;
+                Thread.sleep(l);
 
             }
             catch (Exception e)
             {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
 

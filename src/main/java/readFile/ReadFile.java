@@ -1,6 +1,9 @@
 package readFile;
 
+import Indexer.Indexer;
+import Parser.parseDates;
 import Parser.parseNumbers;
+import Parser.parsePercentage;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,18 +12,21 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class ReadFile {
 
     private static final int MAX_NUMBER_OF_THREADS = 4;
+    private static final int DOC_CREATED_IN_QS = 50000;
     public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
     public parseNumbers prsNums = new parseNumbers();
+    public Thread prsNumThrd ;
+    public parseDates prsDates = new parseDates();
+    public Thread prsDatesThrd ;
+    public Parser.parsePercentage prsPrcntg = new parsePercentage();
+    public Thread prsPrcntThrd;
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
-    public ExecutorService parsersExecutors = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
 
     public ReadFile() {
         runParsers();
@@ -28,9 +34,38 @@ public class ReadFile {
     }
 
     private void runParsers() {
-        parsersExecutors.execute(prsNums);
+        prsNumThrd = new Thread(prsNums);
+        prsNumThrd.start();
+
+        prsDatesThrd = new Thread(prsDates);
+        prsDatesThrd.start();
+
+        prsPrcntThrd = new Thread(prsPrcntg);
+        prsPrcntThrd.start();
+
     }
 
+    public void stopThreads()
+    {
+        while(!prsNums.isQEmpty() && !Indexer.getInstance().isQEmpty() && !prsDates.isQEmpty() && !prsPrcntg.isQEmpty())
+        {
+        }
+        prsNums.stopThread();
+        prsDates.stopThread();
+        prsPrcntg.stopThread();
+        Indexer.stopThreads = true;
+        try
+        {
+            prsNumThrd.join();
+            prsDatesThrd.join();
+            prsPrcntThrd.join();
+        }
+        catch (Exception e)
+        {
+
+        }
+
+    }
 
     public void readCorpus(File corpus){
         Document doc;
@@ -53,6 +88,9 @@ public class ReadFile {
                         numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
                         prsNums.enqueueDoc(document);
+                        prsDates.enqueueDoc(document);
+
+                        shouldWaitForParser();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
 //                        if(numOfParsedDocs > numberOfDocsToPost)
@@ -77,7 +115,19 @@ public class ReadFile {
 
     }
 
+    private void shouldWaitForParser() {
+        if(prsNums.qSize() >= DOC_CREATED_IN_QS)
+        {
+            try
+            {
+                Thread.sleep(5);
+            }
+            catch (Exception e)
+            {
 
+            }
+        }
+    }
 
 
 }

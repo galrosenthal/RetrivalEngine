@@ -8,7 +8,7 @@ import java.time.Month;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class parseDates extends AParser{
+public class parseDates extends AParser {
     String monthesFirstPattern;
     String dayFirstPattern;
     Pattern pattern;
@@ -21,6 +21,17 @@ public class parseDates extends AParser{
                 "(july)|(jul)|(august)|(aug)|(october)|(oct)|(september)|(sept)|(sep)|(november)|(nov)|(december)|(dec)))";
         //pattern = Pattern.compile(dayFirstPattern);
         //matcher = pattern.matcher(word.toLowerCase());
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Date Parser has started");
+        while(!stopThread)
+        {
+            parse();
+        }
+        System.out.println("Date Parser has stopped");
+
     }
 
     @Override

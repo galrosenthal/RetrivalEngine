@@ -7,6 +7,17 @@ import org.apache.commons.lang3.math.NumberUtils;
 public class parsePercentage extends AParser {
     int count = 0;
 
+    @Override
+    public void run() {
+        System.out.println("Precentage Parser has started");
+        while(!stopThread)
+        {
+            parse();
+        }
+        System.out.println("Precentage Parser has stopped");
+
+    }
+
     public parsePercentage() {
         super();
     }

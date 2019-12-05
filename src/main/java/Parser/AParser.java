@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public abstract class AParser{
+public abstract class AParser implements Runnable {
 
     protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
     protected String[] docText;
@@ -25,7 +25,9 @@ public abstract class AParser{
     private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private final int numberOfDocsToPost = 5;
+    private final int numberOfDocsToPost = 10000;
+    protected boolean stopThread = false;
+
 
     protected AParser()
     {
@@ -35,6 +37,16 @@ public abstract class AParser{
         createStopWords();
     }
 
+    public void stopThread()
+    {
+        stopThread = true;
+
+    }
+
+    public boolean isQEmpty()
+    {
+        return this.docQueueWaitingForParse.isEmpty();
+    }
     /**
      * Checks if the queue is Empty
      * @return
@@ -74,8 +86,8 @@ public abstract class AParser{
         {
             myIndexer.enqueue(termsInText);
 //            termsInText = null;
-//            termsInText = new ConcurrentHashMap<>();
-            termsInText.clear();
+            termsInText = new ConcurrentHashMap<>();
+//            termsInText.clear();
             numOfParsedDocInIterative = 0;
         }
     }
@@ -266,4 +278,8 @@ public abstract class AParser{
         return new HashMap<String,String>(termsInText);
     }
 
+    public int qSize()
+    {
+        return this.docQueueWaitingForParse.size();
+    }
 }

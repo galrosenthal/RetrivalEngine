@@ -3,44 +3,36 @@ package Parser;
 import IR.Document;
 
 import java.text.DecimalFormat;
-import java.util.HashMap;
 
-public class parseNumbers extends AParser implements Runnable {
+public class parseNumbers extends AParser{
 
-    private static volatile parseNumbers mInstance;
     private final double BILLION = 1000000000;
     private final double MILLION = 1000000;
     private final double THOUSAND = 1000;
     //    private List<String> numbersInText;
 //    private List<String> allNumbersInText;
-    private HashMap<String,Integer> allNumbersInText;
+//    private HashMap<String,Integer> allNumbersInText;
     private DecimalFormat format3Decimals;
     private Document currentDoc;
 
     @Override
     public void run() {
-        while(true)
+        System.out.println("Num Parser has started");
+        while(!stopThread)
         {
             parse();
         }
+        System.out.println("Num Parser has stopped");
+
     }
+
 
     public parseNumbers() {
         super();
-        allNumbersInText = new HashMap<>();
+//        allNumbersInText = new HashMap<>();
         format3Decimals = new DecimalFormat("#.###");
     }
 
-//    public static parseNumbers getInstance() {
-//        if (mInstance == null) {
-//            synchronized (parseNumbers.class) {
-//                if (mInstance == null) {
-//                    mInstance = new parseNumbers();
-//                }
-//            }
-//        }
-//        return mInstance;
-//    }
 
     @Override
     public void parse()
@@ -49,6 +41,7 @@ public class parseNumbers extends AParser implements Runnable {
         while(!queueIsEmpty())
         {
             Document d = dequeueDoc();
+//            System.out.println("There are " + this.qSize() + " docs in the queue left");
 
 
             if(d == null)
