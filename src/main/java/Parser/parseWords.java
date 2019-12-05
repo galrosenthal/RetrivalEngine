@@ -1,7 +1,5 @@
 package Parser;
 
-import IR.Document;
-
 public class parseWords extends AParser {
 
 
@@ -10,7 +8,7 @@ public class parseWords extends AParser {
     }
 
     @Override
-    public void parse(Document d) {
+    public void parse() {
 
 
     }

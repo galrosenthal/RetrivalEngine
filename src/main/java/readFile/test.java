@@ -5,6 +5,8 @@ import Indexer.Indexer;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class test {
 
@@ -25,10 +27,13 @@ public class test {
 
 
         Indexer.getInstance().setPathToPostFiles(postfilePath);
-        ExecutorService indexerThreads = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
+        ThreadPoolExecutor crpsThrds =(ThreadPoolExecutor)Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
+        ExecutorService corpusParsingIndexeingThreads = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
         for (int i = 0; i < MAX_NUMBER_OF_THREADS; i++) {
-            indexerThreads.execute(Indexer.getInstance());
+            corpusParsingIndexeingThreads.execute(Indexer.getInstance());
         }
+
+
 
 
 
@@ -40,8 +45,24 @@ public class test {
         endTime = System.nanoTime();
         //HashMap<String,Integer> testNumInAllCorpus = f.prsNums.getNumbersInText();
 
-        Indexer.stopThreads = true;
-        indexerThreads.shutdownNow();
+//        Indexer.stopThreads = true;
+//        while(!Indexer.stopThreads)
+//        {
+//
+//        }
+        try
+        {
+            if(!corpusParsingIndexeingThreads.awaitTermination(300, TimeUnit.SECONDS))
+            {
+                System.out.println("Timed out");
+                Indexer.stopThreads = true;
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        corpusParsingIndexeingThreads.shutdownNow();
 
         System.out.println("There are "+f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
     }

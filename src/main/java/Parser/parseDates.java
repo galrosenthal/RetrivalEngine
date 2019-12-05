@@ -4,10 +4,7 @@ import IR.Document;
 import IR.Term;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.lang.reflect.Array;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,14 +24,21 @@ public class parseDates extends AParser{
     }
 
     @Override
-    public void parse(Document d) {
-        if(d != null){
-            int i = 0;
+    public void parse() {
+        while(!queueIsEmpty())
+        {
+            Document d = dequeueDoc();
+            if(d == null)
+            {
+                continue;
+            }
+            if(d != null){
+                int i = 0;
                 String docText = d.getDocText().text();
                 //matcher = pattern.matcher(docText);
                 String[] wordsInDoc = d.getDocText().text().split(" ");
                 for (String word :
-                     wordsInDoc) {
+                        wordsInDoc) {
                     //word = chopDownFisrtChar(word);
                     //word = chopDownLastCharPunc(word);
 
@@ -75,14 +79,14 @@ public class parseDates extends AParser{
 
                     i++;
                 }
-          //  while(matcher.find()){
+                //  while(matcher.find()){
                 //System.out.println(matcher.group());
-            //}
+                //}
 
 
-            /**
-             * Finds all the dates with numbers in the beginning
-             */
+                /**
+                 * Finds all the dates with numbers in the beginning
+                 */
             /*
             Pattern pattern = Pattern.compile(dayFirstPattern);
             Matcher matcher = pattern.matcher(docText);
@@ -117,9 +121,9 @@ public class parseDates extends AParser{
             }
             */
 
-            /**
-             * Finds all the dates with the months at the beginning
-             */
+                /**
+                 * Finds all the dates with the months at the beginning
+                 */
             /*
             pattern = Pattern.compile(monthesFirstPattern);
             matcher = pattern.matcher(docText);
@@ -136,8 +140,9 @@ public class parseDates extends AParser{
 
                 }
             }*/
-        }
+            }
 
+        }
     }
 
     private int getMonthNumber(String monthName) {
@@ -180,7 +185,7 @@ public class parseDates extends AParser{
 
     private boolean equalsMonth(String word){
         if(word.equals("jan") || word.equals("feb") || word.equals("mar") || word.equals("apr") || word.equals("may") || word.equals("jun") ||
-        word.equals("jul") || word.equals("aug") || word.equals("sep") || word.equals("sept") || word.equals("oct") || word.equals("nov") ||
+                word.equals("jul") || word.equals("aug") || word.equals("sep") || word.equals("sept") || word.equals("oct") || word.equals("nov") ||
                 word.equals("dec") || word.equals("january") || word.equals("february") || word.equals("march") || word.equals("april") || word.equals("november") ||
                 word.equals("june") || word.equals("july") || word.equals("august") || word.equals("september") || word.equals("october") || word.equals("december")){
             return true;

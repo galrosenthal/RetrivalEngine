@@ -2,6 +2,7 @@ package Parser;
 
 import IR.Document;
 import IR.Term;
+import Indexer.Indexer;
 import Tokenizer.Tokenizer;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -10,6 +11,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class AParser{
 
@@ -17,54 +20,100 @@ public abstract class AParser{
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
 //    protected String stopWords;
-    protected HashSet<String> stopWords;
-    protected HashMap<String,String> termsInText;
-
+    protected static HashSet<String> stopWords;
+    protected ConcurrentHashMap<String,String> termsInText;
+    private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
+    protected int numOfParsedDocInIterative;
+    private Indexer myIndexer = Indexer.getInstance();
+    private final int numberOfDocsToPost = 5;
 
     protected AParser()
     {
-        stopWords = new HashSet<>();
-        termsInText = new HashMap<>();
+        termsInText = new ConcurrentHashMap<>();
+        docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
+        numOfParsedDocInIterative = 0;
         createStopWords();
+    }
+
+    /**
+     * Checks if the queue is Empty
+     * @return
+     */
+    protected boolean queueIsEmpty()
+    {
+        return this.docQueueWaitingForParse.isEmpty();
+    }
+
+    /**
+     * Enqueue a new Document to the tail of the queue
+     * @param d
+     * @return
+     */
+    public boolean enqueueDoc(Document d)
+    {
+        if(d != null)
+        {
+            return this.docQueueWaitingForParse.add(d);
+        }
+        return false;
+    }
+
+    /**
+     * Dequeue first Document in the queue
+     * @return
+     */
+    protected Document dequeueDoc()
+    {
+        return docQueueWaitingForParse.poll();
+    }
+
+
+    protected void releaseToIndexer()
+    {
+        if(numOfParsedDocInIterative >= numberOfDocsToPost)
+        {
+            myIndexer.enqueue(termsInText);
+//            termsInText = null;
+//            termsInText = new ConcurrentHashMap<>();
+            termsInText.clear();
+            numOfParsedDocInIterative = 0;
+        }
     }
 
     /**
      * Creates a String that contains all the stopwords from the file <b>resources/stopWords.txt</b>
      */
-    protected void createStopWords()
-    {
-        File stopWordsFile = new File("./src/main/resources/stopWords.txt");
-        if(!stopWordsFile.exists())
-        {
-            System.out.println(stopWordsFile.getAbsolutePath());
-        }
-
-        try
-        {
-            BufferedReader stopWordsReader = new BufferedReader(new FileReader(stopWordsFile));
-
-            String word = stopWordsReader.readLine();
-            while(word != null)
-            {
-                stopWords.add(word.toLowerCase());
-                stopWords.add(word);
-                stopWords.add(word.toUpperCase());
-                word = stopWordsReader.readLine();
+    protected void createStopWords() {
+        if (stopWords == null) {
+            stopWords = new HashSet<>();
+            File stopWordsFile = new File("./src/main/resources/stopWords.txt");
+            if (!stopWordsFile.exists()) {
+                System.out.println(stopWordsFile.getAbsolutePath());
             }
 
-            stopWordsReader.close();
+            try {
+                BufferedReader stopWordsReader = new BufferedReader(new FileReader(stopWordsFile));
+
+                String word = stopWordsReader.readLine();
+                while (word != null) {
+                    stopWords.add(word.toLowerCase());
+                    stopWords.add(word);
+                    stopWords.add(word.toUpperCase());
+                    word = stopWordsReader.readLine();
+                }
+
+                stopWordsReader.close();
 //            this.stopWords = (List<String>) Fileo.readObject();
 
 //            Filer.close();
 
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public abstract void parse(Document d);
+    public abstract void parse();
 
 
 
@@ -167,7 +216,7 @@ public abstract class AParser{
         return value;
     }
 
-    public void clearDic() {
+    private void clearDic() {
         this.termsInText.clear();
     }
 

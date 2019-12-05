@@ -1,13 +1,12 @@
 package Indexer;
 
 import java.io.BufferedWriter;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Indexer implements Runnable{
     private static volatile Indexer mInstance;
-    private ConcurrentLinkedQueue<HashMap<String,String>> parsedWordsQueue;
+    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
     private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
@@ -30,12 +29,12 @@ public class Indexer implements Runnable{
     }
 
 
-    public synchronized boolean enqueue(HashMap<String,String> parsedWords)
+    public synchronized boolean enqueue(ConcurrentHashMap<String,String> parsedWords)
     {
         return parsedWordsQueue.add(parsedWords);
     }
 
-    private synchronized HashMap<String,String> dequeue()
+    private synchronized ConcurrentHashMap<String,String> dequeue()
     {
         return parsedWordsQueue.poll();
     }
@@ -52,16 +51,17 @@ public class Indexer implements Runnable{
         {
             createPostFiles();
         }
+//        createPostFiles();
 
     }
 
     private synchronized void createPostFiles() {
-        while (!this.parsedWordsQueue.isEmpty())
+        if (!this.parsedWordsQueue.isEmpty())
         {
             //TODO: For each word check if exists in the CorpusDictionary,
             // find the relevant posting file (from the Dictionary or by first letter),
             // append the relevant data to the posting file in the relevant line
-            HashMap<String,String> dqdHshMap = dequeue();
+            ConcurrentHashMap<String,String> dqdHshMap = dequeue();
 
 
 
@@ -71,6 +71,9 @@ public class Indexer implements Runnable{
             }
             else
             {
+                dqdHshMap.clear();
+                dqdHshMap = null;
+
                 //System.out.println("test");
             }
 
@@ -80,6 +83,19 @@ public class Indexer implements Runnable{
 //
 //            }
         }
+        else
+        {
+            try
+            {
+                Thread.sleep(1/2);
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
 
     }
 }

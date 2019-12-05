@@ -1,6 +1,5 @@
 package readFile;
 
-import Indexer.Indexer;
 import Parser.parseNumbers;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
@@ -19,9 +18,19 @@ public class ReadFile {
     public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
     public parseNumbers prsNums = new parseNumbers();
-    private Indexer myIndexer = Indexer.getInstance();
-    private final int numberOfDocsToPost = 1000;
-    private ExecutorService indexerThreads = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
+//    private Indexer myIndexer = Indexer.getInstance();
+//    private final int numberOfDocsToPost = 1000;
+    public ExecutorService parsersExecutors = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
+
+    public ReadFile() {
+        runParsers();
+
+    }
+
+    private void runParsers() {
+        parsersExecutors.execute(prsNums);
+    }
+
 
     public void readCorpus(File corpus){
         Document doc;
@@ -43,14 +52,15 @@ public class ReadFile {
                         numOfCorpusFiles++;
                         numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
+                        prsNums.enqueueDoc(document);
+
 //                        new Thread(()-> prsNums.parse(document)).start();
-                        prsNums.parse(document);
-                        if(numOfParsedDocs > numberOfDocsToPost)
-                        {
-                            myIndexer.enqueue(prsNums.getCopyOfTermInText());
-                            prsNums.clearDic();
-                            numOfParsedDocs = 0;
-                        }
+//                        if(numOfParsedDocs > numberOfDocsToPost)
+//                        {
+//                            myIndexer.enqueue(prsNums.getCopyOfTermInText());
+//                            prsNums.clearDic();
+//                            numOfParsedDocs = 0;
+//                        }
 //                        parseDates pDate = new parseDates();
 //                        pDate.parse(document);
                         //parsePercentage pp = new parsePercentage();
