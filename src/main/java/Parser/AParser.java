@@ -228,7 +228,11 @@ public abstract class AParser implements Runnable {
         return value;
     }
 
-    private void clearDic() {
+    public String[] getDocText() {
+        return docText;
+    }
+
+    public void clearDic() {
         this.termsInText.clear();
     }
 
