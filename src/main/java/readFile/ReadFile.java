@@ -89,6 +89,7 @@ public class ReadFile {
                         IR.Document document = new IR.Document(fileDoc);
                         prsNums.enqueueDoc(document);
                         prsDates.enqueueDoc(document);
+                        prsPrcntg.enqueueDoc(document);
 
                         shouldWaitForParser();
 
