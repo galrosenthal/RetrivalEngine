@@ -4,3 +4,7 @@
 
 *.iml
 misc.xml
+/dicTemp/*
+/dicTemp
+/postingFiles/*
+/postingFiles

@@ -3,6 +3,7 @@ package Parser;
 import IR.Document;
 import IR.Term;
 import Indexer.Indexer;
+import Indexer.ReadWriteTempDic;
 import Tokenizer.Tokenizer;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -17,16 +18,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class AParser implements Runnable {
 
     protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
+    private String tfDelim = "#";
+    protected String parseName;
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
-//    protected String stopWords;
     protected static HashSet<String> stopWords;
     protected ConcurrentHashMap<String,String> termsInText;
     private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
-    protected int numOfParsedDocInIterative;
+    protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private final int numberOfDocsToPost = 10000;
+    private static final int numberOfDocsToPost = 10000;
     protected boolean stopThread = false;
+    protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
+    private boolean doneReadingDocs;
 
 
     protected AParser()
@@ -35,10 +39,15 @@ public abstract class AParser implements Runnable {
         docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
         numOfParsedDocInIterative = 0;
         createStopWords();
+        doneReadingDocs = false;
+
+
     }
 
     public void stopThread()
     {
+        doneReadingDocs = true;
+        releaseToIndexerFile();
         stopThread = true;
 
     }
@@ -80,16 +89,23 @@ public abstract class AParser implements Runnable {
     }
 
 
-    protected void releaseToIndexer()
+    protected void releaseToIndexerFile()
     {
-        if(numOfParsedDocInIterative >= numberOfDocsToPost)
+        if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
         {
-            myIndexer.enqueue(termsInText);
+            if(!myReadWriter.writeToDic(termsInText))
+            {
+                System.out.println("Fuck it");
+                //TODO: maybe throw exception?
+            }
+//            myIndexer.enqueue(termsInText);
 //            termsInText = null;
             termsInText = new ConcurrentHashMap<>();
-//            termsInText.clear();
             numOfParsedDocInIterative = 0;
+//            termsInText.clear();
+
         }
+
     }
 
     /**
@@ -251,18 +267,18 @@ public abstract class AParser implements Runnable {
 
             for (String docParams:
                  docsSplitted) {
-                String[] docAndtf = docParams.split(",");
+                String[] docAndtf = docParams.split(tfDelim);
                 oldtf = Integer.parseInt(docAndtf[1]);
                 if(docAndtf[0].equals(currentDocNo))
                 {
                     oldtf += 1;
                     docAlreadyParsed = true;
                 }
-                lastDocList += docAndtf[0] + "," + oldtf + ";";
+                lastDocList += docAndtf[0] + tfDelim + oldtf + ";";
             }
             if(docAlreadyParsed)
             {
-                lastDocList += currentDocNo + ",1;";
+                lastDocList += currentDocNo + tfDelim + "1;";
             }
             lastDocList = lastDocList.substring(0,lastDocList.length()-1);
 
@@ -271,7 +287,7 @@ public abstract class AParser implements Runnable {
 
 
         } else {
-            termsInText.put(term, currentDocNo+",1;");
+            termsInText.put(term, currentDocNo + tfDelim + "1;");
         }
     }
 

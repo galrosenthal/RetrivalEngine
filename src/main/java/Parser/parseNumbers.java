@@ -30,6 +30,7 @@ public class parseNumbers extends AParser{
     public parseNumbers() {
         super();
 //        allNumbersInText = new HashMap<>();
+        parseName = "NumberParser";
         format3Decimals = new DecimalFormat("#.###");
     }
 
@@ -107,10 +108,11 @@ public class parseNumbers extends AParser{
 
                 }
             }
-            this.numOfParsedDocInIterative++;
-            this.releaseToIndexer();
+            numOfParsedDocInIterative++;
+            this.releaseToIndexerFile();
 
         }
+
 
         //System.out.println("\n\n\n"+countNumberMatch+"/"+allNumbers);
 
