@@ -29,4 +29,13 @@ public class parseNames extends AParser {
     }
 
 
+    @Override
+    public void parse() {
+
+    }
+
+    @Override
+    public void run() {
+
+    }
 }
