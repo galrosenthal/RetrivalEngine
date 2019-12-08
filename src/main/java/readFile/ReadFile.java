@@ -2,6 +2,7 @@ package readFile;
 
 import Indexer.Indexer;
 import Parser.parseDates;
+import Parser.parseNames;
 import Parser.parseNumbers;
 import Parser.parsePercentage;
 import Tokenizer.Tokenizer;
@@ -25,6 +26,7 @@ public class ReadFile {
     public Thread prsDatesThrd ;
     public Parser.parsePercentage prsPrcntg = new parsePercentage();
     public Thread prsPrcntThrd;
+    parseNames prsNames = new parseNames();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
@@ -50,9 +52,11 @@ public class ReadFile {
         while(!prsNums.isQEmpty() && !Indexer.getInstance().isQEmpty() && !prsDates.isQEmpty() && !prsPrcntg.isQEmpty())
         {
         }
-        prsNums.stopThread();
-        prsDates.stopThread();
-        prsPrcntg.stopThread();
+        //prsNums.stopThread();
+        //prsDates.stopThread();
+        //prsPrcntg.stopThread();
+
+
         Indexer.stopThreads = true;
         try
         {
@@ -90,7 +94,8 @@ public class ReadFile {
                         prsNums.enqueueDoc(document);
                         prsDates.enqueueDoc(document);
                         prsPrcntg.enqueueDoc(document);
-
+                        prsNames.enqueueDoc(document);
+                        prsNames.parse();
                         shouldWaitForParser();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
