@@ -6,9 +6,7 @@ import java.text.DecimalFormat;
 
 public class parseNumbers extends AParser{
 
-    private final double BILLION = 1000000000;
-    private final double MILLION = 1000000;
-    private final double THOUSAND = 1000;
+
     //    private List<String> numbersInText;
 //    private List<String> allNumbersInText;
 //    private HashMap<String,Integer> allNumbersInText;
@@ -30,6 +28,8 @@ public class parseNumbers extends AParser{
     public parseNumbers() {
         super();
 //        allNumbersInText = new HashMap<>();
+        parseName = "NumberParser";
+
         format3Decimals = new DecimalFormat("#.###");
     }
 
@@ -107,10 +107,11 @@ public class parseNumbers extends AParser{
 
                 }
             }
-            this.numOfParsedDocInIterative++;
-            this.releaseToIndexer();
+            numOfParsedDocInIterative++;
+            this.releaseToIndexerFile();
 
         }
+
 
         //System.out.println("\n\n\n"+countNumberMatch+"/"+allNumbers);
 
@@ -174,7 +175,7 @@ public class parseNumbers extends AParser{
      * @param quntifier
      * @return
      */
-    private String quantifiedWordForDic(String number,String quntifier) {
+    protected String quantifiedWordForDic(String number,String quntifier) {
         quntifier = chopDownLastCharPunc(quntifier);
         number = chopDownLastCharPunc(number);
 
@@ -193,16 +194,17 @@ public class parseNumbers extends AParser{
             result += "K";
 
         }
-        else if(quntifier.equalsIgnoreCase("million"))
+        else if(quntifier.equalsIgnoreCase("million") )
         {
             //Million
             result += "M";
         }
-        else if(quntifier.equalsIgnoreCase("billion"))
+        else if(quntifier.equalsIgnoreCase("billion") )
         {
             //billion
             result += "B";
         }
+
 
         return result;
     }
@@ -224,7 +226,7 @@ public class parseNumbers extends AParser{
      * @param quntifier
      * @return
      */
-    private boolean nextWordIsQuntifier(String quntifier) {
+    protected boolean nextWordIsQuntifier(String quntifier) {
         quntifier = chopDownLastCharPunc(quntifier);
         if(quntifier.matches("^(Thousand|Million|Billion)"))
         {

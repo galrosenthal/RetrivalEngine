@@ -22,7 +22,7 @@ public class parseDates extends AParser{
 
     public parseDates() {
         super();
-
+        parseName = "DateParser";
         this.dayFirstPattern = "(((january)|(jan)|(march)|(mar)|(february)|(feb)|(april)|(apr)|(may)|(june)|(jun)|" +
                 "(july)|(jul)|(august)|(aug)|(october)|(oct)|(september)|(sept)|(sep)|(november)|(nov)|(december)|(dec)))";
         //pattern = Pattern.compile(dayFirstPattern);
@@ -163,6 +163,8 @@ public class parseDates extends AParser{
                 }
             }*/
             }
+            this.numOfParsedDocInIterative++;
+            this.releaseToIndexerFile();
 
         }
     }

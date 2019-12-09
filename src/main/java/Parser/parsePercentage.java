@@ -26,6 +26,7 @@ public class parsePercentage extends AParser {
 
     public parsePercentage() {
         super();
+        parseName = "PrecentageParser";
         //pattern = Pattern.compile();
         //matcher = pattern.matcher(word.toLowerCase());
     }
@@ -105,6 +106,8 @@ public class parsePercentage extends AParser {
                     i++;
                 }
             }
+            this.numOfParsedDocInIterative++;
+            this.releaseToIndexerFile();
 
         }
     }
