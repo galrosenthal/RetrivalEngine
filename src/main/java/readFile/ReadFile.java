@@ -61,6 +61,14 @@ public class ReadFile {
     {
         while(!allPrsrQsEmpty() && !Indexer.getInstance().isQEmpty())
         {
+            try
+            {
+                Thread.sleep(5);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
         for (AParser prsr :
                 allParsers) {
@@ -76,7 +84,7 @@ public class ReadFile {
         }
         catch (Exception e)
         {
-
+            e.printStackTrace();
         }
 
     }
