@@ -26,7 +26,8 @@ public class ReadFile {
     public Thread prsDatesThrd ;
     public Parser.parsePercentage prsPrcntg = new parsePercentage();
     public Thread prsPrcntThrd;
-    parseNames prsNames = new parseNames();
+    public Thread prsNamesThrd;
+    public parseNames prsNames = new parseNames();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
@@ -36,14 +37,16 @@ public class ReadFile {
     }
 
     private void runParsers() {
-        prsNumThrd = new Thread(prsNums);
-        prsNumThrd.start();
-
-        prsDatesThrd = new Thread(prsDates);
-        prsDatesThrd.start();
-
-        prsPrcntThrd = new Thread(prsPrcntg);
-        prsPrcntThrd.start();
+//        prsNumThrd = new Thread(prsNums);
+//        prsNumThrd.start();
+//
+//        prsDatesThrd = new Thread(prsDates);
+//        prsDatesThrd.start();
+//
+//        prsPrcntThrd = new Thread(prsPrcntg);
+//        prsPrcntThrd.start();
+        prsNamesThrd = new Thread((prsNames));
+        prsNamesThrd.start();
 
     }
 
@@ -55,7 +58,7 @@ public class ReadFile {
         //prsNums.stopThread();
         //prsDates.stopThread();
         //prsPrcntg.stopThread();
-
+        prsNames.stopThread();
 
         Indexer.stopThreads = true;
         try
@@ -63,6 +66,7 @@ public class ReadFile {
             prsNumThrd.join();
             prsDatesThrd.join();
             prsPrcntThrd.join();
+            prsNamesThrd.join();
         }
         catch (Exception e)
         {
@@ -91,11 +95,11 @@ public class ReadFile {
                         numOfCorpusFiles++;
                         numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
-                        prsNums.enqueueDoc(document);
-                        prsDates.enqueueDoc(document);
-                        prsPrcntg.enqueueDoc(document);
-                        prsNames.enqueueDoc(document);
-                        prsNames.parse();
+//                        prsNums.enqueueDoc(document);
+//                        prsDates.enqueueDoc(document);
+//                        prsPrcntg.enqueueDoc(document);
+                          prsNames.enqueueDoc(document);
+                        //  prsNames.parse();
                         shouldWaitForParser();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
@@ -134,6 +138,4 @@ public class ReadFile {
             }
         }
     }
-
-
 }

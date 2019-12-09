@@ -9,7 +9,7 @@ public class test {
     private static final int MAX_NUMBER_OF_THREADS = 4;
 
     public static void main(String[] args) {
-        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest2";
+        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest3";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
   //      String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\10files";
