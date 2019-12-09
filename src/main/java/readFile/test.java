@@ -6,7 +6,7 @@ import java.io.File;
 
 public class test {
 
-    private static final int MAX_NUMBER_OF_THREADS = 4;
+    private static final int MAX_NUMBER_OF_THREADS = 1;
 
     public static void main(String[] args) {
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
@@ -25,17 +25,16 @@ public class test {
 
 
         Indexer.getInstance().setPathToPostFiles(postfilePath);
-//        ThreadPoolExecutor crpsThrds =(ThreadPoolExecutor)Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
-//        ExecutorService corpusParsingIndexeingThreads = Executors.newFixedThreadPool(MAX_NUMBER_OF_THREADS);
-//        for (int i = 0; i < MAX_NUMBER_OF_THREADS; i++) {
-//            corpusParsingIndexeingThreads.execute(Indexer.getInstance());
-//        }
-        Thread t1 = new Thread (Indexer.getInstance());
-        Thread t2 = new Thread (Indexer.getInstance());
+        Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
 
-        t1.start();
-        t2.start();
-
+        int indexerIndex = 0;
+        for (Thread t :
+                IndexerThreads) {
+            t = new Thread(Indexer.getInstance());
+            t.setName("Indexer " + indexerIndex++);
+            System.out.println(t.getName() + " has started...");
+            t.start();
+        }
 
 
 
@@ -58,8 +57,11 @@ public class test {
 
 //        corpusParsingIndexeingThreads.shutdownNow();
         try{
-            t1.join();
-            t2.join();
+            for (Thread t :
+                    IndexerThreads) {
+                t.join();
+                System.out.println(t.getName() + " has stopped...");
+            }
         }
         catch (Exception e)
         {

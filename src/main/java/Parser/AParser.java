@@ -17,6 +17,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class AParser implements Runnable {
 
+    protected final double BILLION = 1000000000;
+    protected final double MILLION = 1000000;
+    protected final double THOUSAND = 1000;
     protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
     private String tfDelim = "#";
     protected String parseName;
@@ -250,6 +253,20 @@ public abstract class AParser implements Runnable {
 
     public void clearDic() {
         this.termsInText.clear();
+    }
+
+    /**
+     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
+     * @param quntifier
+     * @return
+     */
+    protected boolean nextWordIsQuntifier(String quntifier) {
+        quntifier = chopDownLastCharPunc(quntifier);
+        if(quntifier.matches("^(Thousand|Million|Billion)"))
+        {
+            return true;
+        }
+        return false;
     }
 
     /**

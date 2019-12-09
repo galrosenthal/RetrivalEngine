@@ -6,9 +6,7 @@ import java.text.DecimalFormat;
 
 public class parseNumbers extends AParser{
 
-    private final double BILLION = 1000000000;
-    private final double MILLION = 1000000;
-    private final double THOUSAND = 1000;
+
     //    private List<String> numbersInText;
 //    private List<String> allNumbersInText;
 //    private HashMap<String,Integer> allNumbersInText;
@@ -221,19 +219,7 @@ public class parseNumbers extends AParser{
         return numberInString;
     }
 
-    /**
-     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
-     * @param quntifier
-     * @return
-     */
-    private boolean nextWordIsQuntifier(String quntifier) {
-        quntifier = chopDownLastCharPunc(quntifier);
-        if(quntifier.matches("^(Thousand|Million|Billion)"))
-        {
-            return true;
-        }
-        return false;
-    }
+
 
 
 

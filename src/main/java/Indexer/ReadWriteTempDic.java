@@ -36,6 +36,7 @@ public class ReadWriteTempDic {
 
     public boolean writeToDic(ConcurrentHashMap<String,String> map)
     {
+        readIndexSemaphore.tryAcquire();
         int currIndex = writeIndex.getAndIncrement();
         String newFilePath = pathToTempDicQ +  currIndex;
         Path pathForNewFile = Paths.get(newFilePath);
@@ -59,9 +60,10 @@ public class ReadWriteTempDic {
         catch (Exception e)
         {
             System.out.println("Could not load file");
+            readIndexSemaphore.release();
             return false;
         }
-
+        readIndexSemaphore.release();
         return true;
     }
 
@@ -75,13 +77,13 @@ public class ReadWriteTempDic {
 
         readIndexSemaphore.tryAcquire();
         int currIndex = readIndex.getAndIncrement();
-        readIndexSemaphore.release();
         String newFilePath = pathToTempDicQ +  currIndex;
         Path pathForNewFile = Paths.get(newFilePath);
 
         if (!fileWritten.contains(currIndex))
         {
             readIndex.decrementAndGet();
+            readIndexSemaphore.release();
             return null;
         }
 
@@ -99,6 +101,7 @@ public class ReadWriteTempDic {
             }
             fileWritten.remove(currIndex);
             System.out.println("Read " + currIndex);
+            readIndexSemaphore.release();
             return (ConcurrentHashMap<String,String>)mapReadFromFile;
         }
         catch (Exception e)
@@ -106,6 +109,7 @@ public class ReadWriteTempDic {
             e.printStackTrace();
         }
 
+        readIndexSemaphore.release();
         return null;
 
 //        readSem.tryAcquire();

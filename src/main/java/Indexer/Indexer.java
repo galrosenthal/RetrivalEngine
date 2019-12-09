@@ -25,8 +25,7 @@ public class Indexer implements Runnable{
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
         corpusDictionary = new ConcurrentHashMap<>();
-        indexerNum = new AtomicInteger(0);
-        indexerName += indexerNum.getAndIncrement();
+
     }
     public boolean isQEmpty()
     {
@@ -63,12 +62,12 @@ public class Indexer implements Runnable{
 
     @Override
     public void run() {
-        System.out.println(indexerName + " has Started...");
+//        System.out.println("Indexer has Started...");
         while(!stopThreads)
         {
             createPostFiles();
         }
-        System.out.println(indexerName + " has stopped...");
+//        System.out.println("Indexer has stopped...");
 //        createPostFiles();
 
     }

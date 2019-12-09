@@ -42,7 +42,19 @@ public class parsePrices extends AParser {
                 // Price billion U.S. dollars
                 // Price million U.S. dollars
                 // Price trillion U.S. dollars
-                if (word.matches("(^\\d.*)")) {
+                if (word.matches("(^\\d.*)"))
+                {//Current word is a number
+                    if(wordIndex < docText.length-3)
+                    {//Check next word for quntifier
+                        String nWord = docText[wordIndex+1];
+                        String scndWord = docText[wordIndex+2];
+                        if(nextWordIsQuntifier(nWord) && scndWord.equalsIgnoreCase("dollars"))
+                        {//It is Quntifier {Thousand,Million,Billion} and it is dollars
+
+
+                        }
+
+                    }
 
                 }
                 //TODO: if the word starts with dollar check if next word is number and quantity(Million/Billion)
