@@ -75,6 +75,8 @@ public class parseNames extends AParser {
                 }
                 i++;
             }
+            numOfParsedDocInIterative++;
+            releaseToIndexerFile();
         }
     }
 
