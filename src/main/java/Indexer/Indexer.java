@@ -72,7 +72,7 @@ public class Indexer implements Runnable{
 
     }
 
-    private synchronized void createPostFiles() {
+    private void createPostFiles() {
 
         //TODO: For each word check if exists in the CorpusDictionary,
         // find the relevant posting file (from the Dictionary or by first letter),
@@ -96,6 +96,10 @@ public class Indexer implements Runnable{
                     String dfList = dqdHshMap.get(term);
 //                    String[] splittedDocs = dfList.split(";");
                     try {
+                        if(term.charAt(0) == ' ')
+                        {
+                            term = term.substring(1);
+                        }
                         String lineIndexInFile = createAndWriteTheFile(term.toLowerCase().charAt(0), dfList);
                         if (lineIndexInFile == null) {
                             throw new Exception("Could Not Write The file properly");
@@ -173,7 +177,7 @@ public class Indexer implements Runnable{
         boolean finishedWriting = false;
         String newFilePath = pathToPostFolder + firstLetterForFolderName;
         String fileNumAndLineIndex = "";
-
+//        System.out.println("Posting File Path: " + newFilePath);
         Path pathForNewFile = Paths.get(newFilePath);
         if(!Files.exists(pathForNewFile))
         {

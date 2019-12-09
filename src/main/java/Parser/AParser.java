@@ -96,7 +96,7 @@ public abstract class AParser implements Runnable {
     {
         if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
         {
-            if(!myReadWriter.writeToDic(termsInText))
+            if(!myReadWriter.writeToDic(termsInText,getName()))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
@@ -109,6 +109,10 @@ public abstract class AParser implements Runnable {
 
         }
 
+    }
+
+    private String getName() {
+        return parseName;
     }
 
     /**
@@ -255,19 +259,7 @@ public abstract class AParser implements Runnable {
         this.termsInText.clear();
     }
 
-    /**
-     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
-     * @param quntifier
-     * @return
-     */
-    protected boolean nextWordIsQuntifier(String quntifier) {
-        quntifier = chopDownLastCharPunc(quntifier);
-        if(quntifier.matches("^(Thousand|Million|Billion)"))
-        {
-            return true;
-        }
-        return false;
-    }
+
 
     /**
      * Gets a parsed number and inserting it to the Dictionary

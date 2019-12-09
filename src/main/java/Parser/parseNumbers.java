@@ -29,6 +29,7 @@ public class parseNumbers extends AParser{
         super();
 //        allNumbersInText = new HashMap<>();
         parseName = "NumberParser";
+
         format3Decimals = new DecimalFormat("#.###");
     }
 
@@ -174,7 +175,7 @@ public class parseNumbers extends AParser{
      * @param quntifier
      * @return
      */
-    private String quantifiedWordForDic(String number,String quntifier) {
+    protected String quantifiedWordForDic(String number,String quntifier) {
         quntifier = chopDownLastCharPunc(quntifier);
         number = chopDownLastCharPunc(number);
 
@@ -193,16 +194,17 @@ public class parseNumbers extends AParser{
             result += "K";
 
         }
-        else if(quntifier.equalsIgnoreCase("million"))
+        else if(quntifier.equalsIgnoreCase("million") )
         {
             //Million
             result += "M";
         }
-        else if(quntifier.equalsIgnoreCase("billion"))
+        else if(quntifier.equalsIgnoreCase("billion") )
         {
             //billion
             result += "B";
         }
+
 
         return result;
     }
@@ -219,7 +221,19 @@ public class parseNumbers extends AParser{
         return numberInString;
     }
 
-
+    /**
+     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
+     * @param quntifier
+     * @return
+     */
+    protected boolean nextWordIsQuntifier(String quntifier) {
+        quntifier = chopDownLastCharPunc(quntifier);
+        if(quntifier.matches("^(Thousand|Million|Billion)"))
+        {
+            return true;
+        }
+        return false;
+    }
 
 
 

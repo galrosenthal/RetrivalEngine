@@ -6,14 +6,14 @@ import java.io.File;
 
 public class test {
 
-    private static final int MAX_NUMBER_OF_THREADS = 1;
+    private static final int MAX_NUMBER_OF_THREADS = 2;
 
     public static void main(String[] args) {
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-//        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
+        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
-        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
         String postfilePath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\posts";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 

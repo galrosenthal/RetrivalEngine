@@ -22,6 +22,7 @@ public class ReadWriteTempDic {
     private static volatile AtomicInteger readIndex;
     private static Semaphore readIndexSemaphore;
     private static HashSet<Integer> fileWritten;
+    private Semaphore writeIndexSemaphore;
 
     private ReadWriteTempDic()
     {
@@ -29,15 +30,18 @@ public class ReadWriteTempDic {
         readIndex = new AtomicInteger(0);
         fileWritten = new HashSet<>();
         readIndexSemaphore = new Semaphore(1);
+        writeIndexSemaphore = new Semaphore(1);
 
 
 
     }
 
-    public boolean writeToDic(ConcurrentHashMap<String,String> map)
+    public boolean writeToDic(ConcurrentHashMap<String,String> map,String prsrName)
     {
-        readIndexSemaphore.tryAcquire();
+        writeIndexSemaphore.tryAcquire();
         int currIndex = writeIndex.getAndIncrement();
+        writeIndexSemaphore.release();
+        System.out.println(prsrName + " got " + currIndex);
         String newFilePath = pathToTempDicQ +  currIndex;
         Path pathForNewFile = Paths.get(newFilePath);
 
@@ -60,10 +64,8 @@ public class ReadWriteTempDic {
         catch (Exception e)
         {
             System.out.println("Could not load file");
-            readIndexSemaphore.release();
             return false;
         }
-        readIndexSemaphore.release();
         return true;
     }
 
@@ -74,16 +76,15 @@ public class ReadWriteTempDic {
 
     public ConcurrentHashMap<String,String> readFromDic()
     {
-
         readIndexSemaphore.tryAcquire();
         int currIndex = readIndex.getAndIncrement();
+        readIndexSemaphore.release();
         String newFilePath = pathToTempDicQ +  currIndex;
         Path pathForNewFile = Paths.get(newFilePath);
 
         if (!fileWritten.contains(currIndex))
         {
             readIndex.decrementAndGet();
-            readIndexSemaphore.release();
             return null;
         }
 
@@ -101,7 +102,6 @@ public class ReadWriteTempDic {
             }
             fileWritten.remove(currIndex);
             System.out.println("Read " + currIndex);
-            readIndexSemaphore.release();
             return (ConcurrentHashMap<String,String>)mapReadFromFile;
         }
         catch (Exception e)
