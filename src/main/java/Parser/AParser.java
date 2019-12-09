@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class AParser implements Runnable {
@@ -26,7 +25,8 @@ public abstract class AParser implements Runnable {
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
     protected static HashSet<String> stopWords;
-    protected ConcurrentHashMap<String,String> termsInText;
+//    protected ConcurrentHashMap<String,String> termsInText;
+    protected HashMap<String,String> termsInText;
     private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
@@ -38,7 +38,8 @@ public abstract class AParser implements Runnable {
 
     protected AParser()
     {
-        termsInText = new ConcurrentHashMap<>();
+//        termsInText = new ConcurrentHashMap<>();
+        termsInText = new HashMap<>();
         docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
         numOfParsedDocInIterative = 0;
         createStopWords();
@@ -103,7 +104,8 @@ public abstract class AParser implements Runnable {
             }
 //            myIndexer.enqueue(termsInText);
 //            termsInText = null;
-            termsInText = new ConcurrentHashMap<>();
+//            termsInText = new ConcurrentHashMap<>();
+            termsInText = new HashMap<>();
             numOfParsedDocInIterative = 0;
 //            termsInText.clear();
 

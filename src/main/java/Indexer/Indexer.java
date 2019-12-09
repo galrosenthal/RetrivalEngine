@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -77,7 +78,7 @@ public class Indexer implements Runnable{
         //TODO: For each word check if exists in the CorpusDictionary,
         // find the relevant posting file (from the Dictionary or by first letter),
         // append the relevant data to the posting file in the relevant line
-        ConcurrentHashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
+        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
 
 
 

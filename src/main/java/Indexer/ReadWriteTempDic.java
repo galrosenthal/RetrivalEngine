@@ -8,8 +8,8 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,7 +36,8 @@ public class ReadWriteTempDic {
 
     }
 
-    public boolean writeToDic(ConcurrentHashMap<String,String> map,String prsrName)
+//    public boolean writeToDic(ConcurrentHashMap<String,String> map,String prsrName)
+    public boolean writeToDic(HashMap<String,String> map, String prsrName)
     {
         writeIndexSemaphore.tryAcquire();
         int currIndex = writeIndex.getAndIncrement();
@@ -74,7 +75,8 @@ public class ReadWriteTempDic {
         return fileWritten.size();
     }
 
-    public ConcurrentHashMap<String,String> readFromDic()
+//    public ConcurrentHashMap<String,String> readFromDic()
+    public HashMap<String,String> readFromDic()
     {
         readIndexSemaphore.tryAcquire();
         int currIndex = readIndex.getAndIncrement();
@@ -102,7 +104,8 @@ public class ReadWriteTempDic {
             }
             fileWritten.remove(currIndex);
             System.out.println("Read " + currIndex);
-            return (ConcurrentHashMap<String,String>)mapReadFromFile;
+//            return (ConcurrentHashMap<String,String>)mapReadFromFile;
+            return (HashMap<String,String>)mapReadFromFile;
         }
         catch (Exception e)
         {
