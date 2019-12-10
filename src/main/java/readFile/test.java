@@ -1,8 +1,10 @@
 package readFile;
 
 import Indexer.Indexer;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+
 
 public class test {
 
@@ -14,6 +16,7 @@ public class test {
         String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\1files";
 //        String postfilePath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\posts";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 
@@ -22,6 +25,16 @@ public class test {
 //        test = test.substring(0,test.indexOf("."));
         test = test.replaceAll(",","");
         Double testValue = Double.valueOf(test);
+
+        try
+        {
+            FileUtils.cleanDirectory(new File("./postingFiles/"));
+            FileUtils.cleanDirectory(new File("./dicTemp/"));
+        }
+        catch (Exception e)
+        {
+            System.out.println("Could not clean Dirs");
+        }
 
 
 //        Indexer.getInstance().setPathToPostFiles(postfilePath);
