@@ -30,10 +30,11 @@ public abstract class AParser implements Runnable {
     private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 50000;
+    private static final int numberOfDocsToPost = 1000;
     protected boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
-    protected boolean doneReadingDocs;
+    private boolean doneReadingDocs;
+    public StringBuilder lastDocList;
 
 
     protected AParser()
@@ -273,15 +274,14 @@ public abstract class AParser implements Runnable {
      * @param term
      */
     protected void parsedTermInsert(String term, String currentDocNo) {
-        if (termsInText.containsKey(term))
-        {
-//            System.out.println(term + ": " + termsInText.get(term) );
+        if (termsInText.containsKey(term)) {
+
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
-            String docList = termsInText.get(term);
-            String[] docsSplitted =  docList.split(";");
+             String docList = termsInText.get(term);
+            String[] docsSplitted =  docList.toString().split(";");
             boolean docAlreadyParsed = false;
             int oldtf = 0;
-            String lastDocList = "";
+            lastDocList = new StringBuilder("");
 
             for (String docParams:
                  docsSplitted) {
@@ -292,17 +292,15 @@ public abstract class AParser implements Runnable {
                     oldtf += 1;
                     docAlreadyParsed = true;
                 }
-                lastDocList += docAndtf[0] + tfDelim + oldtf + ";";
+                lastDocList.append(docAndtf[0] + tfDelim + oldtf + ";");
             }
             if(!docAlreadyParsed)
             {
-                lastDocList += currentDocNo + tfDelim + "1;";
+                lastDocList.append(currentDocNo + tfDelim + "1;");
             }
-            lastDocList = lastDocList.substring(0,lastDocList.length()-1);
+            lastDocList = new StringBuilder(lastDocList.substring(0,lastDocList.length()-1));
 
-            termsInText.replace(term,docList,lastDocList);
-
-
+            termsInText.replace(term,docList.toString(),lastDocList.toString());
 
         } else {
             termsInText.put(term, currentDocNo + tfDelim + "1");

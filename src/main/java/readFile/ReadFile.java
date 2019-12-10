@@ -29,6 +29,8 @@ public class ReadFile {
     public parseNumbers prsNums = new parseNumbers();
     public parseDates prsDates = new parseDates();
     public parsePercentage prsPrcntg = new parsePercentage();
+    public parseNames prsNames = new parseNames();
+    public parseRanges prsRanges = new parseRanges();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
@@ -36,9 +38,10 @@ public class ReadFile {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
 //        addParserToThreads(prsNums);
-        addParserToThreads(prsDates);
+//        addParserToThreads(prsDates);
 //        addParserToThreads(prsPrcntg);
 //        addParserToThreads(prsPrices);
+        addParserToThreads(prsNames);
         runParsers();
 
     }
@@ -122,7 +125,7 @@ public class ReadFile {
                         IR.Document document = new IR.Document(fileDoc);
                         enqDocToAllParsers(document);
 
-//                        shouldWaitForParser();
+                        //shouldWaitForParser();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
 //                        if(numOfParsedDocs > numberOfDocsToPost)
@@ -167,6 +170,4 @@ public class ReadFile {
             }
         }
     }
-
-
 }
