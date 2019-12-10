@@ -86,63 +86,61 @@ public class Indexer implements Runnable{
 
     }
 
-    private void createPostFiles() {
+    public int getCorpusDictionarySize() {
+        return corpusDictionary.keySet().size();
+    }
+
+    public void createPostFiles() {
 
         //TODO: For each word check if exists in the CorpusDictionary,
         // find the relevant posting file (from the Dictionary or by first letter),
         // append the relevant data to the posting file in the relevant line
-        if(isQEmpty())
-        {
-            return;
-        }
-        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
+//        if(isQEmpty())
+//        {
+//            return;
+//        }
+        while(!isQEmpty()) {
+            HashMap<String, String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
 
 
-
-        if(dqdHshMap == null)
-        {
+            if (dqdHshMap == null) {
 //            System.out.println("Could not read Object from File");
-            return;
-        }
-        else
-        {
+                return;
+            } else {
 //                System.out.println("cleared " + dqdHshMap.size());
-            for (String term :
-                    dqdHshMap.keySet()) {
-                if(!corpusDictionary.containsKey(term))
-                {
-                    String dfList = dqdHshMap.get(term);
-                    System.out.println("Indexing " + dfList);
+                for (String term :
+                        dqdHshMap.keySet()) {
+                    if (!corpusDictionary.containsKey(term)) {
+                        String dfList = dqdHshMap.get(term);
+//                    System.out.println("Indexing " + dfList);
 //                    String[] splittedDocs = dfList.split(";");
-                    try {
-                        if(term.charAt(0) == ' ')
-                        {
-                            term = term.substring(1);
+                        try {
+                            if (term.charAt(0) == ' ') {
+                                term = term.substring(1);
+                            }
+                            String lineIndexInFile = createAndWriteTheFile(term.toLowerCase().charAt(0), dfList);
+                            if (lineIndexInFile == null) {
+                                throw new Exception("Could Not Write The file properly");
+                            }
+                            this.corpusDictionary.put(term, lineIndexInFile);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                        String lineIndexInFile = createAndWriteTheFile(term.toLowerCase().charAt(0), dfList);
-                        if (lineIndexInFile == null) {
-                            throw new Exception("Could Not Write The file properly");
-                        }
-                        this.corpusDictionary.put(term, lineIndexInFile);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } else {
+                        //The corpus already contains this term
+                        String[] postFileAndLine = corpusDictionary.get(term).split("#");
+                        readAndAppendToFile(term, postFileAndLine[0], postFileAndLine[1], dqdHshMap.get(term));
+
+
                     }
-                }
-                else
-                {
-                    //The corpus already contains this term
-                    String[] postFileAndLine = corpusDictionary.get(term).split("#");
-                    readAndAppendToFile(term,postFileAndLine[0],postFileAndLine[1],dqdHshMap.get(term));
-
 
                 }
 
+                dqdHshMap.clear();
+                dqdHshMap = null;
+
+                //System.out.println("test");
             }
-
-            dqdHshMap.clear();
-            dqdHshMap = null;
-
-            //System.out.println("test");
         }
 
 //            for (String term :

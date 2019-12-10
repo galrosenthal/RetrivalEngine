@@ -37,7 +37,7 @@ public class ReadFile {
         allParsers = new ArrayList<>();
 //        addParserToThreads(prsNums);
         addParserToThreads(prsDates);
-        addParserToThreads(prsPrcntg);
+//        addParserToThreads(prsPrcntg);
 //        addParserToThreads(prsPrices);
         runParsers();
 

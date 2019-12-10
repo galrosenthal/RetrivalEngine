@@ -33,7 +33,7 @@ public abstract class AParser implements Runnable {
     private static final int numberOfDocsToPost = 50000;
     protected boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
-    private boolean doneReadingDocs;
+    protected boolean doneReadingDocs;
 
 
     protected AParser()
@@ -275,7 +275,7 @@ public abstract class AParser implements Runnable {
     protected void parsedTermInsert(String term, String currentDocNo) {
         if (termsInText.containsKey(term))
         {
-            System.out.println(term + ": " + termsInText.get(term) );
+//            System.out.println(term + ": " + termsInText.get(term) );
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
             String docList = termsInText.get(term);
             String[] docsSplitted =  docList.split(";");
