@@ -34,6 +34,7 @@ public abstract class AParser implements Runnable {
     protected boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
+    public StringBuilder lastDocList;
 
 
     protected AParser()
@@ -269,12 +270,13 @@ public abstract class AParser implements Runnable {
      */
     protected void parsedTermInsert(String term, String currentDocNo) {
         if (termsInText.containsKey(term)) {
+
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
-            String docList = termsInText.get(term);
-            String[] docsSplitted =  docList.split(";");
+             String docList = termsInText.get(term);
+            String[] docsSplitted =  docList.toString().split(";");
             boolean docAlreadyParsed = false;
             int oldtf = 0;
-            String lastDocList = "";
+            lastDocList = new StringBuilder("");
 
             for (String docParams:
                  docsSplitted) {
@@ -285,20 +287,18 @@ public abstract class AParser implements Runnable {
                     oldtf += 1;
                     docAlreadyParsed = true;
                 }
-                lastDocList += docAndtf[0] + tfDelim + oldtf + ";";
+                lastDocList.append(docAndtf[0] + tfDelim + oldtf + ";");
             }
-            if(docAlreadyParsed)
+            if(!docAlreadyParsed)
             {
-                lastDocList += currentDocNo + tfDelim + "1;";
+                lastDocList.append(currentDocNo + tfDelim + "1;");
             }
-            lastDocList = lastDocList.substring(0,lastDocList.length()-1);
+            lastDocList = new StringBuilder(lastDocList.substring(0,lastDocList.length()-1));
 
-            termsInText.replace(term,docList,lastDocList);
-
-
+            termsInText.replace(term,docList.toString(),lastDocList.toString());
 
         } else {
-            termsInText.put(term, currentDocNo + tfDelim + "1;");
+            termsInText.put(term, currentDocNo + tfDelim + "1");
         }
     }
 

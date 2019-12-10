@@ -11,17 +11,19 @@ public class parseNames extends AParser {
     String pattern = "([A-Z]+[a-z]*\\s[A-Z]+[a-z]*\\s[A-Z]+[a-z]*\\s[A-Z]+[a-z]*)|([A-Z]+[a-z]*\\s[A-Z]+[a-z]*\\s[A-Z]+[a-z]*)|([A-Z]+[a-z]*\\s[A-Z]+[a-z]*)|([A-Z]+[a-z]*)";
     Pattern p = Pattern.compile(pattern);
     Matcher matcher;
+    StringBuilder sentece = new StringBuilder("");
     int i=0;
 
     @Override
     public void parse() {
-        String sentece = "";
+
         while(!queueIsEmpty()) {
             i=0;
             Document document = dequeueDoc();
 
+            splitedText = document.getDocText().text().split(" ");
 
-            splitedText = document.getDocText().text().split("[\\s?!();\":]");
+            splitedText = document.getDocText().text().split("[\\s?!();\":\\n\\t/*]");
 
             for (String word : splitedText) {
                 /*
@@ -63,20 +65,31 @@ public class parseNames extends AParser {
                         }
                     }
                 }*/
-                if((!word.equals("")) && Character.isUpperCase(word.charAt(0)) && word.charAt(word.length()-1) !='.'
-                        && word.charAt(word.length()-1) !=','){
-                    sentece += word + " ";
-                    parsedTermInsert(word,document.getDocNo());
-                }
-                else if(!sentece.equals("")){
-                   // System.out.println(sentece.substring(0,sentece.length()-1));
-                    parsedTermInsert(sentece.substring(0,sentece.length()-1),document.getDocNo());
-                    sentece = "";
+                if ((!word.equals("")) && Character.isUpperCase(word.charAt(0))) {
+                    if (word.charAt(word.length() - 1) == '.'
+                            || word.charAt(word.length() - 1) == '"' || word.charAt(word.length() - 1) == ',' ||
+                            word.charAt(word.length() - 1) == ';' || word.charAt(word.length() - 1) == ':') {
+                        sentece .append(word.substring(0, word.length() - 1));
+
+                        String[] sentenceLengh = sentece.toString().split(" ");
+                        if(sentenceLengh.length > 1){
+                            parsedTermInsert(sentece.substring(0, sentece.length() - 1), document.getDocNo());
+                        }
+                        sentece = new StringBuilder("");
+
+                    } else {
+                        sentece.append(word + " ");
+                    }
+                } else if (!sentece.equals("")) {
+
+                    String[] sentenceLengh = sentece.toString().split(" ");
+                    if(sentenceLengh.length > 1){
+                        parsedTermInsert(sentece.substring(0, sentece.length() - 1), document.getDocNo());
+                    }
+                    sentece = new StringBuilder("");
                 }
                 i++;
             }
-            numOfParsedDocInIterative++;
-            //releaseToIndexerFile();
         }
     }
 
@@ -89,4 +102,5 @@ public class parseNames extends AParser {
         }
         System.out.println("Names Numbers is stopped");
     }
+
 }

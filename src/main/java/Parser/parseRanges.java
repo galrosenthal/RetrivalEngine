@@ -15,12 +15,12 @@ public class parseRanges extends AParser {
 
     @Override
     public void run() {
-        System.out.println("Date Parser has started");
+        System.out.println("Ranges Parser has started");
         while(!stopThread)
         {
             parse();
         }
-        System.out.println("Date Parser has stopped");
+        System.out.println("Ranges Parser has stopped");
 
     }
 

@@ -30,6 +30,7 @@ public class ReadFile {
     public parseDates prsDates = new parseDates();
     public parsePercentage prsPrcntg = new parsePercentage();
     public parseNames prsNames = new parseNames();
+    public parseRanges prsRanges = new parseRanges();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
@@ -38,9 +39,10 @@ public class ReadFile {
         allParsers = new ArrayList<>();
 //        addParserToThreads(prsNums);
 //        addParserToThreads(prsDates);
-//        addParserToThreads(prsPrcntg);
+        //addParserToThreads(prsPrcntg);
 //        addParserToThreads(prsPrices);
         addParserToThreads(prsNames);
+        // addParserToThreads(prsRanges);
         runParsers();
     }
 
