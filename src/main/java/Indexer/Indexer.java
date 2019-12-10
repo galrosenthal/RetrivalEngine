@@ -36,7 +36,7 @@ public class Indexer implements Runnable{
         File[] directoryListing = dir.listFiles();
         if(directoryListing!= null)
         {
-            return directoryListing.length != 0;
+            return directoryListing.length == 0;
         }
         else
         {
@@ -91,6 +91,10 @@ public class Indexer implements Runnable{
         //TODO: For each word check if exists in the CorpusDictionary,
         // find the relevant posting file (from the Dictionary or by first letter),
         // append the relevant data to the posting file in the relevant line
+        if(isQEmpty())
+        {
+            return;
+        }
         HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
 
 
@@ -108,6 +112,7 @@ public class Indexer implements Runnable{
                 if(!corpusDictionary.containsKey(term))
                 {
                     String dfList = dqdHshMap.get(term);
+                    System.out.println("Indexing " + dfList);
 //                    String[] splittedDocs = dfList.split(";");
                     try {
                         if(term.charAt(0) == ' ')

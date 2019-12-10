@@ -35,9 +35,9 @@ public class ReadFile {
     public ReadFile() {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
-        addParserToThreads(prsNums);
-//        addParserToThreads(prsDates);
-//        addParserToThreads(prsPrcntg);
+//        addParserToThreads(prsNums);
+        addParserToThreads(prsDates);
+        addParserToThreads(prsPrcntg);
 //        addParserToThreads(prsPrices);
         runParsers();
 
@@ -59,7 +59,7 @@ public class ReadFile {
 
     public void stopThreads()
     {
-        while(!allPrsrQsEmpty() && !Indexer.getInstance().isQEmpty())
+        while(!allPrsrQsEmpty() || !Indexer.getInstance().isQEmpty())
         {
 //            try
 //            {

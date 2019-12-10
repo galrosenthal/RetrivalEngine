@@ -3,6 +3,8 @@ package Parser;
 import IR.Document;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class parseNumbers extends AParser{
 
@@ -12,6 +14,8 @@ public class parseNumbers extends AParser{
 //    private HashMap<String,Integer> allNumbersInText;
     private DecimalFormat format3Decimals;
     private Document currentDoc;
+    private List<String> digits = new ArrayList<>();
+
 
     @Override
     public void run() {
@@ -29,6 +33,16 @@ public class parseNumbers extends AParser{
         super();
 //        allNumbersInText = new HashMap<>();
         parseName = "NumberParser";
+        digits.add("0");
+        digits.add("1");
+        digits.add("2");
+        digits.add("3");
+        digits.add("4");
+        digits.add("5");
+        digits.add("6");
+        digits.add("7");
+        digits.add("8");
+        digits.add("9");
 
         format3Decimals = new DecimalFormat("#.###");
     }
@@ -62,7 +76,8 @@ public class parseNumbers extends AParser{
                 word = chopDownLastCharPunc(word);
                 word = chopDownFisrtChar(word);
                 if (word.matches("^\\d.*")) {
-                    if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1])) {
+                    if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1]))
+                    {/**  Number Quantifier  **/
                         String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
                         if (theWordParsed == null) {
                             //FUCK
@@ -77,29 +92,21 @@ public class parseNumbers extends AParser{
                     }
 
 
-                    if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
+                    if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$"))
+                    {/**  num1-num2  **/
                         String[] splitHifWord = word.split("-");
                         parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
                         parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
 
                         continue;
                     }
-
-                    //TODO: this is related to טווחים וביטויים section
-//                else if(word.matches("^\\d+-\\d+$"))
-//                {
-//                    countNumberMatch++;
-////                    numbersInText.add(word.split("-")[0]);
-////                    numbersInText.add(word.split("-")[1]);
-//                    numbersInText.add(word);
-//                }
-
-
-                    else if (word.matches("^\\d+/\\d+$")) {
+                    else if (word.matches("^\\d+/\\d+$"))
+                    {/**  num1/num2  **/
                         countNumberMatch++;
                         parsedTermInsert(word, currentDoc.getDocNo());
                         continue;
-                    } else {
+                    }
+                    else{/**  num1  **/
                         countNumberMatch++;
                         parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
                     }
@@ -116,6 +123,40 @@ public class parseNumbers extends AParser{
         //System.out.println("\n\n\n"+countNumberMatch+"/"+allNumbers);
 
 
+    }
+
+    /**
+     *
+     * @param word
+     * @return
+     */
+    private boolean isWordNumber(String word) {
+        try{
+            Double d = Double.parseDouble(word);
+            return true;
+        }
+        catch (NumberFormatException e)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * @param word - a string
+     * @return true if the first char of the string is a digit
+     */
+    private boolean isWordStartsWithNumber(String word)
+    {
+        String firstD = word.charAt(0) +"";
+
+        for (String d :
+                digits) {
+            if (d.equals(firstD))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

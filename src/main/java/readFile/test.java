@@ -39,7 +39,7 @@ public class test {
             IndexerThreads[i] = new Thread(Indexer.getInstance());
             IndexerThreads[i].setName("Indexer " + indexerIndex++);
             System.out.println(IndexerThreads[i].getName() + " has started...");
-//            IndexerThreads[i].start();
+            IndexerThreads[i].start();
         }
 
 

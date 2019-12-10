@@ -30,7 +30,7 @@ public abstract class AParser implements Runnable {
     private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 1000;
+    private static final int numberOfDocsToPost = 50000;
     protected boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
@@ -97,7 +97,7 @@ public abstract class AParser implements Runnable {
     {
         if((numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs))
         {
-            if(false && !myReadWriter.writeToDic(termsInText,getName()))
+            if(!myReadWriter.writeToDic(termsInText,getName()))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
@@ -273,7 +273,9 @@ public abstract class AParser implements Runnable {
      * @param term
      */
     protected void parsedTermInsert(String term, String currentDocNo) {
-        if (termsInText.containsKey(term)) {
+        if (termsInText.containsKey(term))
+        {
+            System.out.println(term + ": " + termsInText.get(term) );
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
             String docList = termsInText.get(term);
             String[] docsSplitted =  docList.split(";");
@@ -292,7 +294,7 @@ public abstract class AParser implements Runnable {
                 }
                 lastDocList += docAndtf[0] + tfDelim + oldtf + ";";
             }
-            if(docAlreadyParsed)
+            if(!docAlreadyParsed)
             {
                 lastDocList += currentDocNo + tfDelim + "1;";
             }
@@ -303,7 +305,7 @@ public abstract class AParser implements Runnable {
 
 
         } else {
-            termsInText.put(term, currentDocNo + tfDelim + "1;");
+            termsInText.put(term, currentDocNo + tfDelim + "1");
         }
     }
 
