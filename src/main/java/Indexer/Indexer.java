@@ -23,6 +23,7 @@ public class Indexer implements Runnable{
     private static AtomicInteger indexerNum;
     private String pathToPostFolder="./postingFiles/";
 
+
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
         corpusDictionary = new ConcurrentHashMap<>();
@@ -30,7 +31,18 @@ public class Indexer implements Runnable{
     }
     public boolean isQEmpty()
     {
-        return parsedWordsQueue.isEmpty();
+        Path pathToFolder = Paths.get(ReadWriteTempDic.pathToTempDicQ);
+        File dir = pathToFolder.toFile();
+        File[] directoryListing = dir.listFiles();
+        if(directoryListing!= null)
+        {
+            return directoryListing.length != 0;
+        }
+        else
+        {
+            return false;
+        }
+//        return parsedWordsQueue.isEmpty();
     }
 
     public static Indexer getInstance() {
@@ -68,6 +80,7 @@ public class Indexer implements Runnable{
         {
             createPostFiles();
         }
+        System.out.println("Dictionary Size is " + corpusDictionary.keySet().size() + " Terms");
 //        System.out.println("Indexer has stopped...");
 //        createPostFiles();
 
@@ -137,13 +150,23 @@ public class Indexer implements Runnable{
     }
 
 
-
-    // read file one line at a time
-// replace line as you read the file and store updated lines in StringBuffer
-// overwrite the file with the new lines
+    /**
+     * Gets the term, file number, its line index in the file, and the parsed data that is not yet in the posting
+     * appends the data to the posting file
+     * @param term - A term to Index
+     * @param fileNum - The Posting file number
+     * @param lineIndex - The Line Index in the file for each term
+     * @param parsedData - The Data that was parsed by a parser
+     */
     public synchronized void readAndAppendToFile(String term,String fileNum,String lineIndex,String parsedData) {
         try {
-            // input the (modified) file content to the StringBuffer "input"
+            /**
+             * 1. read file one line at a time
+             * 2. replace line as you read the file and store updated lines in StringBuffer
+             * 3. overwrite the file with the new lines
+             */
+
+             /**input the (modified) file content to the StringBuffer "input"**/
             String pathToFileForEdit = pathToPostFolder + term.toLowerCase().charAt(0) +"/" +fileNum;
             BufferedReader file = new BufferedReader(new FileReader(pathToFileForEdit));
             StringBuffer inputBuffer = new StringBuffer();
@@ -203,7 +226,7 @@ public class Indexer implements Runnable{
             CharSequence fromStr = new StringBuffer(splittedDocs);
 //            double fileSize = getFileSizeMegaBytes(pathForNewFile.toFile());
 
-            BufferedWriter writeToPostFile = new BufferedWriter(new FileWriter(pathForNewFile.toFile()));
+            BufferedWriter writeToPostFile = new BufferedWriter(new FileWriter(pathForNewFile.toFile(),true));
             writeToPostFile.append(fromStr);
             writeToPostFile.flush();
             writeToPostFile.close();
@@ -244,6 +267,7 @@ public class Indexer implements Runnable{
                     {
                         String indexStr = child.getName();
                         indexOfFile = Integer.parseInt(indexStr);
+                        break;
                     }
                     numOfFilesInDir++;
                 }

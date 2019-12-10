@@ -36,9 +36,9 @@ public class ReadFile {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
         addParserToThreads(prsNums);
-        addParserToThreads(prsDates);
-        addParserToThreads(prsPrcntg);
-        addParserToThreads(prsPrices);
+//        addParserToThreads(prsDates);
+//        addParserToThreads(prsPrcntg);
+//        addParserToThreads(prsPrices);
         runParsers();
 
     }
@@ -61,14 +61,14 @@ public class ReadFile {
     {
         while(!allPrsrQsEmpty() && !Indexer.getInstance().isQEmpty())
         {
-            try
-            {
-                Thread.sleep(5);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
+//            try
+//            {
+//                Thread.sleep(5);
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
         }
         for (AParser prsr :
                 allParsers) {
@@ -122,7 +122,7 @@ public class ReadFile {
                         IR.Document document = new IR.Document(fileDoc);
                         enqDocToAllParsers(document);
 
-                        shouldWaitForParser();
+//                        shouldWaitForParser();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
 //                        if(numOfParsedDocs > numberOfDocsToPost)

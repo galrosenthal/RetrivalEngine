@@ -95,9 +95,9 @@ public abstract class AParser implements Runnable {
 
     protected void releaseToIndexerFile()
     {
-        if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
+        if((numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs))
         {
-            if(!myReadWriter.writeToDic(termsInText,getName()))
+            if(false && !myReadWriter.writeToDic(termsInText,getName()))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
@@ -110,6 +110,11 @@ public abstract class AParser implements Runnable {
 //            termsInText.clear();
 
         }
+//        else
+//        {
+//            termsInText = new HashMap<>();
+//            numOfParsedDocInIterative = 0;
+//        }
 
     }
 

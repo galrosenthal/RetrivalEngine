@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ReadWriteTempDic {
 
     private static volatile ReadWriteTempDic mInstance;
-    private static final String pathToTempDicQ = "./dicTemp/";
+    public static final String pathToTempDicQ = "./dicTemp/";
     //    private static FileWriter writeToDicQ;
     private static volatile AtomicInteger writeIndex;
     private static volatile AtomicInteger readIndex;
@@ -36,7 +36,7 @@ public class ReadWriteTempDic {
 
     }
 
-//    public boolean writeToDic(ConcurrentHashMap<String,String> map,String prsrName)
+    //    public boolean writeToDic(ConcurrentHashMap<String,String> map,String prsrName)
     public boolean writeToDic(HashMap<String,String> map, String prsrName)
     {
         writeIndexSemaphore.acquireUninterruptibly();
@@ -75,18 +75,18 @@ public class ReadWriteTempDic {
         return fileWritten.size();
     }
 
-//    public ConcurrentHashMap<String,String> readFromDic()
+    //    public ConcurrentHashMap<String,String> readFromDic()
     public HashMap<String,String> readFromDic()
     {
         readIndexSemaphore.acquireUninterruptibly();
         int currIndex = readIndex.getAndIncrement();
-        readIndexSemaphore.release();
         String newFilePath = pathToTempDicQ +  currIndex;
         Path pathForNewFile = Paths.get(newFilePath);
 
         if (!fileWritten.contains(currIndex))
         {
             readIndex.decrementAndGet();
+            readIndexSemaphore.release();
             return null;
         }
 
@@ -100,11 +100,14 @@ public class ReadWriteTempDic {
             ObjectInputStream readDicObjInptStrm = new ObjectInputStream(new FileInputStream(pathForNewFile.toFile()));
             Object mapReadFromFile = readDicObjInptStrm.readObject();
             readDicObjInptStrm.close();
-            while(!pathForNewFile.toFile().delete()) {
+            while(!pathForNewFile.toFile().delete())
+            {
+                System.out.println("Could not delete File " + pathForNewFile.toFile().getAbsolutePath());
             }
             fileWritten.remove(currIndex);
             System.out.println("Read " + currIndex);
 //            return (ConcurrentHashMap<String,String>)mapReadFromFile;
+            readIndexSemaphore.release();
             return (HashMap<String,String>)mapReadFromFile;
         }
         catch (Exception e)
