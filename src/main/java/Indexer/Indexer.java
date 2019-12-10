@@ -92,7 +92,7 @@ public class Indexer implements Runnable{
 //                System.out.println("cleared " + dqdHshMap.size());
             for (String term :
                     dqdHshMap.keySet()) {
-                if(!corpusDictionary.contains(term))
+                if(!corpusDictionary.containsKey(term))
                 {
                     String dfList = dqdHshMap.get(term);
 //                    String[] splittedDocs = dfList.split(";");
@@ -144,7 +144,7 @@ public class Indexer implements Runnable{
     public synchronized void readAndAppendToFile(String term,String fileNum,String lineIndex,String parsedData) {
         try {
             // input the (modified) file content to the StringBuffer "input"
-            String pathToFileForEdit = pathToPostFolder + term.toLowerCase().charAt(0) + fileNum;
+            String pathToFileForEdit = pathToPostFolder + term.toLowerCase().charAt(0) +"/" +fileNum;
             BufferedReader file = new BufferedReader(new FileReader(pathToFileForEdit));
             StringBuffer inputBuffer = new StringBuffer();
             String line;
@@ -169,6 +169,8 @@ public class Indexer implements Runnable{
             fileOut.close();
 
         } catch (Exception e) {
+            e.printStackTrace();
+
             System.out.println("Problem reading file.");
         }
     }

@@ -107,7 +107,7 @@ public class parsePercentage extends AParser {
                 }
             }
             this.numOfParsedDocInIterative++;
-            this.releaseToIndexerFile();
+            //this.releaseToIndexerFile();
 
         }
     }

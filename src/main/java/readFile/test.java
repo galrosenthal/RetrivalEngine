@@ -9,7 +9,7 @@ public class test {
     private static final int MAX_NUMBER_OF_THREADS = 2;
 
     public static void main(String[] args) {
-        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
+        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
@@ -24,17 +24,26 @@ public class test {
         Double testValue = Double.valueOf(test);
 
 
-        Indexer.getInstance().setPathToPostFiles(postfilePath);
-        Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
+//        Indexer.getInstance().setPathToPostFiles(postfilePath);
+        //Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
 
         int indexerIndex = 0;
-        for (Thread t :
-                IndexerThreads) {
-            t = new Thread(Indexer.getInstance());
-            t.setName("Indexer " + indexerIndex++);
-            System.out.println(t.getName() + " has started...");
-            t.start();
-        }
+//        for (Thread t :
+//                IndexerThreads) {
+//            t = new Thread(Indexer.getInstance());
+//            t.setName("Indexer " + indexerIndex++);
+//            System.out.println(t.getName() + " has started...");
+//            t.start();
+//        }
+
+
+
+//        for (int i = 0; i < IndexerThreads.length; i++) {
+//            IndexerThreads[i] = new Thread(Indexer.getInstance());
+//            IndexerThreads[i].setName("Indexer " + indexerIndex++);
+//            System.out.println(IndexerThreads[i].getName() + " has started...");
+//            IndexerThreads[i].start();
+//        }
 
 
 
@@ -53,20 +62,21 @@ public class test {
 //        }
         f.stopThreads();
 
+//        IndexerThreads[0].stop();
 
 
 //        corpusParsingIndexeingThreads.shutdownNow();
-        try{
-            for (Thread t :
-                    IndexerThreads) {
-                t.join();
-                System.out.println(t.getName() + " has stopped...");
-            }
-        }
-        catch (Exception e)
-        {
-
-        }
+//        try{
+//            for (int i = 0; i < IndexerThreads.length; i++) {
+//
+////                IndexerThreads[i].join();
+//  //              System.out.println(IndexerThreads[i].getName() + " has stopped...");
+//            }
+//        }
+//        catch (Exception e)
+//        {
+//            e.printStackTrace();
+//        }
         endTime = System.nanoTime();
 
         System.out.println("There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");

@@ -66,7 +66,7 @@ public class parseNames extends AParser {
                 if((!word.equals("")) && Character.isUpperCase(word.charAt(0)) && word.charAt(word.length()-1) !='.'
                         && word.charAt(word.length()-1) !=','){
                     sentece += word + " ";
-                    //parsedTermInsert(word,document.getDocNo());
+                    parsedTermInsert(word,document.getDocNo());
                 }
                 else if(!sentece.equals("")){
                    // System.out.println(sentece.substring(0,sentece.length()-1));
@@ -76,7 +76,7 @@ public class parseNames extends AParser {
                 i++;
             }
             numOfParsedDocInIterative++;
-            releaseToIndexerFile();
+            //releaseToIndexerFile();
         }
     }
 

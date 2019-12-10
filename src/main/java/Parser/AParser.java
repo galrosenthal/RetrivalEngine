@@ -30,7 +30,7 @@ public abstract class AParser implements Runnable {
     private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 10000;
+    private static final int numberOfDocsToPost = 1000;
     protected boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
@@ -51,7 +51,7 @@ public abstract class AParser implements Runnable {
     public void stopThread()
     {
         doneReadingDocs = true;
-        releaseToIndexerFile();
+        //releaseToIndexerFile();
         stopThread = true;
 
     }

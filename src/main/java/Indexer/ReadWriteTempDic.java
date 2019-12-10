@@ -39,7 +39,7 @@ public class ReadWriteTempDic {
 //    public boolean writeToDic(ConcurrentHashMap<String,String> map,String prsrName)
     public boolean writeToDic(HashMap<String,String> map, String prsrName)
     {
-        writeIndexSemaphore.tryAcquire();
+        writeIndexSemaphore.acquireUninterruptibly();
         int currIndex = writeIndex.getAndIncrement();
         writeIndexSemaphore.release();
         System.out.println(prsrName + " got " + currIndex);
@@ -78,7 +78,7 @@ public class ReadWriteTempDic {
 //    public ConcurrentHashMap<String,String> readFromDic()
     public HashMap<String,String> readFromDic()
     {
-        readIndexSemaphore.tryAcquire();
+        readIndexSemaphore.acquireUninterruptibly();
         int currIndex = readIndex.getAndIncrement();
         readIndexSemaphore.release();
         String newFilePath = pathToTempDicQ +  currIndex;
