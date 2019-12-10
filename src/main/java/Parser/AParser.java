@@ -51,7 +51,7 @@ public abstract class AParser implements Runnable {
     public void stopThread()
     {
         doneReadingDocs = true;
-        releaseToIndexerFile();
+        //releaseToIndexerFile();
         stopThread = true;
 
     }

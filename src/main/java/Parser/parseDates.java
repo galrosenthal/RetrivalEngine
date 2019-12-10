@@ -69,7 +69,8 @@ public class parseDates extends AParser{
                         if(NumberUtils.isDigits(wordsInDoc[i-1])){
                             month = String.format("%02d",getMonthNumber(word));
                             day = String.format("%02d",Integer.parseInt(wordsInDoc[i-1]));
-                            newTerm = new Term(day+"-"+month);
+                            parsedTermInsert(day+"-"+month,d.getDocNo());
+                            //newTerm = new Term(day+"-"+month);
                             numOfTerms++;
                             //System.out.println(newTerm.getWordValue());
                         }
@@ -81,11 +82,13 @@ public class parseDates extends AParser{
                             //If the year is a day in the month
                             if(Integer.parseInt(year) <= 31){
                                 year = String.format("%02d",Integer.parseInt(year));
-                                newTerm = new Term(month +"-"+year);
+                                parsedTermInsert(month +"-"+year,d.getDocNo());
+                                //newTerm = new Term(month +"-"+year);
                                 numOfTerms++;
                             }
                             else{
-                                newTerm = new Term(year +"-"+month);
+                                parsedTermInsert(month +"-"+year,d.getDocNo());
+                                //newTerm = new Term(year +"-"+month);
                                 numOfTerms++;
                             }
 
