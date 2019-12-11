@@ -325,9 +325,11 @@ public abstract class AParser implements Runnable {
 
     protected boolean isFraction(String word){
         boolean isFraction = false;
+        String[] splittedFraction = word.split("/");
+//        wordForSplitting.split(" ");
 
-        if(word.length()> 2 && NumberUtils.isNumber(Character.toString(word.charAt(0))) && NumberUtils.isNumber(Character.toString(word.charAt(2))) &&
-                Character.toString(word.charAt(1)).equals("/")){
+        if(splittedFraction.length == 2 && NumberUtils.isNumber(splittedFraction[0]) && NumberUtils.isNumber(splittedFraction[1]))
+        {
             isFraction = true;
         }
 
