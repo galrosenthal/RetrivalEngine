@@ -25,30 +25,35 @@ public class ReadFile {
 //    public Thread prsPriceThrd;
     public List<Thread> allParserThreads;
     public List<AParser> allParsers;
-    public parsePrices prsPrices = new parsePrices();
-    public parseNumbers prsNums = new parseNumbers();
-    public parseDates prsDates = new parseDates();
-    public parsePercentage prsPrcntg = new parsePercentage();
-    public parseNames prsNames = new parseNames();
-    public parseRanges prsRanges = new parseRanges();
-    public parseWords prsWords = new parseWords();
-    public parseOther prsOther = new parseOther();
-    public MainParse mainParse = new MainParse();
+//    public parsePrices prsPrices = new parsePrices();
+//    public parseNumbers prsNums = new parseNumbers();
+//    public parseDates prsDates = new parseDates();
+//    public parsePercentage prsPrcntg = new parsePercentage();
+//    public parseNames prsNames = new parseNames();
+//    public parseRanges prsRanges = new parseRanges();
+//    public parseWords prsWords = new parseWords();
+//    public parseOther prsOther = new parseOther();
+    public MainParse mainParse1 = new MainParse();
+    public MainParse mainParse2 = new MainParse();
+    public MainParse mainParse3 = new MainParse();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
     public ReadFile() {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
+        addParserToThreads(mainParse1);
+        addParserToThreads(mainParse2);
+        addParserToThreads(mainParse3);
         //addParserToThreads(prsNums);
         //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);
 //        addParserToThreads(prsPrices);
         //addParserToThreads(prsNames);
-         addParserToThreads(prsRanges);
+//         addParserToThreads(prsRanges);
         //addParserToThreads(prsWords);
         //addParserToThreads(prsOther);
-        //runParsers();
+        runParsers();
 
     }
 
@@ -68,7 +73,7 @@ public class ReadFile {
 
     public void stopThreads()
     {
-        while(!allPrsrQsEmpty() && !Indexer.getInstance().isQEmpty())
+        while(!allPrsrQsEmpty() /*&& !Indexer.getInstance().isQEmpty()*/)
         {
             try
             {
@@ -136,7 +141,7 @@ public class ReadFile {
                         //prsWords.parse(document);
                         //shouldWaitForParser();
                         //prsWords.parse(document);
-                        mainParse.parse(document);
+//                        mainParse.parse(document);
                         //prsPrcntg.parse();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
