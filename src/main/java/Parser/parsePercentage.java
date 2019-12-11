@@ -59,18 +59,18 @@ public class parsePercentage extends AParser {
                                 parsedTermInsert(word,d.getDocNo());
                                 //Term newTerm = new Term(word);
                                 numOfTerms++;
-                                //System.out.println(newTerm.getWordValue());
+                                System.out.println(word);
                             } else if (isFraction(word.substring(0, word.length() - 1))) {
                                 if (i > 2 && wordsInDoc[i - 1].matches("^\\d+(\\.\\d+)?")) {
                                     parsedTermInsert(wordsInDoc[i - 1] + " " + word,d.getDocNo());
                                     //Term newTerm = new Term(wordsInDoc[i - 1] + " " + word);
                                     numOfTerms++;
-                                    //System.out.println(newTerm.getWordValue());
+                                    System.out.println(wordsInDoc[i - 1] + " " + word);
                                 } else {
                                     parsedTermInsert(word,d.getDocNo());
                                     //Term newTerm = new Term(word);
                                     numOfTerms++;
-                                    //System.out.println(newTerm.getWordValue());
+                                    System.out.println(word);
                                 }
                             }
                         } else if (word.equalsIgnoreCase("percentage") || word.equalsIgnoreCase("percent") ||
@@ -84,7 +84,7 @@ public class parsePercentage extends AParser {
                                     //Term newTerm = new Term(lastWord + "%");
                                     count++;
                                     numOfTerms++;
-                                    //System.out.println(newTerm.getWordValue());
+                                    System.out.println(lastWord + "%");
 
                                 } else if (isFraction(lastWord)) {
                                     if (i > 2 && NumberUtils.isDigits(wordsInDoc[i - 2])) {

@@ -19,12 +19,13 @@ public abstract class AParser implements Runnable {
     protected final double BILLION = 1000000000;
     protected final double MILLION = 1000000;
     protected final double THOUSAND = 1000;
-    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
+    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','['};
     private String tfDelim = "#";
     protected String parseName;
     protected String[] docText;
     protected Tokenizer toknizr = Tokenizer.getInstance();
     protected static HashSet<String> stopWords;
+    protected static HashSet<String> stopMWords;
 //    protected ConcurrentHashMap<String,String> termsInText;
     protected HashMap<String,String> termsInText;
     private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
@@ -44,6 +45,7 @@ public abstract class AParser implements Runnable {
         docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
         numOfParsedDocInIterative = 0;
         createStopWords();
+        createMStopWords();
         doneReadingDocs = false;
 
 
@@ -151,6 +153,36 @@ public abstract class AParser implements Runnable {
         }
     }
 
+    protected void createMStopWords() {
+        if (stopMWords == null) {
+            stopMWords = new HashSet<>();
+            File stopWordsFile = new File("./src/main/resources/moreStopWords.txt");
+            if (!stopWordsFile.exists()) {
+                System.out.println(stopWordsFile.getAbsolutePath());
+            }
+
+            try {
+                BufferedReader stopWordsReader = new BufferedReader(new FileReader(stopWordsFile));
+
+                String word = stopWordsReader.readLine();
+                while (word != null) {
+                    stopMWords.add(word.toLowerCase());
+                    stopMWords.add(word);
+                    stopMWords.add(word.toUpperCase());
+                    word = stopWordsReader.readLine();
+                }
+
+                stopWordsReader.close();
+//            this.stopWords = (List<String>) Fileo.readObject();
+
+//            Filer.close();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public abstract void parse();
 
 
@@ -190,6 +222,20 @@ public abstract class AParser implements Runnable {
         return word;
     }
 
+    protected StringBuilder chopDownLastCharPunc(StringBuilder word) {
+
+        if(word != null && word.length() >= 1)
+        {
+//            word = word.toLowerCase();
+            while(isLastCharPunctuation(word))
+            {
+                word =new StringBuilder(word.substring(0,word.length()-1));
+            }
+
+        }
+        return word;
+    }
+
     protected boolean isLastCharPunctuation(String word) {
         if(word == null||word.length() == 0)
         {
@@ -206,6 +252,23 @@ public abstract class AParser implements Runnable {
         return false;
     }
 
+    protected boolean isLastCharPunctuation(StringBuilder word) {
+        if(word == null||word.length() == 0)
+        {
+            return false;
+        }
+
+        for (char punc :
+                punctuations) {
+            if(word.length()> 0 && word.charAt(word.length()-1) == punc)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     protected String chopDownFisrtChar(String word) {
         char[] punctuations = {',','.',';',':','?','|','('};
 
@@ -216,6 +279,33 @@ public abstract class AParser implements Runnable {
             }
         }
         return word;
+    }
+
+    protected StringBuilder chopDownFisrtChar(StringBuilder word) {
+        char[] punctuations = {',','.',';',':','?','|','('};
+
+        if(word != null && word.length() >= 2)
+        {
+            while(isFirstCharPunctuation(word)){
+                word =new StringBuilder( word.substring(1));
+            }
+        }
+        return word;
+    }
+
+    protected  boolean isFirstCharPunctuation(StringBuilder word) {
+        if(word != null && word.length() >= 2)
+        {
+            //word = word.toLowerCase();
+            for (char punc :
+                    punctuations) {
+                if(word.charAt(0) == punc)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     protected  boolean isFirstCharPunctuation(String word) {

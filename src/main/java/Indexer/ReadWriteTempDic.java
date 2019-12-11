@@ -42,7 +42,7 @@ public class ReadWriteTempDic {
         writeIndexSemaphore.acquireUninterruptibly();
         int currIndex = writeIndex.getAndIncrement();
         writeIndexSemaphore.release();
-        System.out.println(prsrName + " got " + currIndex);
+        //System.out.println(prsrName + " got " + currIndex);
         String newFilePath = pathToTempDicQ +  currIndex;
         Path pathForNewFile = Paths.get(newFilePath);
 
@@ -60,7 +60,7 @@ public class ReadWriteTempDic {
             writeToDicFile.flush();
             writeToDicFile.close();
             fileWritten.add(currIndex);
-            System.out.println("Written " + currIndex);
+            //System.out.println("Written " + currIndex);
         }
         catch (Exception e)
         {

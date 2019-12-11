@@ -117,6 +117,68 @@ public class parseNumbers extends AParser{
 
 
     }
+    public void parseNoThread(Document d){
+        currentDoc = d;
+        docText = d.getDocText().text().split(" ");
+
+        int countNumberMatch=0,allNumbers=0;
+        for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
+            String word = docText[wordIndex];
+            if (stopWords.contains(word.toLowerCase())) {
+                continue;
+            }
+            word = chopDownLastCharPunc(word);
+            word = chopDownFisrtChar(word);
+            if (word.matches("^\\d.*")) {
+                if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1])) {
+                    String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
+                    if (theWordParsed == null) {
+                        //FUCK
+
+                    } else {
+                        countNumberMatch++;
+                        parsedTermInsert(theWordParsed, currentDoc.getDocNo());
+                        wordIndex++;
+                        continue;
+                    }
+
+                }
+
+
+                if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
+                    String[] splitHifWord = word.split("-");
+                    parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
+                    parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+
+                    continue;
+                }
+
+                //TODO: this is related to טווחים וביטויים section
+//                else if(word.matches("^\\d+-\\d+$"))
+//                {
+//                    countNumberMatch++;
+////                    numbersInText.add(word.split("-")[0]);
+////                    numbersInText.add(word.split("-")[1]);
+//                    numbersInText.add(word);
+//                }
+
+
+                else if (word.matches("^\\d+/\\d+$")) {
+                    countNumberMatch++;
+                    parsedTermInsert(word, currentDoc.getDocNo());
+                    continue;
+                } else {
+                    countNumberMatch++;
+                    parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
+                }
+
+
+            }
+        }
+        numOfParsedDocInIterative++;
+        //this.releaseToIndexerFile();
+    }
+
 
     /**
      * Gets a String with a number
@@ -234,9 +296,4 @@ public class parseNumbers extends AParser{
         }
         return false;
     }
-
-
-
-
-
 }

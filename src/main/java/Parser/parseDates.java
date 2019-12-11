@@ -39,6 +39,60 @@ public class parseDates extends AParser{
         System.out.println("Date Parser has stopped");
 
     }
+    public void parsNoThread(Document d){
+        int i = 0;
+        String docText = d.getDocText().text();
+        //matcher = pattern.matcher(docText);
+        String[] wordsInDoc = d.getDocText().text().split(" ");
+        for (String word :
+                wordsInDoc) {
+            //word = chopDownFisrtChar(word);
+            //word = chopDownLastCharPunc(word);
+            //if(!stopWords.contains(word)) {
+            if (word != null && equalsMonth(word)) {
+                String day;
+                Term newTerm;
+                String month;
+                String year;
+
+                if (i > 0 && i < wordsInDoc.length - 1) {
+                    if (NumberUtils.isDigits(wordsInDoc[i - 1])) {
+                        month = String.format("%02d", getMonthNumber(word));
+                        day = String.format("%02d", Integer.parseInt(wordsInDoc[i - 1]));
+                        parsedTermInsert(day + "-" + month, d.getDocNo());
+                        //newTerm = new Term(day+"-"+month);
+                        numOfTerms++;
+                        //System.out.println(day + "-" + month);
+                    }
+
+                    year = chopDownLastCharPunc(wordsInDoc[i + 1]);
+                    if (NumberUtils.isDigits(year)) {
+                        month = String.format("%02d", getMonthNumber(word));
+
+                        //If the year is a day in the month
+                        if (Integer.parseInt(year) <= 31) {
+                            year = String.format("%02d", Integer.parseInt(year));
+                            parsedTermInsert(month + "-" + year, d.getDocNo());
+                            //newTerm = new Term(month +"-"+year);
+                           // System.out.println(month+"-"+year);
+                            numOfTerms++;
+                        } else {
+                            parsedTermInsert(month + "-" + year, d.getDocNo());
+                            //newTerm = new Term(year +"-"+month);
+                            //System.out.println(month+"-"+year);
+                            numOfTerms++;
+                        }
+
+                        //System.out.println(newTerm.getWordValue());
+                        //System.out.println(month);
+                    }
+
+                }
+            }
+
+            i++;
+        }
+    }
 
     @Override
     public void parse() {
@@ -58,48 +112,49 @@ public class parseDates extends AParser{
                         wordsInDoc) {
                     //word = chopDownFisrtChar(word);
                     //word = chopDownLastCharPunc(word);
+                if(!stopWords.contains(word)) {
+                    if (word != null && equalsMonth(word)) {
+                        String day;
+                        Term newTerm;
+                        String month;
+                        String year;
 
-                if(word != null && equalsMonth(word)){
-                    String day;
-                    Term newTerm;
-                    String month;
-                    String year;
-
-                    if(i > 0 && i < wordsInDoc.length-1){
-                        if(NumberUtils.isDigits(wordsInDoc[i-1])){
-                            month = String.format("%02d",getMonthNumber(word));
-                            day = String.format("%02d",Integer.parseInt(wordsInDoc[i-1]));
-                            parsedTermInsert(day+"-"+month,d.getDocNo());
-                            //newTerm = new Term(day+"-"+month);
-                            numOfTerms++;
-                            //System.out.println(newTerm.getWordValue());
-                        }
-
-                        year = chopDownLastCharPunc(wordsInDoc[i+1]);
-                        if(NumberUtils.isDigits(year)){
-                            month = String.format("%02d",getMonthNumber(word));
-
-                            //If the year is a day in the month
-                            if(Integer.parseInt(year) <= 31){
-                                year = String.format("%02d",Integer.parseInt(year));
-                                parsedTermInsert(month +"-"+year,d.getDocNo());
-                                //newTerm = new Term(month +"-"+year);
+                        if (i > 0 && i < wordsInDoc.length - 1) {
+                            if (NumberUtils.isDigits(wordsInDoc[i - 1])) {
+                                month = String.format("%02d", getMonthNumber(word));
+                                day = String.format("%02d", Integer.parseInt(wordsInDoc[i - 1]));
+                                parsedTermInsert(day + "-" + month, d.getDocNo());
+                                //newTerm = new Term(day+"-"+month);
                                 numOfTerms++;
-                            }
-                            else{
-                                parsedTermInsert(month +"-"+year,d.getDocNo());
-                                //newTerm = new Term(year +"-"+month);
-                                numOfTerms++;
+                                //System.out.println(word);
                             }
 
-                            //System.out.println(newTerm.getWordValue());
-                            //System.out.println(month);
-                        }
+                            year = chopDownLastCharPunc(wordsInDoc[i + 1]);
+                            if (NumberUtils.isDigits(year)) {
+                                month = String.format("%02d", getMonthNumber(word));
 
+                                //If the year is a day in the month
+                                if (Integer.parseInt(year) <= 31) {
+                                    year = String.format("%02d", Integer.parseInt(year));
+                                    parsedTermInsert(month + "-" + year, d.getDocNo());
+                                    //newTerm = new Term(month +"-"+year);
+                                    numOfTerms++;
+                                } else {
+                                    parsedTermInsert(month + "-" + year, d.getDocNo());
+                                    //newTerm = new Term(year +"-"+month);
+                                    numOfTerms++;
+                                }
+
+                                //System.out.println(newTerm.getWordValue());
+                                //System.out.println(month);
+                            }
+
+                        }
                     }
-                }
 
-                i++;
+                    i++;
+                }
+                    this.releaseToIndexerFile();
             }
             //  while(matcher.find()){
             //System.out.println(matcher.group());

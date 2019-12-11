@@ -31,19 +31,25 @@ public class ReadFile {
     public parsePercentage prsPrcntg = new parsePercentage();
     public parseNames prsNames = new parseNames();
     public parseRanges prsRanges = new parseRanges();
+    public parseWords prsWords = new parseWords();
+    public parseOther prsOther = new parseOther();
+    public MainParse mainParse = new MainParse();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
     public ReadFile() {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
-//        addParserToThreads(prsNums);
-//        addParserToThreads(prsDates);
+        //addParserToThreads(prsNums);
+        //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);
 //        addParserToThreads(prsPrices);
-        addParserToThreads(prsNames);
-        // addParserToThreads(prsRanges);
-        runParsers();
+        //addParserToThreads(prsNames);
+         addParserToThreads(prsRanges);
+        //addParserToThreads(prsWords);
+        //addParserToThreads(prsOther);
+        //runParsers();
+
     }
 
     private void addParserToThreads(AParser prsr) {
@@ -124,8 +130,14 @@ public class ReadFile {
                         numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
                         enqDocToAllParsers(document);
-
+                        //prsDates.parsNoThread(document);
+                        //prsNames.parseNoThread(document);
+                        //prsNums.parseNoThread(document);
+                        //prsWords.parse(document);
                         //shouldWaitForParser();
+                        //prsWords.parse(document);
+                        mainParse.parse(document);
+                        //prsPrcntg.parse();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
 //                        if(numOfParsedDocs > numberOfDocsToPost)

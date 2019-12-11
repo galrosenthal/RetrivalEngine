@@ -42,17 +42,19 @@ public class parseRanges extends AParser {
                         String match = matcher.group(1);
 
                         String[] values = StringUtils.split(match, '-');
-                        if (values[0].matches("^\\d+") && values[2].matches("^\\d+")) {
-                            parsedTermInsert(values[2], document.getDocNo());
+                        if (values[0].matches("^\\d+") && values[1].matches("^\\d+")) {
+                            parsedTermInsert(values[1], document.getDocNo());
                             parsedTermInsert(match, document.getDocNo());
+
                         } else {
                             String[] words = StringUtils.split(match, ' ');
                             if (words.length > 3 && words[0].equals("between") && words[2].equals("and")) {
                                 parsedTermInsert(words[1], document.getDocNo());
                                 parsedTermInsert(words[3], document.getDocNo());
+
                             }
                         }
-
+                        System.out.println(match);
                         parsedTermInsert(match, document.getDocNo());
                     }
                 }
