@@ -32,8 +32,9 @@ public class MainParse extends AParser {
 
             String cleanWord = chopDownLastCharPunc(splitedText[index]);
             cleanWord = chopDownFisrtChar(cleanWord);
+            String halfCleanWord = chopDownFisrtChar(splitedText[index]);
 
-            //Check if thw word is a number
+            //Check if the word is a number
             if(!splitedText[index].equals("")) {
                 if (Character.isDigit(splitedText[index].charAt(0))) {
                     if (NumberUtils.isNumber(splitedText[index])) {
@@ -41,14 +42,17 @@ public class MainParse extends AParser {
 
                         }
                     } else {
-                        if (parseNumberRanges(cleanWord)) {
+                        //if (parseNumberRanges(cleanWord)) {
 
-                        }
+                       // }
                     }
                 } else {
                     if (parseDates(cleanWord)) {
 
-                    } else if (parseNameRanges(cleanWord)) {
+                    } //else if (parseNameRanges(cleanWord)) {
+
+                    //}
+                    else if(Character.isUpperCase(splitedText[index].charAt(0))){
 
                     }
                 }
@@ -304,13 +308,6 @@ public class MainParse extends AParser {
                 } else {
                     values = word.split("-");
                     if (values.length > 1) {
-                        if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
-                            parsedTermInsert(values[0], d.getDocNo());
-                            parsedTermInsert(values[1], d.getDocNo());
-
-                        }
-
-                        //System.out.println(word);
                         isParsed = true;
                         parsedTermInsert(word, d.getDocNo());
                     }
@@ -348,5 +345,19 @@ public class MainParse extends AParser {
 
         //}
         return isParsed;
+    }
+
+    /*
+
+        Parse Names
+
+     */
+
+    public boolean parseNames(String word){
+        boolean isParse = false;
+
+
+
+        return false;
     }
 }
