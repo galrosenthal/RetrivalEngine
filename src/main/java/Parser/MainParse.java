@@ -33,16 +33,27 @@ public class MainParse extends AParser {
             String cleanWord = chopDownLastCharPunc(splitedText[index]);
             cleanWord = chopDownFisrtChar(cleanWord);
 
+            //Check if thw word is a number
+            if(!splitedText[index].equals("")) {
+                if (Character.isDigit(splitedText[index].charAt(0))) {
+                    if (NumberUtils.isNumber(splitedText[index])) {
+                        if (parsePercentage(cleanWord)) {
 
-            if (parseDates(cleanWord)) {
+                        }
+                    } else {
+                        if (parseNumberRanges(cleanWord)) {
 
+                        }
+                    }
+                } else {
+                    if (parseDates(cleanWord)) {
+
+                    } else if (parseNameRanges(cleanWord)) {
+
+                    }
+                }
             }
-            else if (parsePercentage(cleanWord)) {
 
-            }
-            else if(parseRanges(cleanWord)){
-
-            }
             i++;
         }
 
@@ -259,7 +270,7 @@ public class MainParse extends AParser {
         Parse Ranges
 
      */
-    public boolean parseRanges(String word) {
+    public boolean parseNameRanges(String word) {
         boolean isParsed = false;
 
        // if(!stopWords.contains(word)) {
@@ -303,6 +314,35 @@ public class MainParse extends AParser {
                         isParsed = true;
                         parsedTermInsert(word, d.getDocNo());
                     }
+                }
+            }
+
+        //}
+        return isParsed;
+    }
+
+    public boolean parseNumberRanges(String word){
+        boolean isParsed = false;
+
+        // if(!stopWords.contains(word)) {
+        //  matcherRange = pRange.matcher(word);
+        // while (matcherRange.find()) {
+
+        //System.out.println(matcher.group(1));
+        //String match = matcherRange.group(1);
+            String[] values = word.split("--");
+            //Kick out of the loop
+            if (values.length > 1) {
+                return true;
+            } else {
+                values = word.split("-");
+                if (values.length > 1) {
+                    if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
+                        parsedTermInsert(values[0], d.getDocNo());
+                        parsedTermInsert(values[1], d.getDocNo());
+                    }
+                    //System.out.println(word);
+                    isParsed = true;
                 }
             }
 
