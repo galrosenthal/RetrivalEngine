@@ -12,14 +12,17 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AParser implements Runnable {
 
     protected final double BILLION = 1000000000;
     protected final double MILLION = 1000000;
     protected final double THOUSAND = 1000;
-    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}'};
+    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','!','\t','\n'};
     private String tfDelim = "#";
     protected String parseName;
     protected String[] docText;
@@ -27,32 +30,42 @@ public abstract class AParser implements Runnable {
     protected static HashSet<String> stopWords;
 //    protected ConcurrentHashMap<String,String> termsInText;
     protected HashMap<String,String> termsInText;
-    private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
+//    private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
+    private static Queue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 1000;
+    private static final int numberOfDocsToPost = 10000;
     protected boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
-    private boolean doneReadingDocs;
+    protected boolean doneReadingDocs;
     public StringBuilder lastDocList;
+    private static ReadWriteLock termsInTextLocker;
 
 
     protected AParser()
     {
 //        termsInText = new ConcurrentHashMap<>();
         termsInText = new HashMap<>();
+//        docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
         docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
         numOfParsedDocInIterative = 0;
         createStopWords();
         doneReadingDocs = false;
+        termsInTextLocker = new ReentrantReadWriteLock();
 
 
     }
 
     public void stopThread()
     {
+        while(!docQueueWaitingForParse.isEmpty())
+        {
+            System.out.println("Waiting for parser");
+        }
         doneReadingDocs = true;
-        //releaseToIndexerFile();
+        System.out.println("Releasing to index");
+        releaseToIndexerFile();
+        System.out.println("Released Map");
         stopThread = true;
 
     }
@@ -77,7 +90,7 @@ public abstract class AParser implements Runnable {
      */
     public boolean enqueueDoc(Document d)
     {
-        if(d != null)
+        if(d != null && !docQueueWaitingForParse.contains(d))
         {
             return this.docQueueWaitingForParse.add(d);
         }
@@ -98,16 +111,24 @@ public abstract class AParser implements Runnable {
     {
         if((numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs))
         {
-            if(!myReadWriter.writeToDic(termsInText,getName()))
+//            if(this instanceof parseNumbers)
+//            {
+//
+//            }
+            System.out.println("Should enqueue");
+            if(/*!myReadWriter.writeToDic(termsInText,getName()) ||*/ !Indexer.enqueue(termsInText))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
             }
+                System.out.println("Enqueued "+ numOfParsedDocInIterative +" to Indexer");
 //            myIndexer.enqueue(termsInText);
 //            termsInText = null;
 //            termsInText = new ConcurrentHashMap<>();
+            termsInTextLocker.writeLock().lock();
             termsInText = new HashMap<>();
             numOfParsedDocInIterative = 0;
+            termsInTextLocker.writeLock().unlock();
 //            termsInText.clear();
 
         }
@@ -273,7 +294,9 @@ public abstract class AParser implements Runnable {
      * Gets a parsed number and inserting it to the Dictionary
      * @param term
      */
-    protected void parsedTermInsert(String term, String currentDocNo) {
+    protected void parsedTermInsert(String term, String currentDocNo)
+    {
+        termsInTextLocker.readLock().lock();
         if (termsInText.containsKey(term)) {
 
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
@@ -292,11 +315,11 @@ public abstract class AParser implements Runnable {
                     oldtf += 1;
                     docAlreadyParsed = true;
                 }
-                lastDocList.append(docAndtf[0] + tfDelim + oldtf + ";");
+                lastDocList.append(docAndtf[0]).append(tfDelim).append(oldtf).append(";");
             }
             if(!docAlreadyParsed)
             {
-                lastDocList.append(currentDocNo + tfDelim + "1;");
+                lastDocList.append(currentDocNo).append(tfDelim).append("1;");
             }
             lastDocList = new StringBuilder(lastDocList.substring(0,lastDocList.length()-1));
 
@@ -305,6 +328,7 @@ public abstract class AParser implements Runnable {
         } else {
             termsInText.put(term, currentDocNo + tfDelim + "1");
         }
+        termsInTextLocker.readLock().unlock();
     }
 
     /**

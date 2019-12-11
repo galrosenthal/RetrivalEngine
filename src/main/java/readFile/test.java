@@ -8,14 +8,14 @@ import java.io.File;
 
 public class test {
 
-    private static final int MAX_NUMBER_OF_THREADS = 2;
+    private static final int MAX_NUMBER_OF_THREADS = 1;
 
     public static void main(String[] args) {
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-//        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
+        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
-        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\1files";
 //        String postfilePath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\posts";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
@@ -53,6 +53,12 @@ public class test {
 
 
 
+        for (int i = 0; i < IndexerThreads.length; i++) {
+            IndexerThreads[i] = new Thread(myIndexer);
+            IndexerThreads[i].setName("Indexer " + indexerIndex++);
+            System.out.println(IndexerThreads[i].getName() + " has started...");
+            IndexerThreads[i].start();
+        }
 
         ReadFile f = new ReadFile();
         File corpus = new File(corpusPath);
@@ -66,29 +72,30 @@ public class test {
 //        {
 //
 //        }
-//        for (int i = 0; i < IndexerThreads.length; i++) {
-//            IndexerThreads[i] = new Thread(myIndexer);
-//            IndexerThreads[i].setName("Indexer " + indexerIndex++);
-//            System.out.println(IndexerThreads[i].getName() + " has started...");
-//            IndexerThreads[i].start();
-//        }
         f.stopThreads();
-        myIndexer.createPostFiles();
+//        myIndexer.createPostFiles();
+        while(!Indexer.canStopThreads())
+        {
+//            System.out.println("waiting for Indexer");
+        }
+        Indexer.stopThreads = true;
 
 
+//        while(!Indexer.stopThreads());
+//        Indexer.stopThreads = true;
 
 //        corpusParsingIndexeingThreads.shutdownNow();
-//        try{
-//            for (int i = 0; i < IndexerThreads.length; i++) {
-//
-//                IndexerThreads[i].join();
-//                System.out.println(IndexerThreads[i].getName() + " has stopped...");
-//            }
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
+        try{
+            for (int i = 0; i < IndexerThreads.length; i++) {
+
+                IndexerThreads[i].join();
+                System.out.println(IndexerThreads[i].getName() + " has stopped...");
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
         endTime = System.nanoTime();
         System.out.println("Dictionary size is: " + myIndexer.getCorpusDictionarySize());
 

@@ -1,12 +1,10 @@
 package IR;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * IR.Document Class is representing a document in the corpus
@@ -107,8 +105,7 @@ public class Document {
         if (this == o) return true;
         if (!(o instanceof Document)) return false;
         Document document = (Document) o;
-        return Objects.equals(termsDictonary, document.termsDictonary) &&
-                Objects.equals(allDocElements, document.allDocElements);
+        return this.textArray.length == document.textArray.length && this.textArray[0].equals(document.textArray[0]);
     }
 
 //    @Override

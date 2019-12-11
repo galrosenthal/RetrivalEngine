@@ -5,6 +5,7 @@ import IR.Document;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class parseNumbers extends AParser{
 
@@ -15,6 +16,7 @@ public class parseNumbers extends AParser{
     private DecimalFormat format3Decimals;
     private Document currentDoc;
     private List<String> digits = new ArrayList<>();
+    private static Semaphore deQDoc;
 
 
     @Override
@@ -44,6 +46,7 @@ public class parseNumbers extends AParser{
         digits.add("8");
         digits.add("9");
 
+        deQDoc = new Semaphore(1);
         format3Decimals = new DecimalFormat("#.###");
     }
 
@@ -54,8 +57,10 @@ public class parseNumbers extends AParser{
 
         while(!queueIsEmpty())
         {
+            deQDoc.acquireUninterruptibly();
             Document d = dequeueDoc();
-//            System.out.println("There are " + this.qSize() + " docs in the queue left");
+            deQDoc.release();
+            System.out.println("There are " + this.qSize() + " docs in the queue left");
 
 
             if(d == null)
@@ -65,57 +70,58 @@ public class parseNumbers extends AParser{
 
 //        this.splitDocText(d);
             currentDoc = d;
-            docText = d.getDocText().text().split(" ");
+//            docText = d.getDocText().text().split(" ");
+            docText = d.getTextArray();
+            try {
+                int countNumberMatch = 0, allNumbers = 0;
+                for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
+                    String word = docText[wordIndex];
+                    if (stopWords.contains(word.toLowerCase())) {
+                        continue;
+                    }
+                    word = chopDownLastCharPunc(word);
+                    word = chopDownFisrtChar(word);
+                    if (word.matches("^\\d+.*")) {
+                        if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1])) {/**  Number Quantifier  **/
+                            String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
+                            if (theWordParsed == null) {
+                                //FUCK
 
-            int countNumberMatch=0,allNumbers=0;
-            for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
-                String word = docText[wordIndex];
-                if (stopWords.contains(word.toLowerCase())) {
-                    continue;
-                }
-                word = chopDownLastCharPunc(word);
-                word = chopDownFisrtChar(word);
-                if (word.matches("^\\d.*")) {
-                    if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1]))
-                    {/**  Number Quantifier  **/
-                        String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
-                        if (theWordParsed == null) {
-                            //FUCK
+                            } else {
+                                countNumberMatch++;
+                                parsedTermInsert(theWordParsed, currentDoc.getDocNo());
+                                wordIndex++;
+                                continue;
+                            }
 
-                        } else {
-                            countNumberMatch++;
-                            parsedTermInsert(theWordParsed, currentDoc.getDocNo());
-                            wordIndex++;
-                            continue;
                         }
 
+
+                        if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {/**  num1-num2  **/
+                            String[] splitHifWord = word.split("-");
+                            parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
+                            parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+
+                            continue;
+                        } else if (word.matches("^\\d+/\\d+$")) {/**  num1/num2  **/
+                            countNumberMatch++;
+                            parsedTermInsert(word, currentDoc.getDocNo());
+                            continue;
+                        } else {/**  num1  **/
+                            countNumberMatch++;
+                            parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
+                        }
+
+
                     }
-
-
-                    if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$"))
-                    {/**  num1-num2  **/
-                        String[] splitHifWord = word.split("-");
-                        parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
-                        parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
-
-                        continue;
-                    }
-                    else if (word.matches("^\\d+/\\d+$"))
-                    {/**  num1/num2  **/
-                        countNumberMatch++;
-                        parsedTermInsert(word, currentDoc.getDocNo());
-                        continue;
-                    }
-                    else{/**  num1  **/
-                        countNumberMatch++;
-                        parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
-                    }
-
-
                 }
+                numOfParsedDocInIterative++;
+                this.releaseToIndexerFile();
+        }
+            catch (Exception e)
+            {
+
             }
-            numOfParsedDocInIterative++;
-            this.releaseToIndexerFile();
 
         }
 

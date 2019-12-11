@@ -1,6 +1,5 @@
 package readFile;
 
-import Indexer.Indexer;
 import Parser.*;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
@@ -26,7 +25,7 @@ public class ReadFile {
     public List<Thread> allParserThreads;
     public List<AParser> allParsers;
     public parsePrices prsPrices = new parsePrices();
-    public parseNumbers prsNums = new parseNumbers();
+    public parseNumbers prsNums1 = new parseNumbers();
     public parseDates prsDates = new parseDates();
     public parsePercentage prsPrcntg = new parsePercentage();
     public parseNames prsNames = new parseNames();
@@ -37,11 +36,13 @@ public class ReadFile {
     public ReadFile() {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
-//        addParserToThreads(prsNums);
+        addParserToThreads(prsNums1);
+        addParserToThreads(prsNums1);
+        addParserToThreads(prsNums1);
 //        addParserToThreads(prsDates);
 //        addParserToThreads(prsPrcntg);
 //        addParserToThreads(prsPrices);
-        addParserToThreads(prsNames);
+//        addParserToThreads(prsNames);
         runParsers();
 
     }
@@ -62,7 +63,8 @@ public class ReadFile {
 
     public void stopThreads()
     {
-        while(!allPrsrQsEmpty() || !Indexer.getInstance().isQEmpty())
+//        while(!allPrsrQsEmpty() || !Indexer.isQEmpty())
+        while(!allPrsrQsEmpty())
         {
 //            try
 //            {
@@ -73,11 +75,12 @@ public class ReadFile {
 //                e.printStackTrace();
 //            }
         }
+
         for (AParser prsr :
                 allParsers) {
             prsr.stopThread();
         }
-        Indexer.stopThreads = true;
+//        Indexer.stopThreads = true;
         try
         {
             for (Thread t :
@@ -125,7 +128,7 @@ public class ReadFile {
                         IR.Document document = new IR.Document(fileDoc);
                         enqDocToAllParsers(document);
 
-                        //shouldWaitForParser();
+                        shouldWaitForParser();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
 //                        if(numOfParsedDocs > numberOfDocsToPost)
@@ -158,11 +161,11 @@ public class ReadFile {
     }
 
     private void shouldWaitForParser() {
-        if(!allPrsrQsEmpty())
+        if(allParsers.get(0).qSize()>20000)
         {
             try
             {
-                Thread.sleep(5);
+                Thread.sleep(5000);
             }
             catch (Exception e)
             {

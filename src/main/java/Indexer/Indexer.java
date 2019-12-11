@@ -10,11 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 public class Indexer implements Runnable{
     private static final double MAX_POSTING_FILE_SIZE = 5;
     private static volatile Indexer mInstance;
     private final int KB_SIZE = 1024;
-    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
+    //    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
+    private static ConcurrentLinkedQueue<HashMap<String,String>> parsedWordsQueue;
     private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
@@ -25,12 +27,21 @@ public class Indexer implements Runnable{
 
 
     private Indexer() {
-        this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
+        parsedWordsQueue = new ConcurrentLinkedQueue<>();
         corpusDictionary = new ConcurrentHashMap<>();
 
     }
-    public boolean isQEmpty()
+
+    public static boolean canStopThreads() {
+        return isQEmpty();
+    }
+
+    public static boolean isQEmpty()
     {
+        if(!parsedWordsQueue.isEmpty())
+        {
+            return false;
+        }
         Path pathToFolder = Paths.get(ReadWriteTempDic.pathToTempDicQ);
         File dir = pathToFolder.toFile();
         File[] directoryListing = dir.listFiles();
@@ -57,12 +68,17 @@ public class Indexer implements Runnable{
     }
 
 
-    public synchronized boolean enqueue(ConcurrentHashMap<String,String> parsedWords)
+    //    public synchronized boolean enqueue(ConcurrentHashMap<String,String> parsedWords)
+    public static synchronized boolean enqueue(HashMap<String,String> parsedWords)
     {
         return parsedWordsQueue.add(parsedWords);
     }
 
-    private synchronized ConcurrentHashMap<String,String> dequeue()
+    //    private synchronized ConcurrentHashMap<String,String> dequeue()
+//    {
+//        return parsedWordsQueue.poll();
+//    }
+    private synchronized HashMap<String,String> dequeue()
     {
         return parsedWordsQueue.poll();
     }
@@ -76,7 +92,7 @@ public class Indexer implements Runnable{
     @Override
     public void run() {
 //        System.out.println("Indexer has Started...");
-        while(!stopThreads)
+        while( !stopThreads)
         {
             createPostFiles();
         }
@@ -105,42 +121,48 @@ public class Indexer implements Runnable{
 
             if (dqdHshMap == null) {
 //            System.out.println("Could not read Object from File");
-                return;
-            } else {
+                dqdHshMap = dequeue();
+                System.out.println("Dequeued Dictionary");
+                if(dqdHshMap == null)
+                {
+                    System.out.println("Dictionary was null");
+                    return;
+                }
+            }
 //                System.out.println("cleared " + dqdHshMap.size());
-                for (String term :
-                        dqdHshMap.keySet()) {
-                    if (!corpusDictionary.containsKey(term)) {
-                        String dfList = dqdHshMap.get(term);
+
+            for (String term :
+                    dqdHshMap.keySet()) {
+                if (!corpusDictionary.containsKey(term)) {
+                    String dfList = dqdHshMap.get(term);
 //                    System.out.println("Indexing " + dfList);
 //                    String[] splittedDocs = dfList.split(";");
-                        try {
-                            if (term.charAt(0) == ' ') {
-                                term = term.substring(1);
-                            }
-                            String lineIndexInFile = createAndWriteTheFile(term.toLowerCase().charAt(0), dfList);
-                            if (lineIndexInFile == null) {
-                                throw new Exception("Could Not Write The file properly");
-                            }
-                            this.corpusDictionary.put(term, lineIndexInFile);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                    try {
+                        if (term.charAt(0) == ' ') {
+                            term = term.substring(1);
                         }
-                    } else {
-                        //The corpus already contains this term
-                        String[] postFileAndLine = corpusDictionary.get(term).split("#");
-                        readAndAppendToFile(term, postFileAndLine[0], postFileAndLine[1], dqdHshMap.get(term));
-
-
+                        String lineIndexInFile = createAndWriteTheFile(term.toLowerCase().charAt(0), dfList);
+                        if (lineIndexInFile == null) {
+                            throw new Exception("Could Not Write The file properly");
+                        }
+                        this.corpusDictionary.put(term, lineIndexInFile);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                } else {
+                    //The corpus already contains this term
+                    String[] postFileAndLine = corpusDictionary.get(term).split("#");
+                    readAndAppendToFile(term, postFileAndLine[0], postFileAndLine[1], dqdHshMap.get(term));
+
 
                 }
 
-                dqdHshMap.clear();
-                dqdHshMap = null;
-
-                //System.out.println("test");
             }
+
+            dqdHshMap.clear();
+            dqdHshMap = null;
+
+            //System.out.println("test");
         }
 
 //            for (String term :
@@ -169,7 +191,7 @@ public class Indexer implements Runnable{
              * 3. overwrite the file with the new lines
              */
 
-             /**input the (modified) file content to the StringBuffer "input"**/
+            /**input the (modified) file content to the StringBuffer "input"**/
             String pathToFileForEdit = pathToPostFolder + term.toLowerCase().charAt(0) +"/" +fileNum;
             BufferedReader file = new BufferedReader(new FileReader(pathToFileForEdit));
             StringBuffer inputBuffer = new StringBuffer();
