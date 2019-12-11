@@ -24,6 +24,7 @@ public class MainParse extends AParser {
     private final String dollars="Dollars";
     private final String us="U.S.";
 
+
     public MainParse() {
         super();
         docDequeuerLock = new Semaphore(1);
@@ -50,6 +51,8 @@ public class MainParse extends AParser {
         if(currentDoc != null)
         {
             parse(currentDoc);
+            numOfParsedDocInIterative++;
+            releaseToIndexerFile();
         }
 
     }

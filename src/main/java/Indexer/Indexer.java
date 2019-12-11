@@ -14,7 +14,8 @@ public class Indexer implements Runnable{
     private static final double MAX_POSTING_FILE_SIZE = 5;
     private static volatile Indexer mInstance;
     private final int KB_SIZE = 1024;
-    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
+//    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
+    private ConcurrentLinkedQueue<HashMap<String,String>> parsedWordsQueue;
     private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
@@ -45,12 +46,12 @@ public class Indexer implements Runnable{
     }
 
 
-    public synchronized boolean enqueue(ConcurrentHashMap<String,String> parsedWords)
+    public synchronized boolean enqueue(HashMap<String,String> parsedWords)
     {
         return parsedWordsQueue.add(parsedWords);
     }
 
-    private synchronized ConcurrentHashMap<String,String> dequeue()
+    private synchronized HashMap<String,String> dequeue()
     {
         return parsedWordsQueue.poll();
     }
@@ -70,6 +71,7 @@ public class Indexer implements Runnable{
         }
 //        System.out.println("Indexer has stopped...");
 //        createPostFiles();
+        System.out.println("Corpus Dictionary size is: " + corpusDictionary.keySet().size());
 
     }
 
@@ -78,7 +80,8 @@ public class Indexer implements Runnable{
         //TODO: For each word check if exists in the CorpusDictionary,
         // find the relevant posting file (from the Dictionary or by first letter),
         // append the relevant data to the posting file in the relevant line
-        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
+//        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
+        HashMap<String,String> dqdHshMap = dequeue();
 
 
 
