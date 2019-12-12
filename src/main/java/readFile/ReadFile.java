@@ -45,8 +45,8 @@ public class ReadFile {
         allParsers = new ArrayList<>();
         addParserToThreads(mainParse1);
         addParserToThreads(mainParse2);
-//        addParserToThreads(mainParse3);
-//        addParserToThreads(mainParse4);
+        addParserToThreads(mainParse3);
+        addParserToThreads(mainParse4);
         //addParserToThreads(prsNums);
         //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);

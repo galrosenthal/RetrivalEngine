@@ -32,9 +32,9 @@ public abstract class AParser implements Runnable {
 //    protected ConcurrentHashMap<String,String> termsInText;
     protected HashMap<String,String> termsInText;
     protected static ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
-    protected static int numOfParsedDocInIterative;
+    protected int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 10000;
+    private static final int numberOfDocsToPost = 500;
     protected volatile boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
