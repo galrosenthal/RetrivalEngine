@@ -38,6 +38,7 @@ public class ReadFile {
     public MainParse mainParse2 = new MainParse();
     public MainParse mainParse3 = new MainParse();
     public MainParse mainParse4 = new MainParse();
+    public MainParse mainParse5 = new MainParse();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
@@ -174,8 +175,6 @@ public class ReadFile {
                 }
             }
         }
-
-        //mainParse1.parse();
 
     }
 
