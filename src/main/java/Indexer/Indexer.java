@@ -4,6 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Indexer implements Runnable{
     private static final double MAX_POSTING_FILE_SIZE = 5;
+    private static final int MAX_TERMS_TO_INDEX = 100000;
     private static volatile Indexer mInstance;
     private final int KB_SIZE = 1024;
     //    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
@@ -23,10 +25,12 @@ public class Indexer implements Runnable{
     private String indexerName = "Indexer ";
     private static AtomicInteger indexerNum;
     private String pathToPostFolder="./postingFiles/";
+    private HashMap<String,String> hundredKtermsMap;
 
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
         corpusDictionary = new ConcurrentHashMap<>();
+        hundredKtermsMap = new HashMap<>();
 
     }
     public boolean isQEmpty()
@@ -65,7 +69,7 @@ public class Indexer implements Runnable{
     @Override
     public void run() {
 //        System.out.println("Indexer has Started...");
-        while(!isQEmpty())
+        while(!stopThreads)
         {
             createPostFiles();
         }
@@ -75,7 +79,7 @@ public class Indexer implements Runnable{
 
     }
 
-    private void createPostFiles() {
+    /*private void createPostFiles() {
 
         //TODO: For each word check if exists in the CorpusDictionary,
         // find the relevant posting file (from the Dictionary or by first letter),
@@ -145,8 +149,81 @@ public class Indexer implements Runnable{
 //            }
 
 
+    }*/
+
+    private void createPostFiles()
+    {
+        //map2.forEach(
+        //    (key, value) -> map1.merge( key, value, (v1, v2) -> v1 + ";" + v2)
+        //);
+//        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
+        while(!isQEmpty()) {
+            HashMap<String, String> dqdHshMap = dequeue();
+
+            if (dqdHshMap == null) {
+                continue;
+            }
+            long startTime,endTime;
+
+            System.out.println("Merging "+dqdHshMap.size());
+            startTime = System.nanoTime();
+            mergeHashMapIntoHundred(dqdHshMap);
+            endTime = System.nanoTime();
+            System.out.println("Merging took "+(endTime - startTime)/1000000000 + " seconds");
+
+            if (hundredKtermsMap.keySet().size() >= MAX_TERMS_TO_INDEX) {
+                System.out.println("Sorting "+hundredKtermsMap.size());
+                startTime = System.nanoTime();
+                sortDocListPerTerm();
+                endTime = System.nanoTime();
+                System.out.println("Sorting took "+(endTime - startTime)/1000000000 + " seconds");
+            }
+
+        }
+
+//        System.out.println("Indexer Q is empty");
+//        try {
+//            Thread.sleep(500);
+//        }
+//        catch (Exception e)
+//        {
+//
+//        }
+//        indexTheFucker();
+
+
+
     }
 
+    private void sortDocListPerTerm() {
+//        String[] myString = {"FBIS3-8#6","FBIS3-1#2","FBIS3-7#32","FBIS3-2#43","FBIS3-4#54","FBIS3-3#5","FBIS3-5#98","FBIS3-6#12"};
+//        Arrays.sort(myString);
+//        System.out.println(Arrays.toString(myString));
+//        StringBuilder newString = new StringBuilder(Arrays.toString(myString));
+
+        for (String key :
+                hundredKtermsMap.keySet()) {
+            String[] docList = hundredKtermsMap.get(key).split(";");
+            Arrays.sort(docList);
+            String sortedList = Arrays.toString(docList);
+            if(sortedList.charAt(0) == '[')
+            {
+                sortedList = sortedList.substring(1);
+            }
+            if(sortedList.charAt(sortedList.length()-1) == ']')
+            {
+                sortedList = sortedList.substring(0,sortedList.length()-1);
+            }
+
+            hundredKtermsMap.replace(key,hundredKtermsMap.get(key),sortedList);
+        }
+    }
+
+    private void mergeHashMapIntoHundred(HashMap<String, String> hashMapToMerge) {
+        hashMapToMerge.forEach(
+            (key, value) -> hundredKtermsMap.merge( key, value, (v1, v2) -> v1 + ";" + v2)
+        );
+    }
 
 
     // read file one line at a time

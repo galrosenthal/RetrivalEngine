@@ -7,28 +7,31 @@ import java.io.File;
 
 public class test {
 
-    private static final int MAX_NUMBER_OF_THREADS = 3;
+    private static final int MAX_NUMBER_OF_THREADS = 1;
 
     public static void main(String[] args) {
 //        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest2";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
-//        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
+        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\1files";
 //        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 
 
-//        String test = "-1010.56";
-////        test = test.substring(0,test.indexOf("."));
-//        test = test.replaceAll(",","");
-//        Double testValue = Double.valueOf(test);
-        String test = "-1010.56";
-//        test = test.substring(0,test.indexOf("."));
-        test = test.replaceAll(",","");
-        Double testValue = Double.valueOf(test);
+
+
+
+
+
+
+
+
+
+
+
 
         try
         {
@@ -60,8 +63,8 @@ public class test {
         for (int i = 0; i < IndexerThreads.length; i++) {
             IndexerThreads[i] = new Thread(Indexer.getInstance());
             IndexerThreads[i].setName("Indexer " + indexerIndex++);
-//            System.out.println(IndexerThreads[i].getName() + " has started...");
-//            IndexerThreads[i].start();
+            System.out.println(IndexerThreads[i].getName() + " has started...");
+            IndexerThreads[i].start();
         }
 
 
@@ -76,10 +79,10 @@ public class test {
 
         f.stopThreads();
 
-        for (int i = 0; i < IndexerThreads.length; i++) {
-            System.out.println(IndexerThreads[i].getName() + " has started...");
-            IndexerThreads[i].start();
-        }
+//        for (int i = 0; i < IndexerThreads.length; i++) {
+//            System.out.println(IndexerThreads[i].getName() + " has started...");
+//            IndexerThreads[i].start();
+//        }
 //            IndexerThreads[i].start();
 
 //        IndexerThreads[0].stop();
