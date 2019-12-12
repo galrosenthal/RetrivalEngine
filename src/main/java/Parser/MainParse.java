@@ -70,7 +70,7 @@ public class MainParse extends AParser {
 //        currentDoc = d;
 
         int m=0;
-        System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
+//        System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
         splitedText = document.getTextArray();
 
         for (i.set(0); i.get() < splitedText.length; i.incrementAndGet()) {
@@ -80,45 +80,45 @@ public class MainParse extends AParser {
             String halfCleanWord = chopDownFisrtChar(splitedText[i.get()]);
 
             //Check if thw word is a number
-            if(!cleanWord.equals("")) {
+            if (!cleanWord.equals("")) {
                 if (Character.isDigit(splitedText[i.get()].charAt(0))) {
-                    if (parsePercentage(cleanWord)) {
-
-                    }
                     if (NumberUtils.isNumber(splitedText[i.get()])) {
-
-                        if(i.get() < splitedText.length-1 && splitedText[i.get()+1].equalsIgnoreCase(dollars.toLowerCase()))
-                        {
-                            if(parsePrices(cleanWord))
-                            {
+                        if (parsePercentage(cleanWord)) {
+//
+                        } else if (i.get() < splitedText.length - 1 && splitedText[i.get() + 1].equalsIgnoreCase(dollars.toLowerCase())) {
+                            if (parsePrices(cleanWord)) {
 
                             }
+                        } else if (parseNumbers(cleanWord)) {
+
                         }
-                    } else
+                    } else {
                         if (parseNumberRanges(cleanWord)) {
 
-                        }
-                        else if(parsePrices(cleanWord))
-                        {
+                        } else if (parsePrices(cleanWord)) {
 
                         }
+
                     }
                 } else {
                     if (parseDates(cleanWord)) {
 
                     } else if (parseNameRanges(cleanWord)) {
 
-                    }
-                    else if(Character.isUpperCase(cleanWord.charAt(0))){
+                    } else if (Character.isUpperCase(cleanWord.charAt(0))) {
                         parseNames(halfCleanWord);
+                    }
+                    else if(parseWords(cleanWord)){
+
                     }
                 }
             }
-
         }
+
         termsInTextSemaphore.release();
         isParsing = false;
-    }
+        }
+
 
 
 
@@ -790,10 +790,10 @@ public class MainParse extends AParser {
 
                 //String[] sentenceLengh = sentence.toString().split(" ");
                 if(numOfWords > 1){
-                    System.out.println(sentence);
-                    if(sentence.toString().equals("PLEASE CALL CHIEF")){
-                        System.out.println();
-                    }
+//                    System.out.println(sentence);
+//                    if(sentence.toString().equals("PLEASE CALL CHIEF")){
+//                        System.out.println();
+//                    }
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d.getDocNo());
                     isParse = true;
                 }
@@ -814,11 +814,11 @@ public class MainParse extends AParser {
         if (numOfWords > 1) {
             //String[] sentenceLengh = sentence.toString().split(" ");
 
-            System.out.println(sentence);
+//            System.out.println(sentence);
             parsedTermInsert(sentence.substring(0, sentence.length() - 1), d.getDocNo());
-            if(sentence.toString().equals("PLEASE CALL CHIEF")){
-                System.out.println();
-            }
+//            if(sentence.toString().equals("PLEASE CALL CHIEF")){
+//                System.out.println();
+//            }
             numOfWords=0;
             sentence.setLength(0);
             isParse = true;
