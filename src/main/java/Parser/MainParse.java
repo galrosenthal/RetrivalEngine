@@ -12,15 +12,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MainParse extends AParser {
-    String[] splitedText;
-    Document d;
-    public AtomicInteger i = new AtomicInteger(0);;
-    String pattern = "(([0-9]+\\-[0-9]+)|([a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+)|([a-zA-Z]+-[a-zA-Z]+)|[0-9]+\\-[a-zA-Z]+)";
-    Pattern pRange = Pattern.compile(pattern);
-    Matcher matcherRange;
-    static Semaphore docDequeuerLock;
-    Document currentDoc;
+    private String[] splitedText;
+    private Document d;
+    private AtomicInteger i = new AtomicInteger(0);;
+    private String pattern = "(([0-9]+\\-[0-9]+)|([a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+)|([a-zA-Z]+-[a-zA-Z]+)|[0-9]+\\-[a-zA-Z]+)";
+    private Pattern pRange = Pattern.compile(pattern);
+    private Matcher matcherRange;
+    private static Semaphore docDequeuerLock;
+    private Document currentDoc;
     private DecimalFormat format3Decimals;
+    private final String dollars="Dollars";
+    private final String us="U.S.";
+
 
     public MainParse() {
         super();
@@ -42,40 +45,53 @@ public class MainParse extends AParser {
     @Override
     public void parse() {
         docDequeuerLock.acquireUninterruptibly();
-        currentDoc = dequeueDoc();
-        i.set(0);
+        while(!queueIsEmpty()){
+            currentDoc = dequeueDoc();
+            i.set(0);
+            parse(currentDoc);
+            numOfParsedDocInIterative++;
+        }
+
+        /*
         docDequeuerLock.release();
         if(currentDoc != null)
         {
-            parse(currentDoc);
-        }
 
+
+            releaseToIndexerFile();
+        }
+           */
     }
 
     public void parse(Document document) {
         d = document;
 
         int m=0;
-        //System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
+//        System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
         splitedText = document.getTextArray();
 
-        for (int index = 0; index < splitedText.length; index= i.getAndIncrement()) {
+        for (i.set(0); i.get() < splitedText.length; i.incrementAndGet()) {
 
-            String cleanWord = chopDownLastCharPunc(splitedText[index]);
+            String cleanWord = chopDownLastCharPunc(splitedText[i.get()]);
             cleanWord = chopDownFisrtChar(cleanWord);
-            String halfCleanWord = chopDownFisrtChar(splitedText[index]);
+            String halfCleanWord = chopDownFisrtChar(splitedText[i.get()]);
 
             //Check if the word is a number
             if(!cleanWord.equals("")) {
-                if (Character.isDigit(splitedText[index].charAt(0))) {
-                    if (NumberUtils.isNumber(splitedText[index])) {
-                        if (parsePercentage(cleanWord)) {
+                if (Character.isDigit(splitedText[i.get()].charAt(0))) {
+                    if (parsePercentage(cleanWord)) {
 
-                        }
-                        else if(parseNumbers(cleanWord))
+                    }
+                    if (NumberUtils.isNumber(splitedText[i.get()])) {
+
+                        if(i.get() < splitedText.length-1 && splitedText[i.get()+1].equalsIgnoreCase(dollars.toLowerCase()))
                         {
+                            if(parsePrices(cleanWord))
+                            {
 
+                            }
                         }
+
                     } else {
                         if (parseNumberRanges(cleanWord)) {
 
@@ -310,43 +326,50 @@ public class MainParse extends AParser {
     public boolean parseNameRanges(String word) {
         boolean isParsed = false;
 
-       // if(!stopWords.contains(word)) {
-            //  matcherRange = pRange.matcher(word);
-            // while (matcherRange.find()) {
+        // if(!stopWords.contains(word)) {
+        //  matcherRange = pRange.matcher(word);
+        // while (matcherRange.find()) {
 
-            //System.out.println(matcher.group(1));
-            //String match = matcherRange.group(1);
+        //System.out.println(matcher.group(1));
+        //String match = matcherRange.group(1);
 
 
-            if (word.equals("between")) {
+        if (word.equals("between")) {
 
-                int wordIndex = i.get();
-                if (wordIndex < splitedText.length - 4) {
-                    splitedText[wordIndex + 3] = chopDownLastCharPunc(splitedText[wordIndex + 3]);
-                    if (splitedText[wordIndex + 2].equals("and") && NumberUtils.isNumber(splitedText[wordIndex + 1]) && NumberUtils.isNumber(splitedText[wordIndex + 3])) {
-                        parsedTermInsert(splitedText[wordIndex + 1], d.getDocNo());
-                        parsedTermInsert(splitedText[wordIndex + 3], d.getDocNo());
-                        parsedTermInsert("between" + splitedText[wordIndex + 1] + "and" + splitedText[wordIndex + 3], d.getDocNo());
-                        //System.out.println("between " + splitedText[i + 1] + " and " + splitedText[i + 3]);
-                        isParsed = true;
-                        i.addAndGet(3);
-                    }
+            int wordIndex = i.get();
+            if (wordIndex < splitedText.length - 4) {
+                splitedText[wordIndex + 3] = chopDownLastCharPunc(splitedText[wordIndex + 3]);
+                if (splitedText[wordIndex + 2].equals("and") && NumberUtils.isNumber(splitedText[wordIndex + 1]) && NumberUtils.isNumber(splitedText[wordIndex + 3])) {
+                    parsedTermInsert(splitedText[wordIndex + 1], d.getDocNo());
+                    parsedTermInsert(splitedText[wordIndex + 3], d.getDocNo());
+                    parsedTermInsert("between" + splitedText[wordIndex + 1] + "and" + splitedText[wordIndex + 3], d.getDocNo());
+                    //System.out.println("between " + splitedText[i + 1] + " and " + splitedText[i + 3]);
+                    isParsed = true;
+                    i.addAndGet(3);
                 }
             }
+        }
 
-            if (!isParsed && !stopWords.contains(word)) {
-                String[] values = word.split("--");
-                //Kick out of the loop
+        if (!isParsed && !stopWords.contains(word)) {
+            String[] values = word.split("--");
+            //Kick out of the loop
+            if (values.length > 1) {
+                return true;
+            } else {
+                values = word.split("-");
                 if (values.length > 1) {
-                    return true;
-                } else {
-                    values = word.split("-");
-                    if (values.length > 1) {
-                        isParsed = true;
-                        parsedTermInsert(word, d.getDocNo());
+                    if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
+                        parsedTermInsert(values[0], d.getDocNo());
+                        parsedTermInsert(values[1], d.getDocNo());
+
                     }
+
+                    //System.out.println(word);
+                    isParsed = true;
+                    parsedTermInsert(word, d.getDocNo());
                 }
             }
+        }
 
         //}
         return isParsed;
@@ -361,85 +384,84 @@ public class MainParse extends AParser {
 
         //System.out.println(matcher.group(1));
         //String match = matcherRange.group(1);
-            String[] values = word.split("--");
-            //Kick out of the loop
+        String[] values = word.split("--");
+        //Kick out of the loop
+        if (values.length > 1) {
+            return true;
+        } else {
+            values = word.split("-");
             if (values.length > 1) {
-                return true;
-            } else {
-                values = word.split("-");
-                if (values.length > 1) {
-                    if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
-                        parsedTermInsert(values[0], d.getDocNo());
-                        parsedTermInsert(values[1], d.getDocNo());
-                    }
-                    //System.out.println(word);
-                    isParsed = true;
+                if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
+                    parsedTermInsert(values[0], d.getDocNo());
+                    parsedTermInsert(values[1], d.getDocNo());
                 }
+                //System.out.println(word);
+                isParsed = true;
             }
+        }
 
         //}
         return isParsed;
     }
 
 
+    /*
+
+        Parse Numbers
+
+     */
     public boolean parseNumbers(String word){
 
-            word = chopDownLastCharPunc(word);
-            word = chopDownFisrtChar(word);
-            boolean isParsed = false;
-            if (stopWords.contains(word.toLowerCase())) {
-                return isParsed;
-            }
-            int wordIndex = i.get();
-            if (word.matches("^\\d.*")) {
-                if (wordIndex < splitedText.length - 1 && nextWordIsQuntifier(splitedText[wordIndex + 1])) {
-                    String theWordParsed = quantifiedWordForDic(word, splitedText[wordIndex + 1]);
-                    if (theWordParsed == null) {
-                        //FUCK
-
-                    } else {
-                        parsedTermInsert(theWordParsed, currentDoc.getDocNo());
-                        i.getAndIncrement();
-                        isParsed = true;
-                    }
-
-                }
-
-
-                if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
-                    String[] splitHifWord = word.split("-");
-                    parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
-                    parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
-
-                    isParsed = true;
-                }
-
-                //TODO: this is related to טווחים וביטויים section
-//                else if(word.matches("^\\d+-\\d+$"))
-//                {
-//                    countNumberMatch++;
-////                    numbersInText.add(word.split("-")[0]);
-////                    numbersInText.add(word.split("-")[1]);
-//                    numbersInText.add(word);
-//                }
-
-
-                else if (word.matches("^\\d+/\\d+$")) {
-                    parsedTermInsert(word, currentDoc.getDocNo());
-                    isParsed = true;
-                } else {
-                    parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
-                    isParsed = true;
-                }
-
-
-            }
+        word = chopDownLastCharPunc(word);
+        word = chopDownFisrtChar(word);
+        boolean isParsed = false;
+        if (stopWords.contains(word.toLowerCase())) {
             return isParsed;
         }
+        int wordIndex = i.get();
+        if (NumberUtils.isNumber(word.charAt(0)+""))
+        {/**searchong for word starting with number**/
+            if (wordIndex < splitedText.length - 1 && nextWordIsQuntifier(splitedText[wordIndex + 1]))
+            {/**searching for number and quantifier num1 (Thousand|Million|Billion) **/
+                String theWordParsed = quantifiedWordForDic(word, splitedText[wordIndex + 1]);
+                if (theWordParsed == null) {
+                    //FUCK
+
+                } else {
+                    parsedTermInsert(theWordParsed, currentDoc.getDocNo());
+                    i.getAndIncrement();
+                    isParsed = true;
+                }
+
+            }
+
+//                /**searches for num1-num2**/
+//                if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
+//                    String[] splitHifWord = word.split("-");
+//                    parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
+//                    parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+//
+//                    isParsed = true;
+//                }
+            /**searches for fraction num1/num2**/
+            else if (isFraction(word)) {
+                parsedTermInsert(word, currentDoc.getDocNo());
+                isParsed = true;
+            }
+            else {
+                /**parsing number**/
+                parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
+                isParsed = true;
+            }
+
+
+        }
+        return isParsed;
+    }
 
 
     /**
-     * Gets a String with a number
+     * Gets a number as string
      * and
      * Returns a String with number formatted as desired in the Instructions (Thousand->K,Million->M...)
      * @param number
@@ -497,6 +519,8 @@ public class MainParse extends AParser {
      */
     protected String quantifiedWordForDic(String number,String quntifier) {
         quntifier = chopDownLastCharPunc(quntifier);
+        quntifier = chopDownFisrtChar(quntifier);
+        number = chopDownLastCharPunc(number);
         number = chopDownLastCharPunc(number);
 
         double importantNumber;
@@ -532,7 +556,8 @@ public class MainParse extends AParser {
     private double getNumberFromString(String number) throws NumberFormatException {
         number = chopDownLastCharPunc(number);
         double numberInString = 0.0;
-        if(number.matches("^(\\d+|\\d{1,3}(,\\d{3})*)(\\.\\d+)?$"))
+//        if(number.matches("^(\\d+|\\d{1,3}(,\\d{3})*)(\\.\\d+)?$"))
+        if(NumberUtils.isNumber(number.replaceAll(",","")))
         {
             numberInString = Double.parseDouble(number.replaceAll(",",""));
 //                    System.out.println(word);
@@ -541,14 +566,182 @@ public class MainParse extends AParser {
         return numberInString;
     }
 
+    //    /**
+//     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
+//     * @param quntifier
+//     * @return
+//     */
+//    protected boolean nextWordIsQuntifier(String quntifier) {
+//        quntifier = chopDownLastCharPunc(quntifier);
+//        quntifier = chopDownFisrtChar(quntifier);
+//        if(quntifier.matches("^(Thousand|Million|Billion)"))
+//        {
+//            return true;
+//        }
+//        return false;
+//    }
+    public boolean parsePrices(String word) {
+
+//        this.splitDocText(d);
+        currentDoc = d;
+        docText = d.getTextArray();
+
+        int countNumberMatch = 0, allNumbers = 0;
+        int wordIndex = i.get();
+        String wordInText = docText[wordIndex];
+        boolean isParsed = false;
+        wordInText = chopDownLastCharPunc(wordInText);
+        wordInText = chopDownFisrtChar(wordInText);
+        if (stopWords.contains(wordInText.toLowerCase())) {
+            return false;
+        }
+//        if (wordInText.matches("(^\\d.*)"))
+        if (NumberUtils.isNumber(word.charAt(0)+""))
+        {//Current word is a number
+            if(wordIndex < docText.length-4)
+            {//Check next word for quntifier
+                String isQuantifier = docText[wordIndex+1];
+                String scndWord = docText[wordIndex+2];
+                String thrdWord = docText[wordIndex+3];
+                String termToInsert = "";
+                if(scndWord.equalsIgnoreCase(us.toLowerCase()))
+                {/**Price Quntifier U.S. Dollars**/
+                    // if there is U.S. in the sentence ignore it
+                    if(thrdWord.equalsIgnoreCase(dollars.toLowerCase()))
+                    {
+                        //if the 3rd word is dollars to get exactly this situation
+                        scndWord = thrdWord;
+                        i.set(wordIndex+1);
+                    }
+                    // if there is no dollars after U.S. ignore all
+                    return false;
+                }
+
+                if(nextWordIsQuntifier(isQuantifier) && scndWord.equalsIgnoreCase(dollars.toLowerCase()))
+                {//It is Quntifier {Thousand,Million,Billion}
+                    termToInsert = quantifiedWordForPrices(wordInText,isQuantifier);
+                    /**Price Quantifier Dollars**/
+                    termToInsert += " " + dollars;
+                    parsedTermInsert(termToInsert, currentDoc.getDocNo());
+                    isParsed = true;
+                    i.set(wordIndex+2);
+                }
+                else if(isFraction(isQuantifier) && scndWord.equalsIgnoreCase(dollars.toLowerCase()))
+                {
+                    /**Price Fraction Dollars**/
+                    termToInsert = quantifiedWordForPrices(wordInText);
+                    termToInsert = " " + isQuantifier + " " + dollars;
+                    parsedTermInsert(termToInsert, currentDoc.getDocNo());
+                    isParsed = true;
+                    i.set(wordIndex+2);
+                }
+                else if(isQuantifier.equalsIgnoreCase(dollars.toLowerCase()))
+                {
+                    /**Price Dollars**/
+                    termToInsert = quantifiedWordForPrices(wordInText);
+                    termToInsert = " " + dollars;
+                    parsedTermInsert(termToInsert, currentDoc.getDocNo());
+                    isParsed = true;
+                    i.set(wordIndex+1);
+                }
+            }
+        }
+        else if(word.charAt(0) == '$' && NumberUtils.isNumber(word.charAt(1)+""))
+        {//$price | regex: \$\d.*
+            if(wordIndex < docText.length-1)
+            {
+                String quant = docText[wordIndex+1];
+                if(nextWordIsQuntifier(quant))
+                {/**$Price Quantifier**/
+                    String termToInsert = quantifiedWordForPrices(wordInText.substring(1),quant);
+                    parsedTermInsert("$"+ termToInsert,currentDoc.getDocNo());
+                    isParsed = true;
+                    i.set(wordIndex+1);
+                }
+                else
+                {/**$Price**/
+                    String termToInsert = quantifiedWordForPrices(wordInText.substring(1));
+                    parsedTermInsert("$"+termToInsert,currentDoc.getDocNo());
+                    isParsed = true;
+                    i.set(wordIndex+1);
+                }
+            }
+
+        }
+        return isParsed;
+    }
+
+
     /**
-     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
-     * @param quntifier
+     * Returns the number with the quantifier attached if the qunatifier is larger than Million
+     * @param number
+     * @param quantifier
      * @return
      */
-    protected boolean nextWordIsQuntifier(String quntifier) {
-        quntifier = chopDownLastCharPunc(quntifier);
-        if(quntifier.matches("^(Thousand|Million|Billion)"))
+    private String quantifiedWordForPrices(String number, String quantifier) {
+        String theQuantifier = "";
+//        if(quantifier.matches("^(Million|Billion|Trillion|m|bn|trillion|million|billion)"))
+
+        if(quantifier.equalsIgnoreCase("million") ||quantifier.equalsIgnoreCase("billion") ||
+                quantifier.equalsIgnoreCase("trillion") || quantifier.equalsIgnoreCase("m") ||
+                quantifier.equalsIgnoreCase("bn") )
+        {
+            theQuantifier = "M";
+            number += theQuantifier;
+        }
+        return number;
+    }
+
+    /**
+     * Gets a String with a number
+     * and
+     * Returns a String with number formatted as desired in the Instructions (Thousand->K,Million->M...)
+     * @param number
+     * @return
+     */
+    private String quantifiedWordForPrices(String number)
+    {
+        number = chopDownLastCharPunc(number);
+        double importantNumber;
+
+        String result = "";
+        try
+        {
+            importantNumber = getNumberFromString(number);
+        }
+        catch (Exception e)
+        {
+            return result;
+        }
+        result = format3Decimals.format(importantNumber);
+        if(importantNumber >= MILLION)
+        {
+            importantNumber = importantNumber/MILLION;
+
+            result+=" M";
+        }
+
+        return result;
+    }
+
+//    private double getNumberFromString(String number) throws NumberFormatException {
+//        number = chopDownLastCharPunc(number);
+//        double numberInString = 0.0;
+//        if(number.matches("^(\\d+|\\d{1,3}(,\\d{3})*)(\\.\\d+)?$"))
+//        {
+//            numberInString = Double.parseDouble(number.replaceAll(",",""));
+////                    System.out.println(word);
+//        }
+//
+//        return numberInString;
+//    }
+
+    private boolean nextWordIsQuntifier(String quantifier) {
+        quantifier = chopDownLastCharPunc(quantifier);
+//        if(quantifier.matches("^(Thousand|Million|Billion|Trillion|m|bn|trillion|million|bilion)"))
+        if(quantifier.equalsIgnoreCase("thousand") || quantifier.equalsIgnoreCase("million") ||
+                quantifier.equalsIgnoreCase("billion") || quantifier.equalsIgnoreCase("trillion") ||
+                quantifier.equalsIgnoreCase("m") || quantifier.equalsIgnoreCase("bn") )
         {
             return true;
         }
@@ -578,6 +771,9 @@ public class MainParse extends AParser {
                 //String[] sentenceLengh = sentence.toString().split(" ");
                 if(numOfWords > 1){
                     System.out.println(sentence);
+                    if(sentence.toString().equals("PLEASE CALL CHIEF")){
+                        System.out.println();
+                    }
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d.getDocNo());
                     isParse = true;
                 }
@@ -586,23 +782,65 @@ public class MainParse extends AParser {
                 break;
             } else {
                 numOfWords++;
-                sentence.append(word).append(" ");
+                sentence.append(wordB).append(" ");
             }
-            wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
+            if(i.get() < splitedText.length-1){
+                wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
+            }
+            else{
+                break;
+            }
         }
         if (numOfWords > 1) {
             //String[] sentenceLengh = sentence.toString().split(" ");
 
-            //System.out.println(sentence);
+            System.out.println(sentence);
             parsedTermInsert(sentence.substring(0, sentence.length() - 1), d.getDocNo());
+            if(sentence.toString().equals("PLEASE CALL CHIEF")){
+                System.out.println();
+            }
             numOfWords=0;
             sentence.setLength(0);
             isParse = true;
         }
 
 
-        return false;
+        return isParse;
     }
 
+    /*
+
+        Parse Words
+
+     */
+    public boolean parseWords(String word){
+        boolean isParsed = false;
+
+        StringBuilder wordB = new StringBuilder(word);
+        wordB = chopDownFisrtChar(wordB);
+        wordB = chopDownLastCharPunc(wordB);
+        if (stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ) {
+            return isParsed;
+        }
+        //else if (wordB.toString().chars().allMatch(Character::isLetter)){
+        else if (bettertWay(wordB.toString())){
+            //System.out.println(word);
+            parsedTermInsert(word,d.getDocNo());
+            isParsed = true;
+        }
+
+        return isParsed;
+    }
+
+    public static boolean bettertWay(String name) {
+        char[] chars = name.toCharArray();
+        long startTimeOne = System.nanoTime();
+        for(char c : chars){
+            if(!(c>=65 && c<=90)&&!(c>=97 && c<=122) ){
+                return false;
+            }
+        }
+        return true;
+    }
 }
 

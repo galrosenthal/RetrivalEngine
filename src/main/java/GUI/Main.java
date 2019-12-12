@@ -6,18 +6,22 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.net.URL;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
-        Parent root = null;
         String pathTofxml = "../irgui.fxml";
+        //URL res = getClass().getResource("irgui.fxml");
+        //FXMLLoader loader = new FXMLLoader(res);
+        Parent root = FXMLLoader.load(getClass().getResource("../irgui.fxml"));
 
-        root = FXMLLoader.load(getClass().getResource(pathTofxml));
+
+
+//        if(res != null){
+//            root = FXMLLoader.load(res);
+//        }
 
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 300, 275));

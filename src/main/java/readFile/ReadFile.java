@@ -42,9 +42,9 @@ public class ReadFile {
     public ReadFile() {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
-        addParserToThreads(mainParse1);
-        addParserToThreads(mainParse2);
-        addParserToThreads(mainParse3);
+        //addParserToThreads(mainParse1);
+//        addParserToThreads(mainParse2);
+//        addParserToThreads(mainParse3);
         //addParserToThreads(prsNums);
         //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);
@@ -53,7 +53,7 @@ public class ReadFile {
 //         addParserToThreads(prsRanges);
         //addParserToThreads(prsWords);
         //addParserToThreads(prsOther);
-        runParsers();
+        //runParsers();
 
     }
 
@@ -73,11 +73,11 @@ public class ReadFile {
 
     public void stopThreads()
     {
-        while(!allPrsrQsEmpty() /*&& !Indexer.getInstance().isQEmpty()*/)
+        while(!allPrsrQsEmpty() && !Indexer.getInstance().isQEmpty())
         {
             try
             {
-                Thread.sleep(5);
+                Thread.sleep(5000);
             }
             catch (Exception e)
             {
@@ -131,18 +131,10 @@ public class ReadFile {
                     Elements docs = doc.getElementsByTag("doc");
                     for (Element fileDoc :
                             docs) {
-                        numOfCorpusFiles++;
-                        numOfParsedDocs++;
+                        //numOfCorpusFiles++;
+                        //numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
-                        enqDocToAllParsers(document);
-                        //prsDates.parsNoThread(document);
-                        //prsNames.parseNoThread(document);
-                        //prsNums.parseNoThread(document);
-                        //prsWords.parse(document);
-                        //shouldWaitForParser();
-                        //prsWords.parse(document);
-//                        mainParse.parse(document);
-                        //prsPrcntg.parse();
+                        //enqDocToAllParsers(document);
 
 //                        new Thread(()-> prsNums.parse(document)).start();
 //                        if(numOfParsedDocs > numberOfDocsToPost)
@@ -164,6 +156,8 @@ public class ReadFile {
                 }
             }
         }
+
+        //mainParse1.parse();
 
     }
 

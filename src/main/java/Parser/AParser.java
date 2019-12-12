@@ -19,7 +19,7 @@ public abstract class AParser implements Runnable {
     protected final double BILLION = 1000000000;
     protected final double MILLION = 1000000;
     protected final double THOUSAND = 1000;
-    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','['};
+    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','[','!','\t','\n','|','*'};
     private String tfDelim = "#";
     protected String parseName;
     protected String[] docText;
@@ -31,11 +31,12 @@ public abstract class AParser implements Runnable {
     protected static ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 1000;
+    private static final int numberOfDocsToPost = 10000;
     protected boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
     public StringBuilder lastDocList;
+//    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
 
 
     protected AParser()
@@ -49,12 +50,13 @@ public abstract class AParser implements Runnable {
         doneReadingDocs = false;
 
 
+
     }
 
     public void stopThread()
     {
         doneReadingDocs = true;
-        //releaseToIndexerFile();
+        releaseToIndexerFile();
         stopThread = true;
 
     }
@@ -100,7 +102,8 @@ public abstract class AParser implements Runnable {
     {
         if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
         {
-            if(!myReadWriter.writeToDic(termsInText,getName()))
+//            if(!myReadWriter.writeToDic(termsInText,getName()))
+            if(!Indexer.getInstance().enqueue(termsInText))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
@@ -108,8 +111,11 @@ public abstract class AParser implements Runnable {
 //            myIndexer.enqueue(termsInText);
 //            termsInText = null;
 //            termsInText = new ConcurrentHashMap<>();
+//            termsInTextLock.writeLock().lock();
             termsInText = new HashMap<>();
+//            termsInTextLock.writeLock().unlock();
             numOfParsedDocInIterative = 0;
+
 //            termsInText.clear();
 
         }
@@ -325,9 +331,11 @@ public abstract class AParser implements Runnable {
 
     protected boolean isFraction(String word){
         boolean isFraction = false;
+        String[] splittedFraction = word.split("/");
+//        wordForSplitting.split(" ");
 
-        if(word.length()> 2 && NumberUtils.isNumber(Character.toString(word.charAt(0))) && NumberUtils.isNumber(Character.toString(word.charAt(2))) &&
-                Character.toString(word.charAt(1)).equals("/")){
+        if(splittedFraction.length == 2 && NumberUtils.isNumber(splittedFraction[0]) && NumberUtils.isNumber(splittedFraction[1]))
+        {
             isFraction = true;
         }
 
@@ -359,6 +367,7 @@ public abstract class AParser implements Runnable {
      * @param term
      */
     protected void parsedTermInsert(String term, String currentDocNo) {
+//        termsInTextLock.readLock().lock();
         if (termsInText.containsKey(term)) {
 
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
@@ -390,6 +399,7 @@ public abstract class AParser implements Runnable {
         } else {
             termsInText.put(term, currentDocNo + tfDelim + "1");
         }
+//        termsInTextLock.readLock().unlock();
     }
 
     /**
