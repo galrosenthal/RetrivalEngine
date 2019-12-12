@@ -1,7 +1,7 @@
 package readFile;
 
-import Indexer.Indexer;
-import Parser.*;
+import Parser.AParser;
+import Parser.MainParse;
 import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -36,15 +36,19 @@ public class ReadFile {
     public MainParse mainParse1 = new MainParse();
     public MainParse mainParse2 = new MainParse();
     public MainParse mainParse3 = new MainParse();
+    public MainParse mainParse4 = new MainParse();
+    public MainParse mainParse5 = new MainParse();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
     public ReadFile() {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
-        //addParserToThreads(mainParse1);
-//        addParserToThreads(mainParse2);
-//        addParserToThreads(mainParse3);
+        addParserToThreads(mainParse1);
+        addParserToThreads(mainParse2);
+        addParserToThreads(mainParse3);
+        //addParserToThreads(mainParse4);
+        //addParserToThreads(mainParse5);
         //addParserToThreads(prsNums);
         //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);
@@ -53,7 +57,7 @@ public class ReadFile {
 //         addParserToThreads(prsRanges);
         //addParserToThreads(prsWords);
         //addParserToThreads(prsOther);
-        //runParsers();
+        runParsers();
 
     }
 
@@ -62,7 +66,7 @@ public class ReadFile {
         allParserThreads.add(new Thread(prsr));
     }
 
-    private void runParsers() {
+    public void runParsers() {
         for (Thread t :
                 allParserThreads) {
             t.start();
@@ -73,7 +77,7 @@ public class ReadFile {
 
     public void stopThreads()
     {
-        while(!allPrsrQsEmpty() && !Indexer.getInstance().isQEmpty())
+        while(!allPrsrQsEmpty())
         {
             try
             {
@@ -88,7 +92,7 @@ public class ReadFile {
                 allParsers) {
             prsr.stopThread();
         }
-        Indexer.stopThreads = true;
+
         try
         {
             for (Thread t :
@@ -100,6 +104,11 @@ public class ReadFile {
         {
             e.printStackTrace();
         }
+//        while(!Indexer.getInstance().isQEmpty())
+//        {
+//
+//        }
+//        Indexer.stopThreads = true;
 
     }
 
@@ -112,6 +121,11 @@ public class ReadFile {
             }
         }
         return true;
+    }
+
+    public void releaseAllParsedTermsToIndex()
+    {
+        mainParse1.stopThread();
     }
 
     public void readCorpus(File corpus){
@@ -131,10 +145,15 @@ public class ReadFile {
                     Elements docs = doc.getElementsByTag("doc");
                     for (Element fileDoc :
                             docs) {
-                        //numOfCorpusFiles++;
-                        //numOfParsedDocs++;
+                        numOfCorpusFiles++;
+                        numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
-                        //enqDocToAllParsers(document);
+                        enqDocToAllParsers(document);
+//                        System.out.println("Starting parse " + document.getDocNo());
+//                        mainParse1.enqueueDoc(document);
+//                        mainParse1.parse();
+//                        System.out.println("Finished parse " + document.getDocNo());
+                        //prsPrcntg.parse();
 
 //                        new Thread(()-> prsNums.parse(document)).start();
 //                        if(numOfParsedDocs > numberOfDocsToPost)
@@ -157,8 +176,11 @@ public class ReadFile {
             }
         }
 
-        //mainParse1.parse();
+    }
 
+    public void runParse()
+    {
+        mainParse1.parse();
     }
 
     private void enqDocToAllParsers(IR.Document document) {
@@ -180,5 +202,11 @@ public class ReadFile {
 
             }
         }
+    }
+
+    public void reset() {
+        numOfParsedDocs = 0;
+        numOfCorpusFiles = 0;
+        mainParse1 = new MainParse();
     }
 }

@@ -5,7 +5,7 @@ import IR.Document;
 public class parseOther extends AParser {
     @Override
     public void parse() {
-        while(!queueIsEmpty()) {
+        while(!isQEmpty()) {
             int i = 0;
             Document document = dequeueDoc();
 

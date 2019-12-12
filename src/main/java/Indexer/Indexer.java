@@ -14,7 +14,7 @@ public class Indexer implements Runnable{
     private static final double MAX_POSTING_FILE_SIZE = 5;
     private static volatile Indexer mInstance;
     private final int KB_SIZE = 1024;
-//    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
+    //    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
     private ConcurrentLinkedQueue<HashMap<String,String>> parsedWordsQueue;
     private String postFiles;
     private BufferedWriter fileWriter;
@@ -65,7 +65,7 @@ public class Indexer implements Runnable{
     @Override
     public void run() {
 //        System.out.println("Indexer has Started...");
-        while(!stopThreads)
+        while(!isQEmpty())
         {
             createPostFiles();
         }
@@ -100,9 +100,13 @@ public class Indexer implements Runnable{
                     String dfList = dqdHshMap.get(term);
 //                    String[] splittedDocs = dfList.split(";");
                     try {
-                        if(term.charAt(0) == ' ')
+                        if(term.length()>0 && (term.charAt(0) == ' ' || term.charAt(0) == '/' || term.charAt(0) == '.'))
                         {
                             term = term.substring(1);
+                        }
+                        if(term.equals(""))
+                        {
+                            throw new Exception("Term Empty before creating new file");
                         }
                         String lineIndexInFile = createAndWriteTheFile(term.toLowerCase().charAt(0), dfList);
                         if (lineIndexInFile == null) {
@@ -184,45 +188,54 @@ public class Indexer implements Runnable{
         String newFilePath = pathToPostFolder + firstLetterForFolderName;
         String fileNumAndLineIndex = "";
 //        System.out.println("Posting File Path: " + newFilePath);
-        Path pathForNewFile = Paths.get(newFilePath);
-        if(!Files.exists(pathForNewFile))
-        {
-            Path a = Files.createDirectories(pathForNewFile);
+        Path pathForNewFile = null;
+        try {
+            pathForNewFile = Paths.get(newFilePath);
+
+            if(!Files.exists(pathForNewFile))
+            {
+                Path a = Files.createDirectories(pathForNewFile);
 //            System.out.println(a.getFileName().toString());
-        }
+            }
 
+            //System.out.println(pathForNewFile.toString());
 
-        int indexFile = getIndexInFolder(pathForNewFile);
-        if(indexFile == -1)
-        {
-            throw new Exception("Could not find Dir");
-        }
-        newFilePath += "/"+indexFile;
-        pathForNewFile = Paths.get(newFilePath);
+            int indexFile = getIndexInFolder(pathForNewFile);
+            if(indexFile == -1)
+            {
+                throw new Exception("Could not find Dir");
+            }
+            newFilePath += "/"+indexFile;
+            pathForNewFile = Paths.get(newFilePath);
 
-        try
-        {
+            try
+            {
 
-            CharSequence fromStr = new StringBuffer(splittedDocs);
+                CharSequence fromStr = new StringBuffer(splittedDocs);
 //            double fileSize = getFileSizeMegaBytes(pathForNewFile.toFile());
 
-            BufferedWriter writeToPostFile = new BufferedWriter(new FileWriter(pathForNewFile.toFile()));
-            writeToPostFile.append(fromStr);
-            writeToPostFile.flush();
-            writeToPostFile.close();
-            finishedWriting = true;
+                BufferedWriter writeToPostFile = new BufferedWriter(new FileWriter(pathForNewFile.toFile()));
+                writeToPostFile.append(fromStr);
+                writeToPostFile.flush();
+                writeToPostFile.close();
+                finishedWriting = true;
 
+            }
+            catch (Exception e)
+            {
+                System.out.println("Could not load file");
+            }
+
+            if(finishedWriting)
+            {
+                List<String> linesInFile = Files.readAllLines(pathForNewFile);
+                fileNumAndLineIndex = pathForNewFile.getFileName().toString() + "#" + linesInFile.size();
+                return fileNumAndLineIndex;
+            }
         }
         catch (Exception e)
         {
-            System.out.println("Could not load file");
-        }
-
-        if(finishedWriting)
-        {
-            List<String> linesInFile = Files.readAllLines(pathForNewFile);
-            fileNumAndLineIndex = pathForNewFile.getFileName().toString() + "#" + linesInFile.size();
-            return fileNumAndLineIndex;
+            System.out.println("Could not Parse the path: "+ newFilePath);
         }
         return null;
 
@@ -271,6 +284,7 @@ public class Indexer implements Runnable{
         }
         catch (Exception e)
         {
+            System.out.println(pathToFolder.toString());
             e.printStackTrace();
         }
 

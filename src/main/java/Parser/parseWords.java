@@ -13,7 +13,7 @@ public class parseWords extends AParser {
 
     @Override
     public void parse() {
-        while(!queueIsEmpty()) {
+        while(!isQEmpty()) {
             Document document = dequeueDoc();
 
 
