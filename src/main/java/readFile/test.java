@@ -12,9 +12,9 @@ public class test {
     public static void main(String[] args) {
 //        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest2";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-//        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
+        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
-        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\1files";
 //        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
@@ -61,7 +61,7 @@ public class test {
 
 
         for (int i = 0; i < IndexerThreads.length; i++) {
-            IndexerThreads[i] = new Thread(Indexer.getInstance());
+            IndexerThreads[i] = new Thread(myIndexer);
             IndexerThreads[i].setName("Indexer " + indexerIndex++);
             System.out.println(IndexerThreads[i].getName() + " has started...");
             IndexerThreads[i].start();
@@ -86,6 +86,12 @@ public class test {
 //            IndexerThreads[i].start();
 
 //        IndexerThreads[0].stop();
+
+
+//        long sortStart = System.nanoTime();
+//        myIndexer.sortDocListPerTerm();
+//        long sortEnd = System.nanoTime();
+//        System.out.println("Sorting " + myIndexer.hundredKtermsMap.size() + " Took " + (sortEnd - sortStart)/1000000000 + " Seconds");
 
 
 //        corpusParsingIndexeingThreads.shutdownNow();

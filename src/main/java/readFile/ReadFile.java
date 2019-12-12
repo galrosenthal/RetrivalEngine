@@ -104,10 +104,10 @@ public class ReadFile {
         {
             e.printStackTrace();
         }
-//        while(!Indexer.getInstance().isQEmpty())
-//        {
-//
-//        }
+        while(!Indexer.getInstance().isQEmpty())
+        {
+
+        }
         Indexer.stopThreads = true;
 
     }

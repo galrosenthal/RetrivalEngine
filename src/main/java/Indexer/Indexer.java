@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Indexer implements Runnable{
     private static final double MAX_POSTING_FILE_SIZE = 5;
     private static final int MAX_TERMS_TO_INDEX = 100000;
+    private int countMergedTerms = 0;
     private static volatile Indexer mInstance;
     private final int KB_SIZE = 1024;
     //    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
@@ -25,7 +26,7 @@ public class Indexer implements Runnable{
     private String indexerName = "Indexer ";
     private static AtomicInteger indexerNum;
     private String pathToPostFolder="./postingFiles/";
-    private HashMap<String,String> hundredKtermsMap;
+    public HashMap<String,String> hundredKtermsMap;
 
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
@@ -165,18 +166,23 @@ public class Indexer implements Runnable{
             }
             long startTime,endTime;
 
-            System.out.println("Merging "+dqdHshMap.size());
+
+//            System.out.println("Merging "+dqdHshMap.size());
+            int mapSizeBeforeMerge = hundredKtermsMap.size();
             startTime = System.nanoTime();
             mergeHashMapIntoHundred(dqdHshMap);
             endTime = System.nanoTime();
-            System.out.println("Merging took "+(endTime - startTime)/1000000000 + " seconds");
+            int mapSizeAfterMerge = hundredKtermsMap.size();
+            countMergedTerms += (mapSizeAfterMerge-mapSizeBeforeMerge);
+//            System.out.println("Merging took "+(endTime - startTime)/1000000000 + " seconds");
 
-            if (hundredKtermsMap.keySet().size() >= MAX_TERMS_TO_INDEX) {
-                System.out.println("Sorting "+hundredKtermsMap.size());
-                startTime = System.nanoTime();
+            if (countMergedTerms >= MAX_TERMS_TO_INDEX) {
+//                System.out.println("Sorting "+hundredKtermsMap.size());
+//                startTime = System.nanoTime();
                 sortDocListPerTerm();
-                endTime = System.nanoTime();
-                System.out.println("Sorting took "+(endTime - startTime)/1000000000 + " seconds");
+//                endTime = System.nanoTime();
+                countMergedTerms = 0;
+//                System.out.println("Sorting took "+(endTime - startTime)/1000000000 + " seconds");
             }
 
         }
@@ -195,7 +201,7 @@ public class Indexer implements Runnable{
 
     }
 
-    private void sortDocListPerTerm() {
+    public void sortDocListPerTerm() {
 //        String[] myString = {"FBIS3-8#6","FBIS3-1#2","FBIS3-7#32","FBIS3-2#43","FBIS3-4#54","FBIS3-3#5","FBIS3-5#98","FBIS3-6#12"};
 //        Arrays.sort(myString);
 //        System.out.println(Arrays.toString(myString));
