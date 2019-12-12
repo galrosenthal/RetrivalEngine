@@ -80,6 +80,10 @@ public class Indexer implements Runnable{
         //TODO: For each word check if exists in the CorpusDictionary,
         // find the relevant posting file (from the Dictionary or by first letter),
         // append the relevant data to the posting file in the relevant line
+
+        //map2.forEach(
+        //    (key, value) -> map1.merge( key, value, (v1, v2) -> v1 + ";" + v2)
+        //);
 //        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
         HashMap<String,String> dqdHshMap = dequeue();
 
