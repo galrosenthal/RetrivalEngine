@@ -174,6 +174,8 @@ public class ReadFile {
             }
         }
 
+        //mainParse1.parse();
+
     }
 
     public void runParse()

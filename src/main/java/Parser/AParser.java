@@ -63,7 +63,6 @@ public abstract class AParser implements Runnable {
 
     public void stopThread()
     {
-
         doneReadingDocs = true;
         while(isParsing);
         releaseToIndexerFile();
@@ -130,7 +129,6 @@ public abstract class AParser implements Runnable {
 //            myIndexer.enqueue(termsInText);
 //            termsInText = null;
 //            termsInText = new ConcurrentHashMap<>();
-//            termsInTextLock.writeLock().lock();
             termsInText = new HashMap<>();
 //            termsInTextLocker.writeLock().unlock();
             numOfParsedDocInIterative = 0;
