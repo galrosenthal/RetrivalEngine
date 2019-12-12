@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AParser implements Runnable {
 
@@ -36,6 +38,7 @@ public abstract class AParser implements Runnable {
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
     public StringBuilder lastDocList;
+    private ReadWriteLock termsInTextLocker = new ReentrantReadWriteLock();
 //    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
 
 
@@ -103,6 +106,8 @@ public abstract class AParser implements Runnable {
         if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
         {
 //            if(!myReadWriter.writeToDic(termsInText,getName()))
+            System.out.println("Parsed " + termsInText.size() + " terms");
+            termsInTextLocker.writeLock().lock();
             if(!Indexer.getInstance().enqueue(termsInText))
             {
                 System.out.println("Fuck it");
@@ -113,7 +118,7 @@ public abstract class AParser implements Runnable {
 //            termsInText = new ConcurrentHashMap<>();
 //            termsInTextLock.writeLock().lock();
             termsInText = new HashMap<>();
-//            termsInTextLock.writeLock().unlock();
+            termsInTextLocker.writeLock().unlock();
             numOfParsedDocInIterative = 0;
 
 //            termsInText.clear();
@@ -367,7 +372,7 @@ public abstract class AParser implements Runnable {
      * @param term
      */
     protected void parsedTermInsert(String term, String currentDocNo) {
-//        termsInTextLock.readLock().lock();
+        termsInTextLocker.readLock().lock();
         if (termsInText.containsKey(term)) {
 
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
@@ -399,7 +404,7 @@ public abstract class AParser implements Runnable {
         } else {
             termsInText.put(term, currentDocNo + tfDelim + "1");
         }
-//        termsInTextLock.readLock().unlock();
+        termsInTextLocker.readLock().unlock();
     }
 
     /**
