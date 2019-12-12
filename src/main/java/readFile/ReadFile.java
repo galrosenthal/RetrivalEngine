@@ -36,6 +36,7 @@ public class ReadFile {
     public MainParse mainParse1 = new MainParse();
     public MainParse mainParse2 = new MainParse();
     public MainParse mainParse3 = new MainParse();
+    public MainParse mainParse4 = new MainParse();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
@@ -43,8 +44,9 @@ public class ReadFile {
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
         addParserToThreads(mainParse1);
-//        addParserToThreads(mainParse2);
+        addParserToThreads(mainParse2);
 //        addParserToThreads(mainParse3);
+//        addParserToThreads(mainParse4);
         //addParserToThreads(prsNums);
         //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);
