@@ -28,7 +28,7 @@ public abstract class AParser implements Runnable {
     protected static HashSet<String> stopMWords;
 //    protected ConcurrentHashMap<String,String> termsInText;
     protected HashMap<String,String> termsInText;
-    private ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
+    protected static ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
     private static final int numberOfDocsToPost = 1000;
@@ -79,9 +79,9 @@ public abstract class AParser implements Runnable {
      */
     public boolean enqueueDoc(Document d)
     {
-        if(d != null)
+        if(d != null && !docQueueWaitingForParse.contains(d))
         {
-            return this.docQueueWaitingForParse.add(d);
+            return docQueueWaitingForParse.add(d);
         }
         return false;
     }

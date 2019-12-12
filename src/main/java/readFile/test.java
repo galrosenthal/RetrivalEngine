@@ -1,7 +1,5 @@
 package readFile;
 
-import Indexer.Indexer;
-
 import java.io.File;
 
 public class test {
@@ -11,17 +9,17 @@ public class test {
     public static void main(String[] args) {
         String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest2";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-//        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
+        //String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
-        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
+//        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 
 
-        String test = "-1010.56";
-//        test = test.substring(0,test.indexOf("."));
-        test = test.replaceAll(",","");
-        Double testValue = Double.valueOf(test);
+//        String test = "-1010.56";
+////        test = test.substring(0,test.indexOf("."));
+//        test = test.replaceAll(",","");
+//        Double testValue = Double.valueOf(test);
 
 
 //        Indexer.getInstance().setPathToPostFiles(postfilePath);
