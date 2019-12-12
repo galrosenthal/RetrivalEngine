@@ -1,4 +1,4 @@
-package GUI;
+package GUI.View;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -13,9 +13,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         String pathTofxml = "../irgui.fxml";
-        //URL res = getClass().getResource("irgui.fxml");
+        //URL res = getClass().getResource("../../irgui.fxml");
         //FXMLLoader loader = new FXMLLoader(res);
-        Parent root = FXMLLoader.load(getClass().getResource("../irgui.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("../../irgui.fxml"));
 
 
 
@@ -24,7 +24,7 @@ public class Main extends Application {
 //        }
 
         primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setScene(new Scene(root, 500 ,500));
         primaryStage.show();
     }
 
