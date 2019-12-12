@@ -20,7 +20,7 @@ public class parsePrices extends AParser {
 
     @Override
     public void parse() {
-        while(!queueIsEmpty()) {
+        while(!isQEmpty()) {
             Document d = dequeueDoc();
 //            System.out.println("There are " + this.qSize() + " docs in the queue left");
 

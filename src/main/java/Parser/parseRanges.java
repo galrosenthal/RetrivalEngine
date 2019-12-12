@@ -26,7 +26,7 @@ public class parseRanges extends AParser {
 
     @Override
     public void parse() {
-        while(!queueIsEmpty()) {
+        while(!isQEmpty()) {
             Document document = dequeueDoc();
             if (document == null) {
                 continue;

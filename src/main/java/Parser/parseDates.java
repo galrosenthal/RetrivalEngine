@@ -96,7 +96,7 @@ public class parseDates extends AParser{
 
     @Override
     public void parse() {
-        while(!queueIsEmpty())
+        while(!isQEmpty())
         {
             Document d = dequeueDoc();
             if(d == null)

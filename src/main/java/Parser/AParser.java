@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -34,11 +35,14 @@ public abstract class AParser implements Runnable {
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
     private static final int numberOfDocsToPost = 10000;
-    protected boolean stopThread = false;
+    protected volatile boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
     public StringBuilder lastDocList;
-    private ReadWriteLock termsInTextLocker = new ReentrantReadWriteLock();
+    private static ReadWriteLock docEnqDeqLocker = new ReentrantReadWriteLock();
+    protected static Semaphore termsInTextSemaphore = new Semaphore(1);
+    protected boolean isParsing = false;
+
 //    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
 
 
@@ -51,6 +55,7 @@ public abstract class AParser implements Runnable {
         createStopWords();
         createMStopWords();
         doneReadingDocs = false;
+        stopThread = false;
 
 
 
@@ -58,23 +63,25 @@ public abstract class AParser implements Runnable {
 
     public void stopThread()
     {
+
         doneReadingDocs = true;
+        while(isParsing);
         releaseToIndexerFile();
         stopThread = true;
 
     }
 
-    public boolean isQEmpty()
-    {
-        return this.docQueueWaitingForParse.isEmpty();
-    }
+
     /**
      * Checks if the queue is Empty
      * @return
      */
-    protected boolean queueIsEmpty()
+    public boolean isQEmpty()
     {
-        return this.docQueueWaitingForParse.isEmpty();
+        docEnqDeqLocker.readLock().lock();
+        boolean isItEmpty = docQueueWaitingForParse.isEmpty();
+        docEnqDeqLocker.readLock().unlock();
+        return isItEmpty;
     }
 
     /**
@@ -86,7 +93,10 @@ public abstract class AParser implements Runnable {
     {
         if(d != null && !docQueueWaitingForParse.contains(d))
         {
-            return docQueueWaitingForParse.add(d);
+            docEnqDeqLocker.writeLock().lock();
+            boolean inserted = docQueueWaitingForParse.add(d);
+            docEnqDeqLocker.writeLock().unlock();
+            return inserted;
         }
         return false;
     }
@@ -97,7 +107,10 @@ public abstract class AParser implements Runnable {
      */
     protected Document dequeueDoc()
     {
-        return docQueueWaitingForParse.poll();
+        docEnqDeqLocker.readLock().lock();
+        Document dqd = docQueueWaitingForParse.poll();
+        docEnqDeqLocker.readLock().unlock();
+        return dqd;
     }
 
 
@@ -106,8 +119,9 @@ public abstract class AParser implements Runnable {
         if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
         {
 //            if(!myReadWriter.writeToDic(termsInText,getName()))
+            termsInTextSemaphore.acquireUninterruptibly();
             System.out.println("Parsed " + termsInText.size() + " terms");
-            termsInTextLocker.writeLock().lock();
+//            termsInTextLocker.writeLock().lock();
             if(!Indexer.getInstance().enqueue(termsInText))
             {
                 System.out.println("Fuck it");
@@ -118,8 +132,9 @@ public abstract class AParser implements Runnable {
 //            termsInText = new ConcurrentHashMap<>();
 //            termsInTextLock.writeLock().lock();
             termsInText = new HashMap<>();
-            termsInTextLocker.writeLock().unlock();
+//            termsInTextLocker.writeLock().unlock();
             numOfParsedDocInIterative = 0;
+            termsInTextSemaphore.release();
 
 //            termsInText.clear();
 
@@ -365,6 +380,14 @@ public abstract class AParser implements Runnable {
         this.termsInText.clear();
     }
 
+    protected void parsedTermInsert(String term, String currentDocNo,String parserName) {
+        if(term.equalsIgnoreCase(""))
+        {
+            System.out.println("Term is Empty " + parserName);
+        }
+        parsedTermInsert(term,currentDocNo);
+
+    }
 
 
     /**
@@ -372,10 +395,13 @@ public abstract class AParser implements Runnable {
      * @param term
      */
     protected void parsedTermInsert(String term, String currentDocNo) {
-        termsInTextLocker.readLock().lock();
+//        termsInTextLocker.readLock().lock();
+//        termsInTextSemaphore.acquireUninterruptibly();
+
         if (termsInText.containsKey(term)) {
 
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
+
              String docList = termsInText.get(term);
             String[] docsSplitted =  docList.toString().split(";");
             boolean docAlreadyParsed = false;
@@ -404,7 +430,8 @@ public abstract class AParser implements Runnable {
         } else {
             termsInText.put(term, currentDocNo + tfDelim + "1");
         }
-        termsInTextLocker.readLock().unlock();
+//        termsInTextLocker.readLock().unlock();
+//        termsInTextSemaphore.release();
     }
 
     /**

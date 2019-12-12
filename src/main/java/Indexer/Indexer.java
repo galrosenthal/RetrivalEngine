@@ -65,7 +65,7 @@ public class Indexer implements Runnable{
     @Override
     public void run() {
 //        System.out.println("Indexer has Started...");
-        while(!stopThreads)
+        while(!isQEmpty())
         {
             createPostFiles();
         }
@@ -100,7 +100,7 @@ public class Indexer implements Runnable{
                     String dfList = dqdHshMap.get(term);
 //                    String[] splittedDocs = dfList.split(";");
                     try {
-                        if(term.charAt(0) == ' ')
+                        if(!term.isEmpty() && term.charAt(0) == ' ')
                         {
                             term = term.substring(1);
                         }

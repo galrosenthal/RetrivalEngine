@@ -33,7 +33,7 @@ public class parsePercentage extends AParser {
 
     @Override
     public void parse() {
-        while (!queueIsEmpty()) {
+        while (!isQEmpty()) {
             Document d = dequeueDoc();
             if (d == null) {
                 continue;
