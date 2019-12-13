@@ -159,6 +159,7 @@ public class Indexer implements Runnable{
         //);
 //        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
         while(!isQEmpty()) {
+//            System.out.println("There are " + parsedWordsQueue.size() + " Maps left in the Q");
             HashMap<String, String> dqdHshMap = dequeue();
 
             if (dqdHshMap == null) {

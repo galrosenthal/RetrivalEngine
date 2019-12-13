@@ -17,8 +17,9 @@ import java.util.List;
 public class ReadFile {
 
     private int numOfParsers = 0;
-    private static final int DOC_CREATED_IN_QS = 10000;
+    private static final int DOC_CREATED_IN_QS = 2000;
     public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
+    public int testSleepOn4Files = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
 //    public Thread prsNumThrd ;
 //    public Thread prsDatesThrd ;
@@ -147,8 +148,10 @@ public class ReadFile {
                             docs) {
                         numOfCorpusFiles++;
                         numOfParsedDocs++;
+                        testSleepOn4Files++;
                         IR.Document document = new IR.Document(fileDoc);
                         enqDocToAllParsers(document);
+//                        shouldWaitForParser();
 //                        System.out.println("Starting parse " + document.getDocNo());
 //                        mainParse1.enqueueDoc(document);
 //                        mainParse1.parse();
@@ -191,11 +194,11 @@ public class ReadFile {
     }
 
     private void shouldWaitForParser() {
-        if(!allPrsrQsEmpty())
+        if(mainParse1.qSize() >= DOC_CREATED_IN_QS)
         {
             try
             {
-                Thread.sleep(5);
+                Thread.sleep(1000);
             }
             catch (Exception e)
             {

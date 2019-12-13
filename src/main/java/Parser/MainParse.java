@@ -48,6 +48,7 @@ public class MainParse extends AParser {
 //            while (currentDoc == null) {
 //                currentDoc = dequeueDoc();
 //            }
+//        System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
         docDequeuerLock.acquireUninterruptibly();
         currentDoc = dequeueDoc();
         if (currentDoc == null) {
