@@ -34,7 +34,7 @@ public abstract class AParser implements Runnable {
     protected static ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 50;
+    private static final int numberOfDocsToPost = 100;
     protected volatile boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
