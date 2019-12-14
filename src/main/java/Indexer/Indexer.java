@@ -4,14 +4,14 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Indexer implements Runnable{
     private static final double MAX_POSTING_FILE_SIZE = 5;
-    private static final int MAX_TERMS_TO_INDEX = 100000;
+    private static final int MAX_TERMS_TO_INDEX = 500000;
     private int countMergedTerms = 0;
     private static volatile Indexer mInstance;
     private final int KB_SIZE = 1024;
@@ -20,7 +20,8 @@ public class Indexer implements Runnable{
     private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
-    public ConcurrentHashMap<String,String> corpusDictionary;
+//    public ConcurrentHashMap<String,String> corpusDictionary;
+    public HashMap<String,String> corpusDictionary;
     private String indexerName = "Indexer ";
     private static AtomicInteger indexerNum;
     private String pathToPostFolder="./postingFiles/";
@@ -29,7 +30,7 @@ public class Indexer implements Runnable{
 
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
-        corpusDictionary = new ConcurrentHashMap<>();
+        corpusDictionary = new HashMap<>();
         hundredKtermsMap = new HashMap<>();
         indexerNum = new AtomicInteger(0);
 
@@ -79,6 +80,11 @@ public class Indexer implements Runnable{
 //        createPostFiles();
         System.out.println("Corpus Dictionary size is: " + corpusDictionary.keySet().size());
 
+    }
+
+    public int corpusSize()
+    {
+        return corpusDictionary.size();
     }
 
     /*private void createPostFiles() {
@@ -273,6 +279,7 @@ public class Indexer implements Runnable{
     }
 
 
+
     /**
      * Creates the Dictionary and postfiles from the saved Temp Dictionaries
      */
@@ -300,6 +307,7 @@ public class Indexer implements Runnable{
                 hashMapFile.delete();
                 System.out.println("Read HashMap with size: " + ((HashMap) newMap).size());
                 mergeReadMapIntoCorpus(newMap);
+//                mergeHashMapIntoHundred(newMap,corpusDictionary);
             }
 
         }
@@ -309,6 +317,8 @@ public class Indexer implements Runnable{
         }
 
     }
+
+
 
     /**
      * Gets the Read HashMap from Object file
@@ -365,6 +375,14 @@ public class Indexer implements Runnable{
             for (String term :
                     newMap.keySet()) {
                 int lineNumber,fileIndex;
+                if(term.charAt(0) == ' ' || term.charAt(0) == '#' || term.charAt(0) == '/')
+                {
+                    String termList = newMap.get(term);
+                    newMap.remove(term);
+                    term = term.substring(1);
+                    newMap.put(term,termList);
+
+                }
                 char firstLetterForFolderName = term.charAt(0);
                 if(corpusDictionary.containsKey(term))
                 {
@@ -405,7 +423,13 @@ public class Indexer implements Runnable{
                 if(lineNumber == 0)
                     lineNumber = 1;
                 lines.set(lineNumber-1, newMap.get(term));
-                Files.write(postFileOfTerm, lines);
+                if(postFileOfTerm.toFile().exists()) {
+                    Files.write(postFileOfTerm, lines, StandardOpenOption.APPEND);
+                }
+                else
+                {
+                    Files.write(postFileOfTerm, lines);
+                }
             }
         }
         catch (Exception e)
@@ -440,6 +464,8 @@ public class Indexer implements Runnable{
 //                Path a = Files.createDirectories(postFileOfTerm);
 //            }
             List<String> lines = Files.readAllLines(postFileOfTerm);
+            if(line == 0)
+                line = 1;
             return lines.get(line-1);
         }
         catch (Exception e)
