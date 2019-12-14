@@ -2,6 +2,8 @@ package Parser;
 
 import IR.Document;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.tartarus.snowball.SnowballStemmer;
+import org.tartarus.snowball.ext.englishStemmer;
 
 import java.text.DecimalFormat;
 import java.time.Month;
@@ -22,18 +24,24 @@ public class MainParse extends AParser {
     private DecimalFormat format3Decimals;
     private final String dollars = "Dollars";
     private final String us = "U.S.";
+    private SnowballStemmer snowballStemmer;
 
 
     public MainParse() {
         super();
+
         this.parseName = "Main Parser";
         docDequeuerLock = new Semaphore(1);
         format3Decimals = new DecimalFormat("#.###");
+
+
 //        i = new AtomicInteger(0);
     }
 
+
     @Override
     public void run() {
+
         System.out.println("Main Parser has started");
         while (!stopThread) {
             parse();
@@ -44,6 +52,9 @@ public class MainParse extends AParser {
 
     @Override
     public void parse() {
+        if(withStemm && snowballStemmer == null){
+            snowballStemmer = new englishStemmer();
+        }
 //            while (currentDoc == null) {
 //                currentDoc = dequeueDoc();
 //            }
@@ -76,6 +87,15 @@ public class MainParse extends AParser {
             String cleanWord = chopDownLastCharPunc(splitedText[index]);
             cleanWord = chopDownFisrtChar(cleanWord);
             String halfCleanWord = chopDownFisrtChar(splitedText[i.get()]);
+
+            if(withStemm){
+                snowballStemmer.setCurrent(cleanWord);
+                snowballStemmer.stem();
+                cleanWord = snowballStemmer.getCurrent();
+                snowballStemmer.setCurrent(halfCleanWord);
+                snowballStemmer.stem();
+                cleanWord = snowballStemmer.getCurrent();
+            }
 
             //Check if the word is empty word
             if(!cleanWord.isEmpty()){

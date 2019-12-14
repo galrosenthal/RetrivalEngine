@@ -1,6 +1,5 @@
 package GUI.Model;
 
-import GUI.ViewModel.ViewModel;
 import Indexer.Indexer;
 import org.apache.commons.io.FileUtils;
 import readFile.ReadFile;
@@ -18,26 +17,30 @@ public class Model extends Observable implements IModel {
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
         int indexerIndex = 0;
 
+
         for (int i = 0; i < IndexerThreads.length; i++) {
             IndexerThreads[i] = new Thread(Indexer.getInstance());
             IndexerThreads[i].setName("Indexer " + indexerIndex++);
         }
 
-        ReadFile f = new ReadFile();
+        ReadFile f = new ReadFile(withStemm);
         File corpus = new File(corpusPath);
         long startTime,endTime;
         startTime = System.nanoTime();
         this.corpusPath = corpusPath;
         this.postingPath = postingPath;
         Indexer.getInstance().setPathToPostFiles(postingPath);
-        f.readCorpus(corpus);
 
         for (int i = 0; i < IndexerThreads.length; i++) {
             System.out.println(IndexerThreads[i].getName() + " has started...");
             IndexerThreads[i].start();
         }
 
+        f.readCorpus(corpus);
         f.stopThreads();
+
+
+
         try{
             for (int i = 0; i < IndexerThreads.length; i++) {
 
@@ -50,6 +53,13 @@ public class Model extends Observable implements IModel {
             e.printStackTrace();
         }
 
+        Indexer myIndexer = Indexer.getInstance();
+        myIndexer.createCorpusDictionary();
+
+        myIndexer.saveCorpusDictionary();
+        System.out.println("Corpus Size = " + myIndexer.corpusSize());
+
+
         endTime = System.nanoTime();
         System.out.println("There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
         setChanged();
@@ -61,7 +71,7 @@ public class Model extends Observable implements IModel {
         try
         {
             if(corpusPath!=null && postingPath!=null){
-                FileUtils.cleanDirectory(new File(corpusPath));
+                //FileUtils.cleanDirectory(new File(corpusPath));
                 FileUtils.cleanDirectory(new File(postingPath));
             }
         }

@@ -16,7 +16,6 @@ public class Indexer implements Runnable {
     private final int KB_SIZE = 1024;
     //    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
     private ConcurrentLinkedQueue<HashMap<String, String>> parsedWordsQueue;
-    private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
     //    public ConcurrentHashMap<String,String> corpusDictionary;
@@ -60,7 +59,8 @@ public class Indexer implements Runnable {
     }
 
     public void setPathToPostFiles(String path) {
-        this.postFiles = path;
+        //System.out.println(path);
+        this.pathToPostFolder = path;
     }
 
 
@@ -122,6 +122,10 @@ public class Indexer implements Runnable {
     public void writeHashMapToDisk() {
         sortDocListPerTerm();
         try {
+            if(!Paths.get(pathToTempFolder).toFile().exists())
+            {
+                Files.createDirectories(Paths.get(pathToTempFolder));
+            }
             FileOutputStream fileOut = new FileOutputStream(pathToTempFolder + indexerNum.getAndIncrement(), true);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(hundredKtermsMap);
@@ -150,21 +154,32 @@ public class Indexer implements Runnable {
         for (String key :
                 hundredKtermsMap.keySet()) {
             String[] docList = hundredKtermsMap.get(key).split(";");
-            long start, end;
-            start = System.nanoTime();
-            Arrays.sort(docList);
-            end = System.nanoTime();
-//            System.out.println("The Sort took " + (end-start)/1000000 + " Milli Seconds");
-            String sortedList = Arrays.toString(docList).replaceAll(",", ";");
-            if (sortedList.charAt(0) == '[') {
-                sortedList = sortedList.substring(1);
-            }
-            if (sortedList.charAt(sortedList.length() - 1) == ']') {
-                sortedList = sortedList.substring(0, sortedList.length() - 1);
-            }
+            String sortedList = sortArray(docList);
 
             hundredKtermsMap.replace(key, hundredKtermsMap.get(key), sortedList);
         }
+    }
+
+    /**
+     * Gets an Array of doc List and sorts it alphabetically
+     * @param docList - An Array of docList
+     * @return String containing the docList sorted
+     */
+    private String sortArray(String[] docList) {
+        long start, end;
+        start = System.nanoTime();
+        Arrays.sort(docList);
+        end = System.nanoTime();
+//            System.out.println("The Sort took " + (end-start)/1000000 + " Milli Seconds");
+        String sortedList = Arrays.toString(docList).replaceAll(",", ";");
+//        sortedList = Arrays.toString(docList).replaceAll(" ", "");
+        if (sortedList.charAt(0) == '[') {
+            sortedList = sortedList.substring(1);
+        }
+        if (sortedList.charAt(sortedList.length() - 1) == ']') {
+            sortedList = sortedList.substring(0, sortedList.length() - 1);
+        }
+        return sortedList;
     }
 
     /**
@@ -223,11 +238,15 @@ public class Indexer implements Runnable {
         Collections.sort(sortedKeys);
         System.out.println("Sorted " + sortedKeys.size() + " HashMap keys");
         int i = 0;
-        char docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
-        while(docLetter == ' ')
-        {
-            docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
-        }
+        //char docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
+//        while(docLetter == ' ')
+//        {
+//            docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
+//        }
+//        while(sortedKeys.get(0).equalsIgnoreCase(""))
+//        {
+//            sortedKeys.remove(0);
+//        }
         int termIndexInSortedKeys = 0;
         String corpusPathAndLineDelim = "#";
         Path termFilePath = getFileForTerm(sortedKeys.get(0));
@@ -278,41 +297,29 @@ public class Indexer implements Runnable {
                 }
             }
 
-//            if(termKey.toLowerCase().charAt(0) != docLetter)
-//            {//When the letter is changed, write the file and start again for the next letter
-//                System.out.println("Finished letter " + docLetter);
-//                writePostFileOfLetter(termFilePath,allTermsOfLetter);
-//                i = 0;
-//                docLetter = termKey.toLowerCase().charAt(i++);
-//                while(docLetter == ' ')
-//                {
-//                    docLetter = termKey.toLowerCase().charAt(i++);
-//                }
-//            }
-
-//            System.out.println("Strating letter " + termKey.toLowerCase().charAt(0));
-//            if(termKey.equalsIgnoreCase("abacus"))
-//            {
-//                System.out.println("CUS ABA!");
-//            }
             if (corpusDictionary.containsKey(termKey.toLowerCase()))
             {
 
                 int lineNumberInFile = Integer.parseInt(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[1]);
                 StringBuilder addNewHashMapLineToExisting = new StringBuilder();
-                if(allTermsOfLetter.size() == 0 || lineNumberInFile > allTermsOfLetter.size())
-                {
-                    System.out.println("Fuckkkk");
-                }
                 addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(newMap.get(termKey));
-                allTermsOfLetter.set(lineNumberInFile-1,addNewHashMapLineToExisting.toString());
+                //Gets and set new Total TF
+                int totalTF = sumTotalTF(termKey,newMap.get(termKey),corpusPathAndLineDelim);
+                String pathAndLineAndTTF = corpusDictionary.get(termKey.toLowerCase());
+                String[] pathLineTTF = pathAndLineAndTTF.split(corpusPathAndLineDelim);
+                pathAndLineAndTTF = pathLineTTF[0] + corpusPathAndLineDelim + pathLineTTF[1] + corpusPathAndLineDelim + totalTF;
+                corpusDictionary.replace(termKey.toLowerCase(),corpusDictionary.get(termKey.toLowerCase()),pathAndLineAndTTF);
+                //sort and set the line in file with the new values
+                String newLineSorted = sortArray(addNewHashMapLineToExisting.toString().split(";"));
+                allTermsOfLetter.set(lineNumberInFile-1,newLineSorted);
+
 //                termFilePath = Paths.get(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[0]);
             }
             else
             {
 //                termFilePath = getFileForTerm(termKey);
                 allTermsOfLetter.add(newMap.get(termKey));
-                String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size();
+                String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size() + corpusPathAndLineDelim + sumTotalTF(termKey,newMap.get(termKey),corpusPathAndLineDelim);
                 corpusDictionary.put(termKey.toLowerCase(),pathAndLine);
             }
         }
@@ -323,6 +330,28 @@ public class Indexer implements Runnable {
 
     }
 
+    private int sumTotalTF(String termKey, String docList,String delim) {
+        String[] docListSplitted = docList.split(";");
+        int sum;
+        if(corpusDictionary.containsKey(termKey.toLowerCase()))
+        {
+            sum = Integer.parseInt(corpusDictionary.get(termKey.toLowerCase()).split(delim)[2]);
+        }
+        else
+        {
+            sum = 0;
+        }
+        int tfInSpecificDoc = 0;
+        for (String doc :
+                docListSplitted) {
+            String[] docParams = doc.split(delim);
+            tfInSpecificDoc = Integer.parseInt(docParams[1]);
+            sum += tfInSpecificDoc;
+        }
+
+        return sum;
+    }
+
     /**
      * Gets a term from the hash map
      * and returns the Path to the post file it suppose to be in
@@ -331,6 +360,7 @@ public class Indexer implements Runnable {
      */
     private Path getFileForTerm(String termKey)
     {
+
         if (termKey.length() > 0 && (termKey.charAt(0) == ' ' || termKey.charAt(0) == '/' || termKey.charAt(0) == '\'' || termKey.charAt(0) == '.'))
         {
             termKey = termKey.substring(1);
@@ -386,291 +416,6 @@ public class Indexer implements Runnable {
         {
             e.printStackTrace();
         }
-    }
-
-
-//    /**
-//     * Gets the Read HashMap from Object file
-//     * And Merging it into the Dictionary while writing the post files.
-//     * @param newMap - the HashMap Read from the Object File
-//     */
-//    private void mergeReadMapIntoCorpus(HashMap<String,String> newMap)
-//    {
-//        StringBuilder docListMerged = new StringBuilder();
-//
-//        for (String term :
-//                newMap.keySet()) {
-//
-//            if (corpusDictionary.containsKey(term))
-//            {
-//                //Get the line from disk and add the line to the HashMap
-//                String docListPostedAlready = getLineFromDic(term,corpusDictionary.get(term).split("#")[1]);
-//                docListMerged = new StringBuilder(newMap.get(term));
-//                if (term.length() > 0 && (term.charAt(0) == ' ' || term.charAt(0) == '/' || term.charAt(0) == '.')) {
-//                    //If the term starts with a sign not recognized remove it and create the new term
-//                    newMap.remove(term);
-//                    term = term.substring(1);
-//                    newMap.put(term,docListMerged.toString());
-//                }
-//                if (term.equals("")) {
-//                    System.out.println("Term Empty before creating new file");
-//                }
-//
-//                //Create the merged doc list of the term
-//                docListMerged.append(";").append(docListPostedAlready);
-//                String[] docList = docListMerged.toString().split(";");
-//                Arrays.sort(docList);
-//                //Remove the arrays toString [] brackets
-//                String sortedList = Arrays.toString(docList).replaceAll(",",";");
-//                if(sortedList.charAt(0) == '[')
-//                {
-//                    sortedList = sortedList.substring(1);
-//                }
-//                if(sortedList.charAt(sortedList.length()-1) == ']')
-//                {
-//                    sortedList = sortedList.substring(0,sortedList.length()-1);
-//                }
-//
-//                newMap.replace(term,newMap.get(term),sortedList);
-//
-//
-//            }
-//        }
-//        Path postFileOfTerm;
-//        List<String> lines;
-//        String corpusPathAndLineDelim = "#";
-//        try {
-//            //Foreach term if it exists in the corpus replace the line of it and
-//            // if it does not exists in the corpus add it to the relevant file and line.
-//            for (String term :
-//                    newMap.keySet()) {
-//                int lineNumber,fileIndex;
-//                if(term.charAt(0) == ' ' || term.charAt(0) == '#' || term.charAt(0) == '/')
-//                {
-//                    String termList = newMap.get(term);
-//                    newMap.remove(term);
-//                    term = term.substring(1);
-//                    newMap.put(term,termList);
-//
-//                }
-//                char firstLetterForFolderName = term.charAt(0);
-//                if(corpusDictionary.containsKey(term))
-//                {
-//                    //Update the line in post file
-//                    fileIndex = Integer.parseInt(corpusDictionary.get(term).split(corpusPathAndLineDelim)[1]);
-//                    lineNumber = Integer.parseInt(corpusDictionary.get(term).split(corpusPathAndLineDelim)[0]);
-//                    postFileOfTerm = Paths.get(pathToPostFolder + firstLetterForFolderName + "/" +fileIndex);
-//                    lines = Files.readAllLines(postFileOfTerm);
-//                }
-//                else
-//                {
-//                    //Create a new Post file for the term and insert it as new
-//                    String newFilePath = pathToPostFolder + firstLetterForFolderName;
-//                    Path pathForNewFile = null;
-//                    pathForNewFile = Paths.get(newFilePath);
-//
-//                    if(!Files.exists(pathForNewFile))
-//                    {
-//                        Path a = Files.createDirectories(pathForNewFile);
-//                    }
-//                    fileIndex = getIndexInFolder(pathForNewFile);
-//                    postFileOfTerm = Paths.get(pathForNewFile.toFile().getPath() +"/" + fileIndex);
-//                    if(!Files.exists(postFileOfTerm))
-//                    {
-//                        lineNumber = 0;
-//                        lines = new ArrayList<>();
-//                        lines.add(newMap.get(term));
-//                    }
-//                    else {
-//                        lines = Files.readAllLines(postFileOfTerm);
-//                        lineNumber = lines.size();
-//                    }
-//                    StringBuilder corpusDictionaryPathAndLine = new StringBuilder();
-//                    corpusDictionaryPathAndLine.append(postFileOfTerm.getFileName().toString()).append(corpusPathAndLineDelim).append(lineNumber);
-//                    corpusDictionary.put(term,corpusDictionaryPathAndLine.toString());
-//                }
-//
-//                if(lineNumber == 0)
-//                    lineNumber = 1;
-//                lines.set(lineNumber-1, newMap.get(term));
-//                if(postFileOfTerm.toFile().exists()) {
-//                    Files.write(postFileOfTerm, lines, StandardOpenOption.APPEND);
-//                }
-//                else
-//                {
-//                    Files.write(postFileOfTerm, lines);
-//                }
-//            }
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-    /**
-     * Gets a term and lineNumber
-     * and return the line in the postFile of this term, its docList
-     * @param term -  a term to get its docList
-     * @param lineNumber - the line number of this term in the postFile
-     * @return The line containing the docList
-     */
-    private String getLineFromDic(String term,String lineNumber) {
-        char firstLetterForFolderName = term.charAt(0);
-        int line = Integer.parseInt(lineNumber);
-        String newFilePath = pathToPostFolder + firstLetterForFolderName;
-        Path pathForNewFile = null;
-        pathForNewFile = Paths.get(newFilePath);
-        try{
-            if(!Files.exists(pathForNewFile))
-            {
-                Path a = Files.createDirectories(pathForNewFile);
-            }
-            int fileIndex = getIndexInFolder(pathForNewFile);
-            Path postFileOfTerm = Paths.get(pathForNewFile.toFile().getPath() + "/" + fileIndex);
-//            if(!Files.exists(postFileOfTerm))
-//            {
-//                Path a = Files.createDirectories(postFileOfTerm);
-//            }
-            List<String> lines = Files.readAllLines(postFileOfTerm);
-            if(line == 0)
-                line = 1;
-            return lines.get(line-1);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    //            if(!corpusDictionary.containsKey(term))
-//            {
-//                String dfList = newMap.get(term);
-////                String[] splittedDocs = dfList.split(";");
-//                try {
-//                    if (term.length() > 0 && (term.charAt(0) == ' ' || term.charAt(0) == '/' || term.charAt(0) == '.')) {
-//                        term = term.substring(1);
-//                    }
-//                    if (term.equals("")) {
-//                        throw new Exception("Term Empty before creating new file");
-//                    }
-//                    String lineIndexInFile = createAndWriteTheFile(term,dfList);
-//                }
-//                catch (Exception e)
-//                {
-////                    e.printStackTrace();
-//                }
-//            }
-//            else
-//            {
-////                readAndAppendToFile();
-//            }
-
-
-    // read file one line at a time
-// replace line as you read the file and store updated lines in StringBuffer
-// overwrite the file with the new lines
-    public synchronized void readAndAppendToFile(String term,String fileNum,String lineIndex,String parsedData) {
-        try {
-            // input the (modified) file content to the StringBuffer "input"
-            String pathToFileForEdit = pathToPostFolder + term.toLowerCase().charAt(0) +"/" +fileNum;
-            BufferedReader file = new BufferedReader(new FileReader(pathToFileForEdit));
-            StringBuffer inputBuffer = new StringBuffer();
-            String line;
-            int lineIndexCounter = 0;
-            int parsedLineIndex = Integer.parseInt(lineIndex);
-
-
-            while ((line = file.readLine()) != null) {
-                lineIndexCounter++;
-                if(lineIndexCounter == parsedLineIndex)
-                {
-                    line = line +";" + parsedData;
-                }
-                inputBuffer.append(line);
-                inputBuffer.append('\n');
-            }
-            file.close();
-
-            // write the new string with the replaced line OVER the same file
-            FileOutputStream fileOut = new FileOutputStream(pathToFileForEdit);
-            fileOut.write(inputBuffer.toString().getBytes());
-            fileOut.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            System.out.println("Problem reading file.");
-        }
-    }
-
-    /**
-     *
-     * @param term
-     * @param docList
-     * @return
-     */
-    private synchronized String createAndWriteTheFile(String term, String docList){
-
-//        int currIndex = writeIndex.getAndIncrement();
-        boolean finishedWriting = false;
-        char firstLetterForFolderName = term.charAt(0);
-        String newFilePath = pathToPostFolder + firstLetterForFolderName;
-        String fileNumAndLineIndex = "";
-//        System.out.println("Posting File Path: " + newFilePath);
-        Path pathForNewFile = null;
-        try {
-            pathForNewFile = Paths.get(newFilePath);
-
-            if(!Files.exists(pathForNewFile))
-            {
-                Path a = Files.createDirectories(pathForNewFile);
-//            System.out.println(a.getFileName().toString());
-            }
-
-            //System.out.println(pathForNewFile.toString());
-
-            int indexFile = getIndexInFolder(pathForNewFile);
-            if(indexFile == -1)
-            {
-                throw new Exception("Could not find Dir");
-            }
-            newFilePath += "/"+indexFile;
-            pathForNewFile = Paths.get(newFilePath);
-
-            try
-            {
-
-                CharSequence fromStr = new StringBuffer(docList);
-//            double fileSize = getFileSizeMegaBytes(pathForNewFile.toFile());
-
-                BufferedWriter writeToPostFile = new BufferedWriter(new FileWriter(pathForNewFile.toFile(),true));
-                writeToPostFile.append(fromStr);
-                writeToPostFile.flush();
-                writeToPostFile.close();
-                finishedWriting = true;
-
-            }
-            catch (Exception e)
-            {
-                System.out.println("Could not load file");
-            }
-
-            if(finishedWriting)
-            {
-                List<String> linesInFile = Files.readAllLines(pathForNewFile);
-                fileNumAndLineIndex = pathForNewFile.getFileName().toString() + "#" + linesInFile.size();
-                return fileNumAndLineIndex;
-            }
-        }
-        catch (Exception e)
-        {
-            System.out.println("Could not Parse the path: "+ newFilePath);
-        }
-        return null;
-
     }
 
     /**
@@ -729,4 +474,7 @@ public class Indexer implements Runnable {
     }
 
 
+    public void saveCorpusDictionary() {
+
+    }
 }

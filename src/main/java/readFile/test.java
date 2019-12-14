@@ -10,7 +10,7 @@ public class test {
     private static final int MAX_NUMBER_OF_THREADS = 1;
 
     public static void main(String[] args) {
-        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest2";
+        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
         //String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
@@ -46,7 +46,7 @@ public class test {
             IndexerThreads[i].start();
         }
 
-        ReadFile f = new ReadFile();
+        ReadFile f = new ReadFile(false);
         File corpus = new File(corpusPath);
         long startTime,endTime;
         startTime = System.nanoTime();
@@ -70,7 +70,7 @@ public class test {
 
         myIndexer.createCorpusDictionary();
 
-
+        myIndexer.saveCorpusDictionary();
         System.out.println("Corpus Size = " + myIndexer.corpusSize());
 
 
