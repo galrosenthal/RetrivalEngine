@@ -56,18 +56,18 @@ public class parsePercentage extends AParser {
                             //word = chopDownFisrtChar(word);
                             if ((word.substring(0, word.length() - 1)).matches("^\\d+(\\.\\d+)?")) {
                                 //double num = Double.parseDouble(word.substring(0, word.length() - 1));
-                                parsedTermInsert(word,d.getDocNo());
+                                parsedTermInsert(word,d);
                                 //Term newTerm = new Term(word);
                                 numOfTerms++;
                                 System.out.println(word);
                             } else if (isFraction(word.substring(0, word.length() - 1))) {
                                 if (i > 2 && wordsInDoc[i - 1].matches("^\\d+(\\.\\d+)?")) {
-                                    parsedTermInsert(wordsInDoc[i - 1] + " " + word,d.getDocNo());
+                                    parsedTermInsert(wordsInDoc[i - 1] + " " + word,d);
                                     //Term newTerm = new Term(wordsInDoc[i - 1] + " " + word);
                                     numOfTerms++;
                                     System.out.println(wordsInDoc[i - 1] + " " + word);
                                 } else {
-                                    parsedTermInsert(word,d.getDocNo());
+                                    parsedTermInsert(word,d);
                                     //Term newTerm = new Term(word);
                                     numOfTerms++;
                                     System.out.println(word);
@@ -80,7 +80,7 @@ public class parsePercentage extends AParser {
                                 lastWord = chopDownFisrtChar(wordsInDoc[i - 1]);
 
                                 if (NumberUtils.isNumber(lastWord)) {
-                                    parsedTermInsert(lastWord + "%",d.getDocNo());
+                                    parsedTermInsert(lastWord + "%",d);
                                     //Term newTerm = new Term(lastWord + "%");
                                     count++;
                                     numOfTerms++;
@@ -88,12 +88,12 @@ public class parsePercentage extends AParser {
 
                                 } else if (isFraction(lastWord)) {
                                     if (i > 2 && NumberUtils.isDigits(wordsInDoc[i - 2])) {
-                                        parsedTermInsert(wordsInDoc[i - 2] + " " + word,d.getDocNo());
+                                        parsedTermInsert(wordsInDoc[i - 2] + " " + word,d);
                                         //Term newTerm = new Term(wordsInDoc[i - 2] + " " + word);
                                         numOfTerms++;
                                         //System.out.println(newTerm.getWordValue());
                                     } else {
-                                        parsedTermInsert(word,d.getDocNo());
+                                        parsedTermInsert(word,d);
                                         Term newTerm = new Term(word);
                                         numOfTerms++;
                                         //System.out.println(newTerm.getWordValue());

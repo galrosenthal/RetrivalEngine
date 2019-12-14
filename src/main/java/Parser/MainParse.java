@@ -27,12 +27,15 @@ public class MainParse extends AParser {
     private SnowballStemmer snowballStemmer;
 
 
+
+
     public MainParse() {
         super();
 
         this.parseName = "Main Parser";
         docDequeuerLock = new Semaphore(1);
         format3Decimals = new DecimalFormat("#.###");
+
 
 
 //        i = new AtomicInteger(0);
@@ -68,6 +71,7 @@ public class MainParse extends AParser {
         docDequeuerLock.release();
         i.set(0);
         parse(currentDoc);
+        makeDocParsed(currentDoc);
         numOfParsedDocInIterative++;
         releaseToIndexerFile();
     }

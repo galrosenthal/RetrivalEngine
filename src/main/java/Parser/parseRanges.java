@@ -43,19 +43,19 @@ public class parseRanges extends AParser {
 
                         String[] values = StringUtils.split(match, '-');
                         if (values[0].matches("^\\d+") && values[1].matches("^\\d+")) {
-                            parsedTermInsert(values[1], document.getDocNo());
-                            parsedTermInsert(match, document.getDocNo());
+                            parsedTermInsert(values[1], document);
+                            parsedTermInsert(match, document);
 
                         } else {
                             String[] words = StringUtils.split(match, ' ');
                             if (words.length > 3 && words[0].equals("between") && words[2].equals("and")) {
-                                parsedTermInsert(words[1], document.getDocNo());
-                                parsedTermInsert(words[3], document.getDocNo());
+                                parsedTermInsert(words[1], document);
+                                parsedTermInsert(words[3], document);
 
                             }
                         }
                         System.out.println(match);
-                        parsedTermInsert(match, document.getDocNo());
+                        parsedTermInsert(match, document);
                     }
                 }
 

@@ -1,7 +1,6 @@
 package Parser;
 
 import IR.Document;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -128,7 +127,7 @@ public class parseNames extends AParser {
                     //String[] sentenceLengh = sentence.toString().split(" ");
                     if(numOfWords > 1){
                         //System.out.println(sentence);
-                        parsedTermInsert(sentence.substring(0, sentence.length() - 1), document.getDocNo());
+                        parsedTermInsert(sentence.substring(0, sentence.length() - 1), document);
                     }
                     numOfWords=0;
                     sentence.setLength(0);
@@ -141,7 +140,7 @@ public class parseNames extends AParser {
                 //String[] sentenceLengh = sentence.toString().split(" ");
 
                     //System.out.println(sentence);
-                    parsedTermInsert(sentence.substring(0, sentence.length() - 1), document.getDocNo());
+                    parsedTermInsert(sentence.substring(0, sentence.length() - 1), document);
                 numOfWords=0;
                 sentence.setLength(0);
             }

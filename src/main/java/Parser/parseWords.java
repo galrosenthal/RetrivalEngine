@@ -27,7 +27,7 @@ public class parseWords extends AParser {
                 }
                 else{
                     //System.out.println(word);
-                    parsedTermInsert(word,document.getDocNo());
+                    parsedTermInsert(word,document);
                 }
                 /*
                 if(Character.isUpperCase(word.charAt(0))){
@@ -56,7 +56,7 @@ public class parseWords extends AParser {
             //else if (wordB.toString().chars().allMatch(Character::isLetter)){
             else if (bettertWay(wordB.toString())){
                 //System.out.println(word);
-                parsedTermInsert(word,document.getDocNo());
+                parsedTermInsert(word,document);
             }
                 /*
                 if(Character.isUpperCase(word.charAt(0))){

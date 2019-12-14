@@ -66,7 +66,7 @@ public class parsePrices extends AParser {
                             termToInsert = quantifiedWordForDic(word,isQuantifier);
                             /**Price Quantifier Dollars**/
                             termToInsert += " " + dollars;
-                            parsedTermInsert(termToInsert, currentDoc.getDocNo());
+                            parsedTermInsert(termToInsert, currentDoc);
                             wordIndex += 2;
                         }
                         else if(isFraction(isQuantifier) && scndWord.equalsIgnoreCase(dollars.toLowerCase()))
@@ -74,7 +74,7 @@ public class parsePrices extends AParser {
                             /**Price Fraction Dollars**/
                             termToInsert = quantifiedWordForDic(word);
                             termToInsert = " " + isQuantifier + " " + dollars;
-                            parsedTermInsert(termToInsert, currentDoc.getDocNo());
+                            parsedTermInsert(termToInsert, currentDoc);
                             wordIndex += 2;
                         }
                         else if(isQuantifier.equalsIgnoreCase(dollars.toLowerCase()))
@@ -82,7 +82,7 @@ public class parsePrices extends AParser {
                             /**Price Dollars**/
                             termToInsert = quantifiedWordForDic(word);
                             termToInsert = " " + dollars;
-                            parsedTermInsert(termToInsert, currentDoc.getDocNo());
+                            parsedTermInsert(termToInsert, currentDoc);
                             wordIndex += 1;
                         }
                     }
@@ -95,12 +95,12 @@ public class parsePrices extends AParser {
                         if(nextWordIsQuntifier(quant))
                         {/**$Price Quantifier**/
                             String termToInsert = quantifiedWordForDic(word.substring(1),quant);
-                            parsedTermInsert("$"+ termToInsert,currentDoc.getDocNo());
+                            parsedTermInsert("$"+ termToInsert,currentDoc);
                         }
                         else
                         {/**$Price**/
                             String termToInsert = quantifiedWordForDic(word.substring(1));
-                            parsedTermInsert("$"+termToInsert,currentDoc.getDocNo());
+                            parsedTermInsert("$"+termToInsert,currentDoc);
                         }
                     }
 

@@ -69,7 +69,7 @@ public class parseNumbers extends AParser{
 
                         } else {
                             countNumberMatch++;
-                            parsedTermInsert(theWordParsed, currentDoc.getDocNo());
+                            parsedTermInsert(theWordParsed, currentDoc);
                             wordIndex++;
                             continue;
                         }
@@ -79,8 +79,8 @@ public class parseNumbers extends AParser{
 
                     if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
                         String[] splitHifWord = word.split("-");
-                        parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
-                        parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+                        parsedTermInsert(splitHifWord[0], currentDoc);
+                        parsedTermInsert(splitHifWord[1], currentDoc);
 
                         continue;
                     }
@@ -97,11 +97,11 @@ public class parseNumbers extends AParser{
 
                     else if (word.matches("^\\d+/\\d+$")) {
                         countNumberMatch++;
-                        parsedTermInsert(word, currentDoc.getDocNo());
+                        parsedTermInsert(word, currentDoc);
                         continue;
                     } else {
                         countNumberMatch++;
-                        parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
+                        parsedTermInsert(quantifiedWordForDic(word), currentDoc);
                     }
 
 
@@ -137,7 +137,7 @@ public class parseNumbers extends AParser{
 
                     } else {
                         countNumberMatch++;
-                        parsedTermInsert(theWordParsed, currentDoc.getDocNo());
+                        parsedTermInsert(theWordParsed, currentDoc);
                         wordIndex++;
                         continue;
                     }
@@ -147,8 +147,8 @@ public class parseNumbers extends AParser{
 
                 if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
                     String[] splitHifWord = word.split("-");
-                    parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
-                    parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+                    parsedTermInsert(splitHifWord[0], currentDoc);
+                    parsedTermInsert(splitHifWord[1], currentDoc);
 
                     continue;
                 }
@@ -165,11 +165,11 @@ public class parseNumbers extends AParser{
 
                 else if (word.matches("^\\d+/\\d+$")) {
                     countNumberMatch++;
-                    parsedTermInsert(word, currentDoc.getDocNo());
+                    parsedTermInsert(word, currentDoc);
                     continue;
                 } else {
                     countNumberMatch++;
-                    parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
+                    parsedTermInsert(quantifiedWordForDic(word), currentDoc);
                 }
 
 
