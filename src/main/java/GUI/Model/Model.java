@@ -23,7 +23,7 @@ public class Model extends Observable implements IModel {
             IndexerThreads[i].setName("Indexer " + indexerIndex++);
         }
 
-        ReadFile f = new ReadFile();
+        ReadFile f = new ReadFile(withStemm);
         File corpus = new File(corpusPath);
         long startTime,endTime;
         startTime = System.nanoTime();
@@ -53,8 +53,16 @@ public class Model extends Observable implements IModel {
             e.printStackTrace();
         }
 
+        Indexer myIndexer = Indexer.getInstance();
+        myIndexer.createCorpusDictionary();
+
+        myIndexer.saveCorpusDictionary();
+        System.out.println("Corpus Size = " + myIndexer.corpusSize());
+
+
         endTime = System.nanoTime();
         System.out.println("There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
+        setChanged();
         notifyObservers(1);
     }
 
@@ -63,7 +71,7 @@ public class Model extends Observable implements IModel {
         try
         {
             if(corpusPath!=null && postingPath!=null){
-                FileUtils.cleanDirectory(new File(corpusPath));
+                //FileUtils.cleanDirectory(new File(corpusPath));
                 FileUtils.cleanDirectory(new File(postingPath));
             }
         }

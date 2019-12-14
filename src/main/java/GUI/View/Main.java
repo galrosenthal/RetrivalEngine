@@ -21,7 +21,8 @@ public class Main extends Application {
         Controller controller = loader.getController();
         Model model = new Model();
         ViewModel viewModel = new ViewModel(model);
-
+        model.addObserver(viewModel);
+        viewModel.addObserver(controller);
 
 
         primaryStage.setTitle("Hello World");

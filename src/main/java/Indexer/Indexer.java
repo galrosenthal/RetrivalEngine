@@ -238,7 +238,7 @@ public class Indexer implements Runnable {
         Collections.sort(sortedKeys);
         System.out.println("Sorted " + sortedKeys.size() + " HashMap keys");
         int i = 0;
-        char docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
+        //char docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
 //        while(docLetter == ' ')
 //        {
 //            docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
@@ -474,4 +474,7 @@ public class Indexer implements Runnable {
     }
 
 
+    public void saveCorpusDictionary() {
+
+    }
 }

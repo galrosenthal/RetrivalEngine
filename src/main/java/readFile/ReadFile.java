@@ -21,6 +21,7 @@ public class ReadFile {
     public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
     public int testSleepOn4Files = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
+    boolean withStemm;
 //    public Thread prsNumThrd ;
 //    public Thread prsDatesThrd ;
 //    public Thread prsPrcntThrd;
@@ -43,7 +44,8 @@ public class ReadFile {
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
-    public ReadFile() {
+    public ReadFile(boolean withStemm) {
+        this.withStemm = withStemm;
         allParserThreads = new ArrayList<>();
         allParsers = new ArrayList<>();
         addParserToThreads(mainParse1);
@@ -64,6 +66,7 @@ public class ReadFile {
 
     private void addParserToThreads(AParser prsr) {
         allParsers.add(prsr);
+        prsr.setStemm(withStemm);
         allParserThreads.add(new Thread(prsr));
     }
 
@@ -205,11 +208,5 @@ public class ReadFile {
 
             }
         }
-    }
-
-    public void reset() {
-        numOfParsedDocs = 0;
-        numOfCorpusFiles = 0;
-        mainParse1 = new MainParse();
     }
 }

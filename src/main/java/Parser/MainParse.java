@@ -2,6 +2,8 @@ package Parser;
 
 import IR.Document;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.tartarus.snowball.SnowballStemmer;
+import org.tartarus.snowball.ext.englishStemmer;
 
 import java.text.DecimalFormat;
 import java.time.Month;
@@ -22,18 +24,24 @@ public class MainParse extends AParser {
     private DecimalFormat format3Decimals;
     private final String dollars = "Dollars";
     private final String us = "U.S.";
+    private SnowballStemmer snowballStemmer;
 
 
     public MainParse() {
         super();
+
         this.parseName = "Main Parser";
         docDequeuerLock = new Semaphore(1);
         format3Decimals = new DecimalFormat("#.###");
+
+
 //        i = new AtomicInteger(0);
     }
 
+
     @Override
     public void run() {
+
         System.out.println("Main Parser has started");
         while (!stopThread) {
             parse();
@@ -44,6 +52,9 @@ public class MainParse extends AParser {
 
     @Override
     public void parse() {
+        if(withStemm && snowballStemmer == null){
+            snowballStemmer = new englishStemmer();
+        }
 //            while (currentDoc == null) {
 //                currentDoc = dequeueDoc();
 //            }
@@ -76,6 +87,15 @@ public class MainParse extends AParser {
             String cleanWord = chopDownLastCharPunc(splitedText[index]);
             cleanWord = chopDownFisrtChar(cleanWord);
             String halfCleanWord = chopDownFisrtChar(splitedText[i.get()]);
+
+            if(withStemm){
+                snowballStemmer.setCurrent(cleanWord);
+                snowballStemmer.stem();
+                cleanWord = snowballStemmer.getCurrent();
+                snowballStemmer.setCurrent(halfCleanWord);
+                snowballStemmer.stem();
+                cleanWord = snowballStemmer.getCurrent();
+            }
 
             //Check if the word is empty word
             if(!cleanWord.isEmpty()){
@@ -140,6 +160,9 @@ public class MainParse extends AParser {
                     else if(parsePercentage(cleanWord)){
 
                     }
+                    else if(parseNameRanges(cleanWord)){
+
+                    }
                     else {
                         if(parseWords(cleanWord)){
 
@@ -151,8 +174,6 @@ public class MainParse extends AParser {
         termsInTextSemaphore.release();
         isParsing = false;
     }
-
-
 
 
 
@@ -234,13 +255,6 @@ public class MainParse extends AParser {
 
     private boolean equalsMonth(String word) {
         boolean isMonth = false;
-        /*if(word.equals("jan") || word.equals("feb") || word.equals("mar") || word.equals("apr") || word.equals("may") || word.equals("jun") ||
-                word.equals("jul") || word.equals("aug") || word.equals("sep") || word.equals("sept") || word.equals("oct") || word.equals("nov") ||
-                word.equals("dec") || word.equals("january") || word.equals("february") || word.equals("march") || word.equals("april") || word.equals("november") ||
-                word.equals("june") || word.equals("july") || word.equals("august") || word.equals("september") || word.equals("october") || word.equals("december")){
-            return true;
-        }
-        return false;*/
 
         if (word.equalsIgnoreCase("Jan")) {
             isMonth = true;
@@ -364,14 +378,6 @@ public class MainParse extends AParser {
      */
     public boolean parseNameRanges(String word) {
         boolean isParsed = false;
-
-        // if(!stopWords.contains(word)) {
-        //  matcherRange = pRange.matcher(word);
-        // while (matcherRange.find()) {
-
-        //System.out.println(matcher.group(1));
-        //String match = matcherRange.group(1);
-
 
         if (word.equals("between")) {
 
@@ -816,9 +822,7 @@ public class MainParse extends AParser {
         //wordB = chopDownLastCharPunc(wordB);
         while ((wordB.length()>0) && Character.isUpperCase(wordB.charAt(0))) {
             char lastChar = wordB.charAt(wordB.length()-1);
-            //if (wordB.charAt(wordB.length() - 1) == '.'
-                 //   || wordB.charAt(wordB.length() - 1) == '"' || wordB.charAt(wordB.length() - 1) == ',' ||
-                //    wordB.charAt(wordB.length() - 1) == ';' || wordB.charAt(wordB.length() - 1) == ':' ) {
+
             if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar < 'Z')){
                 sentence.append(chopDownLastCharPunc(wordB.toString()));
 

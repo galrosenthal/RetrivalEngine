@@ -22,6 +22,7 @@ public abstract class AParser implements Runnable {
     protected final double BILLION = 1000000000;
     protected final double MILLION = 1000000;
     protected final double THOUSAND = 1000;
+    protected boolean withStemm;
     protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','[','!','\t','\n','|','*','\'','+','/'};
     private String tfDelim = "#";
     protected String parseName;
@@ -60,6 +61,7 @@ public abstract class AParser implements Runnable {
 
 
     }
+
 
     public void stopThread()
     {
@@ -447,5 +449,9 @@ public abstract class AParser implements Runnable {
     public int qSize()
     {
         return this.docQueueWaitingForParse.size();
+    }
+
+    public void setStemm(boolean withStemm) {
+        this.withStemm = withStemm;
     }
 }
