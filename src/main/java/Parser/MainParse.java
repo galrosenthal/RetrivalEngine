@@ -48,6 +48,7 @@ public class MainParse extends AParser {
 //            while (currentDoc == null) {
 //                currentDoc = dequeueDoc();
 //            }
+//        System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
         docDequeuerLock.acquireUninterruptibly();
         currentDoc = dequeueDoc();
         if (currentDoc == null) {
@@ -107,7 +108,7 @@ public class MainParse extends AParser {
                     }
                 }
                 //The first letter is a character and upper case
-                else if(Character.isUpperCase(cleanWord.charAt(0)) ){//&& cleanWord.matches("^[a-zA-Z]*$")){
+                else if(Character.isUpperCase(cleanWord.charAt(0))){
                     if(parseDates(cleanWord)){
 
                     }
@@ -118,12 +119,14 @@ public class MainParse extends AParser {
                         parseNames(halfCleanWord);
                     }
                 }
-               /* else if(parseNameRanges(cleanWord)){
+                else if(!checkAlphaBet(cleanWord)){
+                    if(parseNameRanges(cleanWord)){
 
-                }*/
-                //Check if the char is $
-                else if(cleanWord.charAt(0) == '$'){
-                    parsePrices(cleanWord);
+                    }
+                    //Check if the char is $
+                    else if(cleanWord.charAt(0) == '$'){
+                        parsePrices(cleanWord);
+                    }
                 }
                 else{
                     if(parseDates(cleanWord)){
@@ -857,13 +860,12 @@ public class MainParse extends AParser {
         boolean isParsed = false;
         //System.out.println(word);
         StringBuilder wordB = new StringBuilder(word);
-        wordB = chopDownFisrtChar(wordB);
-        wordB = chopDownLastCharPunc(wordB);
+
         if (wordB.length() < 3 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ) {
             return isParsed;
         }
         //else if (wordB.toString().chars().allMatch(Character::isLetter)){
-        else if (bettertWay(wordB.toString())){
+        else {
             //System.out.println(word);
             parsedTermInsert(word,d.getDocNo());
             isParsed = true;
@@ -872,9 +874,8 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
-    public static boolean bettertWay(String name) {
+    public static boolean checkAlphaBet(String name) {
         char[] chars = name.toCharArray();
-        long startTimeOne = System.nanoTime();
         for(char c : chars){
             if(!(c>=65 && c<=90)&&!(c>=97 && c<=122) ){
                 return false;

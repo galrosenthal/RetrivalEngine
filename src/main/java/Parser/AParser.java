@@ -59,12 +59,10 @@ public abstract class AParser implements Runnable {
 
 
 
-
     }
 
     public void stopThread()
     {
-
         doneReadingDocs = true;
         while(isParsing);
         releaseToIndexerFile();
@@ -122,14 +120,12 @@ public abstract class AParser implements Runnable {
 //            if(!myReadWriter.writeToDic(termsInText,getName()))
             termsInTextSemaphore.acquireUninterruptibly();
             //System.out.println("Parsed " + termsInText.size() + " terms");
-//
 //            termsInTextLocker.writeLock().lock();
             if(!Indexer.getInstance().enqueue(termsInText))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
             }
-           // System.out.println("Indexer queue size: " + Indexer.getInstance().parsedWordsQueue.size());
 //            myIndexer.enqueue(termsInText);
 //            termsInText = null;
 //            termsInText = new ConcurrentHashMap<>();
