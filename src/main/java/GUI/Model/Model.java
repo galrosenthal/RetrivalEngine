@@ -37,6 +37,7 @@ public class Model extends Observable implements IModel {
             IndexerThreads[i].start();
         }
 
+        f.stopThreads();
         try{
             for (int i = 0; i < IndexerThreads.length; i++) {
 
@@ -51,6 +52,7 @@ public class Model extends Observable implements IModel {
 
         endTime = System.nanoTime();
         System.out.println("There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
+        setChanged();
         notifyObservers(1);
     }
 
