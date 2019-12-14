@@ -21,12 +21,14 @@ public class Document {
 
 
     //    private ConcurrentHashMap
-    private HashMap<Term,Integer> termsDictonary;// Each IR.Term has an Integer that presets how many times this IR.Term is present in the IR.Document
+    private HashMap<String,Integer> termsDictonary;// Each IR.Term has an Integer that presets how many times this IR.Term is present in the IR.Document
 
     private Elements allDocElements;
     private Elements docText;
     private Elements docNo;
     private String[] textArray;
+    private String maxTFTerm;
+    private boolean firstInsert;
 
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
@@ -34,6 +36,9 @@ public class Document {
         docText = fileDocInCorpus.getElementsByTag("text");
         docNo = fileDocInCorpus.getElementsByTag("docno");
         textArray = StringUtils.split(docText.text());
+        maxTFTerm = "";
+        firstInsert = true;
+
         /**
          * searches for the element \"Text\" and \"docNo\"
          */
@@ -51,6 +56,7 @@ public class Document {
 
     }
 
+
     public Elements getDocText() {
         return docText;
     }
@@ -64,11 +70,22 @@ public class Document {
         return textArray;
     }
 
+
+    public String getMaxTfTerm()
+    {
+        return maxTFTerm;
+    }
+
+    public int getNumUniqeTerm()
+    {
+        return termsDictonary.size();
+    }
+
     /**
      * if newTerm is not in the Doc termsDictionary it adds to the Dictionary with value 1
      * @param newTerm - a IR.Term that suppose to be in this Doc text docText
      */
-    public void insertFoundTermInDoc(Term newTerm)
+    public void insertFoundTermInDoc(String newTerm)
     {
         if(newTerm != null )
         {
@@ -81,13 +98,27 @@ public class Document {
                 increaseTermCountInDoc(newTerm);
             }
         }
+
+        if(firstInsert)
+        {
+            maxTFTerm = newTerm;
+            firstInsert = false;
+
+        }
+        else
+        {
+            if (termsDictonary.get(newTerm) > termsDictonary.get(maxTFTerm))
+            {
+                maxTFTerm = newTerm;
+            }
+        }
     }
 
     /**
      * if the existingTerm is already in the termsDictionary its value is increased by 1
      * @param existingTerm - a term that is already inside the dictionary
      */
-    public void increaseTermCountInDoc(Term existingTerm)
+    public void increaseTermCountInDoc(String existingTerm)
     {
         if(existingTerm != null)
         {

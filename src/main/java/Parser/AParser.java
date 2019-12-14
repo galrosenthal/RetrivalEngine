@@ -378,12 +378,12 @@ public abstract class AParser implements Runnable {
         this.termsInText.clear();
     }
 
-    protected void parsedTermInsert(String term, String currentDocNo,String parserName) {
+    protected void parsedTermInsert(String term, Document doc,String parserName) {
         if(term.equalsIgnoreCase(""))
         {
             System.out.println("Term is Empty " + parserName);
         }
-        parsedTermInsert(term,currentDocNo);
+        parsedTermInsert(term,doc);
 
     }
 
@@ -392,12 +392,13 @@ public abstract class AParser implements Runnable {
      * Gets a parsed number and inserting it to the Dictionary
      * @param term
      */
-    protected void parsedTermInsert(String term, String currentDocNo) {
+    protected void parsedTermInsert(String term, Document doc) {
 //        termsInTextLocker.readLock().lock();
 //        termsInTextSemaphore.acquireUninterruptibly();
         if(term.isEmpty())
             return;
 
+        String currentDocNo = doc.getDocNo();
         if (termsInText.containsKey(term)) {
 
 //            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
@@ -430,6 +431,8 @@ public abstract class AParser implements Runnable {
         } else {
             termsInText.put(term, currentDocNo + tfDelim + "1");
         }
+
+        doc.insertFoundTermInDoc(term);
 //        termsInTextLocker.readLock().unlock();
 //        termsInTextSemaphore.release();
     }

@@ -16,7 +16,6 @@ public class Indexer implements Runnable {
     private final int KB_SIZE = 1024;
     //    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
     private ConcurrentLinkedQueue<HashMap<String, String>> parsedWordsQueue;
-    private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
     //    public ConcurrentHashMap<String,String> corpusDictionary;
@@ -60,7 +59,8 @@ public class Indexer implements Runnable {
     }
 
     public void setPathToPostFiles(String path) {
-        this.postFiles = path;
+
+        this.pathToPostFolder = path;
     }
 
 

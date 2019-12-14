@@ -177,7 +177,7 @@ public class MainParse extends AParser {
                     if (NumberUtils.isDigits(splitedText[wordIndex - 1])) {
                         month = String.format("%02d", getMonthNumber(word));
                         day = String.format("%02d", Integer.parseInt(splitedText[wordIndex - 1]));
-                        parsedTermInsert(day + "-" + month, d.getDocNo(),"Dates");
+                        parsedTermInsert(day + "-" + month, d,"Dates");
                         //System.out.println(day + "-" + month);
                         isParsed = true;
 
@@ -187,11 +187,11 @@ public class MainParse extends AParser {
                         //If the year is a day in the month
                         if (Integer.parseInt(year) <= 31) {
                             year = String.format("%02d", Integer.parseInt(year));
-                            parsedTermInsert(month + "-" + year, d.getDocNo(),"Dates");
+                            parsedTermInsert(month + "-" + year, d,"Dates");
                             //System.out.println(month+"-"+year);
                             //newTerm = new Term(month +"-"+year);
                         } else {
-                            parsedTermInsert(month + "-" + year, d.getDocNo(),"Dates");
+                            parsedTermInsert(month + "-" + year, d,"Dates");
                             //System.out.println(month+"-"+year);
                             //newTerm = new Term(year +"-"+month);
                         }
@@ -309,18 +309,18 @@ public class MainParse extends AParser {
                 //word = chopDownFisrtChar(word);
                 if ((word.substring(0, word.length() - 1)).matches("^\\d+(\\.\\d+)?")) {
                     //double num = Double.parseDouble(word.substring(0, word.length() - 1));
-                    parsedTermInsert(word, d.getDocNo(),"Precentage");
+                    parsedTermInsert(word, d,"Precentage");
                     isParsed = true;
                     //Term newTerm = new Term(word);
                     //System.out.println(word);
                 } else if (isFraction(word.substring(0, word.length() - 1))) {
                     int wordIndex = i.get();
                     if (wordIndex > 2 && splitedText[wordIndex - 1].matches("^\\d+(\\.\\d+)?")) {
-                        parsedTermInsert(splitedText[wordIndex - 1] + " " + word, d.getDocNo(),"Precentage");
+                        parsedTermInsert(splitedText[wordIndex - 1] + " " + word, d,"Precentage");
                         //Term newTerm = new Term(wordsInDoc[i - 1] + " " + word);
                         //System.out.println(splitedText[i - 1] + " " + word);
                     } else {
-                        parsedTermInsert(word, d.getDocNo(),"Precentage");
+                        parsedTermInsert(word, d,"Precentage");
                         //Term newTerm = new Term(word);
                         //System.out.println(word);
                     }
@@ -334,18 +334,18 @@ public class MainParse extends AParser {
                     lastWord = chopDownFisrtChar(splitedText[wordIndex - 1]);
 
                     if (NumberUtils.isNumber(lastWord)) {
-                        parsedTermInsert(lastWord + "%", d.getDocNo(),"Precentage");
+                        parsedTermInsert(lastWord + "%", d,"Precentage");
                         //Term newTerm = new Term(lastWord + "%");
                         //System.out.println(lastWord + "%");
                         isParsed = true;
 
                     } else if (isFraction(lastWord)) {
                         if (wordIndex > 2 && NumberUtils.isDigits(splitedText[wordIndex - 2])) {
-                            parsedTermInsert(splitedText[wordIndex - 2] + " " + word, d.getDocNo(),"Precentage");
+                            parsedTermInsert(splitedText[wordIndex - 2] + " " + word, d,"Precentage");
                             //Term newTerm = new Term(wordsInDoc[i - 2] + " " + word);
                             //System.out.println(newTerm.getWordValue());
                         } else {
-                            parsedTermInsert(word, d.getDocNo(),"Precentage");
+                            parsedTermInsert(word, d,"Precentage");
                             //System.out.println(newTerm.getWordValue());
                         }
                         isParsed = true;
@@ -379,9 +379,9 @@ public class MainParse extends AParser {
             if (wordIndex < splitedText.length - 4) {
                 splitedText[wordIndex + 3] = chopDownLastCharPunc(splitedText[wordIndex + 3]);
                 if (splitedText[wordIndex + 2].equals("and") && NumberUtils.isNumber(splitedText[wordIndex + 1]) && NumberUtils.isNumber(splitedText[wordIndex + 3])) {
-                    parsedTermInsert(splitedText[wordIndex + 1], d.getDocNo(),"NameRanges");
-                    parsedTermInsert(splitedText[wordIndex + 3], d.getDocNo(),"NameRanges");
-                    parsedTermInsert("between" + splitedText[wordIndex + 1] + "and" + splitedText[wordIndex + 3], d.getDocNo(),"NameRanges");
+                    parsedTermInsert(splitedText[wordIndex + 1], d,"NameRanges");
+                    parsedTermInsert(splitedText[wordIndex + 3], d,"NameRanges");
+                    parsedTermInsert("between" + splitedText[wordIndex + 1] + "and" + splitedText[wordIndex + 3], d,"NameRanges");
                     //System.out.println("between " + splitedText[i + 1] + " and " + splitedText[i + 3]);
                     isParsed = true;
                     i.addAndGet(3);
@@ -398,14 +398,14 @@ public class MainParse extends AParser {
                 values = word.split("-");
                 if (values.length > 1) {
                     if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
-                        parsedTermInsert(values[0], d.getDocNo(),"NameRanges");
-                        parsedTermInsert(values[1], d.getDocNo(),"NameRanges");
+                        parsedTermInsert(values[0], d,"NameRanges");
+                        parsedTermInsert(values[1], d,"NameRanges");
 
                     }
 
                     //System.out.println(word);
                     isParsed = true;
-                    parsedTermInsert(word, d.getDocNo(),"NameRanges");
+                    parsedTermInsert(word, d,"NameRanges");
                 }
             }
         }
@@ -431,8 +431,8 @@ public class MainParse extends AParser {
             values = word.split("-");
             if (values.length > 1) {
                 if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
-                    parsedTermInsert(values[0], d.getDocNo(),"NumberRanges");
-                    parsedTermInsert(values[1], d.getDocNo(),"NumberRanges");
+                    parsedTermInsert(values[0], d,"NumberRanges");
+                    parsedTermInsert(values[1], d,"NumberRanges");
                 }
                 //System.out.println(word);
                 isParsed = true;
@@ -469,7 +469,7 @@ public class MainParse extends AParser {
 
                 } else {
 
-                    parsedTermInsert(theWordParsed, currentDoc.getDocNo(),"Number");
+                    parsedTermInsert(theWordParsed, d,"Number");
                     i.getAndIncrement();
                     isParsed = true;
                 }
@@ -479,20 +479,20 @@ public class MainParse extends AParser {
 //                /**searches for num1-num2**/
 //                if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
 //                    String[] splitHifWord = word.split("-");
-//                    parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
-//                    parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+//                    parsedTermInsert(splitHifWord[0], d);
+//                    parsedTermInsert(splitHifWord[1], d);
 //
 //                    isParsed = true;
 //                }
             /**searches for fraction num1/num2**/
             else if (isFraction(word)) {
-                parsedTermInsert(word, currentDoc.getDocNo(),"Number");
+                parsedTermInsert(word, d,"Number");
                 isParsed = true;
             }
             else {
                 /**parsing number**/
                 if(allCharsAreDigits(word)) {
-                    parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo(), "Number");
+                    parsedTermInsert(quantifiedWordForDic(word), d, "Number");
                     isParsed = true;
                 }
             }
@@ -675,7 +675,7 @@ public class MainParse extends AParser {
                     termToInsert = quantifiedWordForPrices(wordInText,isQuantifier);
                     /**Price Quantifier Dollars**/
                     termToInsert += " " + dollars;
-                    parsedTermInsert(termToInsert, currentDoc.getDocNo(),"Prices");
+                    parsedTermInsert(termToInsert, d,"Prices");
                     isParsed = true;
                     i.set(wordIndex+2);
                 }
@@ -684,7 +684,7 @@ public class MainParse extends AParser {
                     /**Price Fraction Dollars**/
                     termToInsert = quantifiedWordForPrices(wordInText);
                     termToInsert = " " + isQuantifier + " " + dollars;
-                    parsedTermInsert(termToInsert, currentDoc.getDocNo(),"Prices");
+                    parsedTermInsert(termToInsert, d,"Prices");
                     isParsed = true;
                     i.set(wordIndex+2);
                 }
@@ -693,7 +693,7 @@ public class MainParse extends AParser {
                     /**Price Dollars**/
                     termToInsert = quantifiedWordForPrices(wordInText);
                     termToInsert = " " + dollars;
-                    parsedTermInsert(termToInsert, currentDoc.getDocNo(),"Prices");
+                    parsedTermInsert(termToInsert, d,"Prices");
                     isParsed = true;
                     i.set(wordIndex+1);
                 }
@@ -707,14 +707,14 @@ public class MainParse extends AParser {
                 if(nextWordIsQuntifier(quant))
                 {/**$Price Quantifier**/
                     String termToInsert = quantifiedWordForPrices(wordInText.substring(1),quant);
-                    parsedTermInsert("$"+ termToInsert,currentDoc.getDocNo(),"Prices");
+                    parsedTermInsert("$"+ termToInsert,d,"Prices");
                     isParsed = true;
                     i.set(wordIndex+1);
                 }
                 else
                 {/**$Price**/
                     String termToInsert = quantifiedWordForPrices(wordInText.substring(1));
-                    parsedTermInsert("$"+termToInsert,currentDoc.getDocNo(),"Prices");
+                    parsedTermInsert("$"+termToInsert,d,"Prices");
                     isParsed = true;
                     i.set(wordIndex+1);
                 }
@@ -824,7 +824,7 @@ public class MainParse extends AParser {
 
                 //String[] sentenceLengh = sentence.toString().split(" ");
                 if(numOfWords > 1 && numOfWords < 5){
-                    parsedTermInsert(sentence.substring(0, sentence.length() - 1), d.getDocNo());
+                    parsedTermInsert(sentence.substring(0, sentence.length() - 1), d);
                     isParse = true;
                 }
                 numOfWords=0;
@@ -833,7 +833,7 @@ public class MainParse extends AParser {
             } else {
                 numOfWords++;
                 sentence.append(wordB).append(" ");
-                parsedTermInsert(wordB.toString(), d.getDocNo());
+                parsedTermInsert(wordB.toString(), d);
             }
             if(i.get() < splitedText.length-1){
                 wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
@@ -846,7 +846,7 @@ public class MainParse extends AParser {
             //String[] sentenceLengh = sentence.toString().split(" ");
 
             //System.out.println(sentence);
-            parsedTermInsert(sentence.substring(0, sentence.length() - 1), d.getDocNo());
+            parsedTermInsert(sentence.substring(0, sentence.length() - 1), d);
             numOfWords=0;
             sentence.setLength(0);
             isParse = true;
@@ -872,7 +872,7 @@ public class MainParse extends AParser {
         //else if (wordB.toString().chars().allMatch(Character::isLetter)){
         else {
             //System.out.println(word);
-            parsedTermInsert(word,d.getDocNo());
+            parsedTermInsert(word,d);
             isParsed = true;
         }
 
@@ -897,7 +897,7 @@ public class MainParse extends AParser {
     public boolean parseEmails(String word){
         boolean isParsed = false;
         if(word.matches("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+")){
-            parsedTermInsert(word,d.getDocNo());
+            parsedTermInsert(word,d);
             isParsed = true;
         }
 
@@ -917,7 +917,7 @@ public class MainParse extends AParser {
             String [] splitWord = word.split("/");
             for(String wordIn: splitWord) {
                 if(isAlphaBet(wordIn) && !stopWords.contains(wordIn)){
-                    parsedTermInsert(wordIn,d.getDocNo());
+                    parsedTermInsert(wordIn,d);
                     isParsed = true;
                 }
 
