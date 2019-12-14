@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.View.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/1.8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.View.Controller">
    <center>
       <GridPane prefHeight="370.0" prefWidth="503.0" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -34,18 +34,20 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <TextField prefHeight="0.0" prefWidth="131.0" promptText="Path to Corpus" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+            <TextField fx:id="txt_field_Corpus" prefHeight="0.0" prefWidth="131.0" promptText="Path to Corpus" GridPane.columnIndex="3" GridPane.rowIndex="3" />
             <Button fx:id="btn_strtPrs" mnemonicParsing="false" onAction="#startParse" prefHeight="51.0" prefWidth="156.0" text="Start Parsing" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <TextField prefHeight="0.0" prefWidth="131.0" promptText="Path to Postings files" GridPane.columnIndex="3" GridPane.rowIndex="4" />
-            <CheckBox mnemonicParsing="false" prefHeight="21.0" prefWidth="123.0" text="Stemm" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Button mnemonicParsing="false" prefHeight="31.0" prefWidth="132.0" text="Reset" GridPane.columnIndex="4" GridPane.rowIndex="6">
+            <TextField fx:id="txt_field_Posting" prefHeight="0.0" prefWidth="131.0" promptText="Path to Postings files" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+            <CheckBox fx:id="chk_Stemm" mnemonicParsing="false"  prefHeight="21.0" prefWidth="123.0" text="Stemm" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Button fx:id="btn_reset" mnemonicParsing="false" onAction="#reset" prefHeight="31.0" prefWidth="132.0" text="Reset" GridPane.columnIndex="4" GridPane.rowIndex="6">
                <GridPane.margin>
                   <Insets left="30.0" right="10.0" />
                </GridPane.margin></Button>
-            <Button mnemonicParsing="false" text="Open Dictionary" GridPane.columnIndex="3" />
-            <Button mnemonicParsing="false" text="Load Dictionary" GridPane.columnIndex="4" />
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Open Dictionary" GridPane.columnIndex="1" />
+            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="154.0" text="Load Dictionary" GridPane.columnIndex="4" />
             <Label prefHeight="25.0" prefWidth="115.0" text="Path to Corpus:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label prefHeight="29.0" prefWidth="118.0" text="Path to Posting files: " GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Button mnemonicParsing="false" onAction="#choosePathForCorpus" text="Browse" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+            <Button mnemonicParsing="false" onAction="#choosePathToPosting" text="Browse" GridPane.columnIndex="4" GridPane.rowIndex="4" />
          </children>
          <BorderPane.margin>
             <Insets right="20.0" />
