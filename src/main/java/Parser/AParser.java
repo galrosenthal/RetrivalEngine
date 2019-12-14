@@ -22,7 +22,7 @@ public abstract class AParser implements Runnable {
     protected final double BILLION = 1000000000;
     protected final double MILLION = 1000000;
     protected final double THOUSAND = 1000;
-    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','[','!','\t','\n','|','*'};
+    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','[','!','\t','\n','|','*','\'','+','/'};
     private String tfDelim = "#";
     protected String parseName;
     protected String[] docText;
@@ -294,7 +294,7 @@ public abstract class AParser implements Runnable {
 
 
     protected String chopDownFisrtChar(String word) {
-        char[] punctuations = {',','.',';',':','?','|','('};
+        char[] punctuations = {',','.',';',':','?','|','(','\''};
 
         if(word != null && word.length() >= 2)
         {

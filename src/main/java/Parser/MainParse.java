@@ -14,7 +14,6 @@ public class MainParse extends AParser {
     private String[] splitedText;
     private Document d;
     private AtomicInteger i = new AtomicInteger(0);
-    ;
     private String pattern = "(([0-9]+\\-[0-9]+)|([a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+)|([a-zA-Z]+-[a-zA-Z]+)|[0-9]+\\-[a-zA-Z]+)";
     private Pattern pRange = Pattern.compile(pattern);
     private Matcher matcherRange;
@@ -107,6 +106,21 @@ public class MainParse extends AParser {
                         }
                     }
                 }
+                else if(!isAlphaBet(cleanWord)){
+                    if(parseNameRanges(cleanWord)){
+
+                    }
+                    //Check if the char is $
+                    else if(cleanWord.charAt(0) == '$'){
+                        parsePrices(cleanWord);
+                    }
+                    else if(parseSlash(cleanWord)){
+
+                    }
+                    else{
+                        parseEmails(cleanWord);
+                    }
+                }
                 //The first letter is a character and upper case
                 else if(Character.isUpperCase(cleanWord.charAt(0))){
                     if(parseDates(cleanWord)){
@@ -119,15 +133,6 @@ public class MainParse extends AParser {
                         parseNames(halfCleanWord);
                     }
                 }
-                else if(!checkAlphaBet(cleanWord)){
-                    if(parseNameRanges(cleanWord)){
-
-                    }
-                    //Check if the char is $
-                    else if(cleanWord.charAt(0) == '$'){
-                        parsePrices(cleanWord);
-                    }
-                }
                 else{
                     if(parseDates(cleanWord)){
 
@@ -136,7 +141,9 @@ public class MainParse extends AParser {
 
                     }
                     else {
-                        parseWords(cleanWord);
+                        if(parseWords(cleanWord)){
+
+                        }
                     }
                 }
             }
@@ -808,7 +815,6 @@ public class MainParse extends AParser {
         StringBuilder sentence = new StringBuilder("");
         //wordB = chopDownLastCharPunc(wordB);
         while ((wordB.length()>0) && Character.isUpperCase(wordB.charAt(0))) {
-
             char lastChar = wordB.charAt(wordB.length()-1);
             //if (wordB.charAt(wordB.length() - 1) == '.'
                  //   || wordB.charAt(wordB.length() - 1) == '"' || wordB.charAt(wordB.length() - 1) == ',' ||
@@ -818,7 +824,6 @@ public class MainParse extends AParser {
 
                 //String[] sentenceLengh = sentence.toString().split(" ");
                 if(numOfWords > 1 && numOfWords < 5){
-                    //System.out.println(wordB);
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d.getDocNo());
                     isParse = true;
                 }
@@ -874,14 +879,63 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
-    public static boolean checkAlphaBet(String name) {
-        char[] chars = name.toCharArray();
+    public static boolean isAlphaBet(String word) {
+        char[] chars = word.toCharArray();
         for(char c : chars){
             if(!(c>=65 && c<=90)&&!(c>=97 && c<=122) ){
                 return false;
             }
         }
         return true;
+    }
+
+    /*
+
+        Parse emails
+
+     */
+    public boolean parseEmails(String word){
+        boolean isParsed = false;
+        if(word.matches("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+")){
+            parsedTermInsert(word,d.getDocNo());
+            isParsed = true;
+        }
+
+        return isParsed;
+    }
+
+    /*
+
+        Parse Slash
+
+     */
+    public boolean parseSlash(String word){
+        boolean isParsed = false;
+
+        if(containsSlash(word)){
+
+            String [] splitWord = word.split("/");
+            for(String wordIn: splitWord) {
+                if(isAlphaBet(wordIn) && !stopWords.contains(wordIn)){
+                    parsedTermInsert(wordIn,d.getDocNo());
+                    isParsed = true;
+                }
+
+            }
+        }
+
+        return isParsed;
+    }
+
+    public boolean containsSlash(String word){
+
+        char[] chars = word.toCharArray();
+        for(char c : chars){
+            if(c == '/'){
+                return true;
+            }
+        }
+        return false;
     }
 }
 
