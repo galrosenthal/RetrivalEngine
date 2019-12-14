@@ -150,21 +150,32 @@ public class Indexer implements Runnable {
         for (String key :
                 hundredKtermsMap.keySet()) {
             String[] docList = hundredKtermsMap.get(key).split(";");
-            long start, end;
-            start = System.nanoTime();
-            Arrays.sort(docList);
-            end = System.nanoTime();
-//            System.out.println("The Sort took " + (end-start)/1000000 + " Milli Seconds");
-            String sortedList = Arrays.toString(docList).replaceAll(",", ";");
-            if (sortedList.charAt(0) == '[') {
-                sortedList = sortedList.substring(1);
-            }
-            if (sortedList.charAt(sortedList.length() - 1) == ']') {
-                sortedList = sortedList.substring(0, sortedList.length() - 1);
-            }
+            String sortedList = sortArray(docList);
 
             hundredKtermsMap.replace(key, hundredKtermsMap.get(key), sortedList);
         }
+    }
+
+    /**
+     * Gets an Array of doc List and sorts it alphabetically
+     * @param docList - An Array of docList
+     * @return String containing the docList sorted
+     */
+    private String sortArray(String[] docList) {
+        long start, end;
+        start = System.nanoTime();
+        Arrays.sort(docList);
+        end = System.nanoTime();
+//            System.out.println("The Sort took " + (end-start)/1000000 + " Milli Seconds");
+        String sortedList = Arrays.toString(docList).replaceAll(",", ";");
+        sortedList = Arrays.toString(docList).replaceAll(" ", "");
+        if (sortedList.charAt(0) == '[') {
+            sortedList = sortedList.substring(1);
+        }
+        if (sortedList.charAt(sortedList.length() - 1) == ']') {
+            sortedList = sortedList.substring(0, sortedList.length() - 1);
+        }
+        return sortedList;
     }
 
     /**
@@ -283,12 +294,10 @@ public class Indexer implements Runnable {
 
                 int lineNumberInFile = Integer.parseInt(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[1]);
                 StringBuilder addNewHashMapLineToExisting = new StringBuilder();
-                if(allTermsOfLetter.size() == 0 || lineNumberInFile > allTermsOfLetter.size())
-                {
-                    System.out.println("Fuckkkk");
-                }
                 addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(newMap.get(termKey));
-                allTermsOfLetter.set(lineNumberInFile-1,addNewHashMapLineToExisting.toString());
+                String newLineSorted = sortArray(addNewHashMapLineToExisting.toString().split(";"));
+                allTermsOfLetter.set(lineNumberInFile-1,newLineSorted);
+//                sumAndAppendTotalTF();
 //                termFilePath = Paths.get(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[0]);
             }
             else
