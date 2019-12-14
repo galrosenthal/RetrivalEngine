@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Indexer implements Runnable {
-    private static final double MAX_POSTING_FILE_SIZE = 5;
+    private static final double MAX_POSTING_FILE_SIZE = 500;
     private static final int MAX_TERMS_TO_INDEX = 500000;
     private int countMergedTerms = 0;
     private static volatile Indexer mInstance;
@@ -81,83 +81,9 @@ public class Indexer implements Runnable {
         return corpusDictionary.size();
     }
 
-    /*private void createPostFiles() {
-
-        //TODO: For each word check if exists in the CorpusDictionary,
-        // find the relevant posting file (from the Dictionary or by first letter),
-        // append the relevant data to the posting file in the relevant line
-
-        //map2.forEach(
-        //    (key, value) -> map1.merge( key, value, (v1, v2) -> v1 + ";" + v2)
-        //);
-//        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
-        HashMap<String,String> dqdHshMap = dequeue();
-
-
-
-        if(dqdHshMap == null)
-        {
-//            System.out.println("Could not read Object from File");
-            return;
-        }
-        else
-        {
-//                System.out.println("cleared " + dqdHshMap.size());
-            for (String term :
-                    dqdHshMap.keySet()) {
-                if(!corpusDictionary.containsKey(term))
-                {
-                    String dfList = dqdHshMap.get(term);
-//                    String[] splittedDocs = dfList.split(";");
-                    try {
-                        if(term.length()>0 && (term.charAt(0) == ' ' || term.charAt(0) == '/' || term.charAt(0) == '.'))
-                        {
-                            term = term.substring(1);
-                        }
-                        if(term.equals(""))
-                        {
-                            throw new Exception("Term Empty before creating new file");
-                        }
-                        String lineIndexInFile = createAndWriteTheFile(term.toLowerCase().charAt(0), dfList);
-                        if (lineIndexInFile == null) {
-                            throw new Exception("Could Not Write The file properly");
-                        }
-                        this.corpusDictionary.put(term, lineIndexInFile);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                else
-                {
-                    //The corpus already contains this term
-                    String[] postFileAndLine = corpusDictionary.get(term).split("#");
-                    readAndAppendToFile(term,postFileAndLine[0],postFileAndLine[1],dqdHshMap.get(term));
-
-
-                }
-
-            }
-
-            dqdHshMap.clear();
-            dqdHshMap = null;
-
-            //System.out.println("test");
-        }
-
-//            for (String term :
-//                    dqdHshMap.keySet()) {
-//
-//
-//            }
-
-
-    }*/
 
     private void createPostFiles() {
-        //map2.forEach(
-        //    (key, value) -> map1.merge( key, value, (v1, v2) -> v1 + ";" + v2)
-        //);
-//        HashMap<String,String> dqdHshMap = ReadWriteTempDic.getInstance().readFromDic();
+
         while (!isQEmpty()) {
 //            System.out.println("There are " + parsedWordsQueue.size() + " Maps left in the Q");
             HashMap<String, String> dqdHshMap = dequeue();
@@ -188,18 +114,6 @@ public class Indexer implements Runnable {
             }
 
         }
-
-//        System.out.println("Indexer Q is empty");
-//        try {
-//            Thread.sleep(500);
-//        }
-//        catch (Exception e)
-//        {
-//
-//        }
-//        indexTheFucker();
-
-
     }
 
     /**
@@ -275,12 +189,8 @@ public class Indexer implements Runnable {
 
 
         try {
-            Path pathToTempDir = Paths.get(pathToTempFolder);
-            File dir = pathToTempDir.toFile();
-            if (dir == null) {
-                return;
-            }
-            while (Objects.requireNonNull(dir.listFiles()).length > 0) {
+
+            while (Objects.requireNonNull(Paths.get(pathToTempFolder).toFile().listFiles()).length > 0) {
                 /**Read objects**/
                 File hashMapFile = Paths.get(pathToTempFolder + indexerNum.getAndIncrement()).toFile();
                 FileInputStream fileIn = new FileInputStream(hashMapFile);
@@ -295,6 +205,7 @@ public class Indexer implements Runnable {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
 
         }
 
@@ -310,8 +221,13 @@ public class Indexer implements Runnable {
 
         ArrayList<String> sortedKeys = new ArrayList<String>(newMap.keySet());
         Collections.sort(sortedKeys);
-
-        char docLetter = sortedKeys.get(0).toLowerCase().charAt(0);
+        System.out.println("Sorted " + sortedKeys.size() + " HashMap keys");
+        int i = 0;
+        char docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
+        while(docLetter == ' ')
+        {
+            docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
+        }
         int termIndexInSortedKeys = 0;
         String corpusPathAndLineDelim = "#";
         Path termFilePath = getFileForTerm(sortedKeys.get(0));
@@ -323,46 +239,80 @@ public class Indexer implements Runnable {
             }
             catch (Exception e)
             {
-
+                e.printStackTrace();
             }
         }
+
         for (String termKey :
-                sortedKeys)
-        {
-            if(termKey.toLowerCase().charAt(0) != docLetter)
-            {//When the letter is changed, write the file and start again for the next letter
+                sortedKeys){
+
+            Path termFilePathTemp;
+            if(corpusDictionary.containsKey(termKey.toLowerCase()))
+            {
+                String valueFromCorpus = corpusDictionary.get(termKey.toLowerCase());
+                String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
+                termFilePathTemp = Paths.get(splittedValue[0]);
+            }
+            else
+            {
+                termFilePathTemp = getFileForTerm(termKey);
+            }
+
+            if (!(termFilePathTemp.toString().equalsIgnoreCase(termFilePath.toString()))) {
+                //the new termFile is not the same as last one
                 writePostFileOfLetter(termFilePath,allTermsOfLetter);
-                termFilePath = getFileForTerm(termKey);
-                if(termFilePath.toFile().exists())
-                {
-                    try{
+                termFilePath = termFilePathTemp;
+                if (termFilePath.toFile().exists()) {
+                    try {
+
+                        System.out.println("Reading all lines from file: " + termFilePath.toFile().getPath());
+//                        allTermsOfLetter = new ArrayList<>();
                         allTermsOfLetter = Files.readAllLines(termFilePath);
                         termFilePath.toFile().delete();
-                    }
-                    catch (Exception e)
-                    {
-
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-                else{
+                else {
                     allTermsOfLetter = new ArrayList<>();
                 }
             }
 
+//            if(termKey.toLowerCase().charAt(0) != docLetter)
+//            {//When the letter is changed, write the file and start again for the next letter
+//                System.out.println("Finished letter " + docLetter);
+//                writePostFileOfLetter(termFilePath,allTermsOfLetter);
+//                i = 0;
+//                docLetter = termKey.toLowerCase().charAt(i++);
+//                while(docLetter == ' ')
+//                {
+//                    docLetter = termKey.toLowerCase().charAt(i++);
+//                }
+//            }
 
-
+//            System.out.println("Strating letter " + termKey.toLowerCase().charAt(0));
+//            if(termKey.equalsIgnoreCase("abacus"))
+//            {
+//                System.out.println("CUS ABA!");
+//            }
             if (corpusDictionary.containsKey(termKey.toLowerCase()))
             {
+
                 int lineNumberInFile = Integer.parseInt(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[1]);
                 StringBuilder addNewHashMapLineToExisting = new StringBuilder();
-                addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile)).append(";").append(newMap.get(termKey));
-                allTermsOfLetter.set(lineNumberInFile,addNewHashMapLineToExisting.toString());
-
+                if(allTermsOfLetter.size() == 0 || lineNumberInFile > allTermsOfLetter.size())
+                {
+                    System.out.println("Fuckkkk");
+                }
+                addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(newMap.get(termKey));
+                allTermsOfLetter.set(lineNumberInFile-1,addNewHashMapLineToExisting.toString());
+//                termFilePath = Paths.get(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[0]);
             }
             else
             {
+//                termFilePath = getFileForTerm(termKey);
                 allTermsOfLetter.add(newMap.get(termKey));
-                String pathAndLine = termFilePath + corpusPathAndLineDelim + allTermsOfLetter.size();
+                String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size();
                 corpusDictionary.put(termKey.toLowerCase(),pathAndLine);
             }
         }
@@ -381,11 +331,24 @@ public class Indexer implements Runnable {
      */
     private Path getFileForTerm(String termKey)
     {
-        if (termKey.length() > 0 && (termKey.charAt(0) == ' ' || termKey.charAt(0) == '/' || termKey.charAt(0) == '.'))
+        if (termKey.length() > 0 && (termKey.charAt(0) == ' ' || termKey.charAt(0) == '/' || termKey.charAt(0) == '\'' || termKey.charAt(0) == '.'))
         {
             termKey = termKey.substring(1);
         }
-        Path pathToPost = Paths.get(pathToPostFolder+"/"+termKey.toLowerCase().charAt(0) + "/0");
+        String pathToTerm = pathToPostFolder+"/"+termKey.toLowerCase().charAt(0);
+        Path realPathOfTermFile = Paths.get(pathToTerm);
+        if(!realPathOfTermFile.toFile().exists())
+        {
+            try {
+                Files.createDirectories(realPathOfTermFile);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        int indexForFile = getIndexInFolder(Paths.get(pathToTerm));
+        Path pathToPost = Paths.get( pathToTerm + "/" +indexForFile);
         return pathToPost;
     }
 
@@ -725,7 +688,7 @@ public class Indexer implements Runnable {
         try {
             if (directoryListing != null) {
                 for (File child : directoryListing) {
-                    if (getFileSizeMegaBytes(child) <= MAX_POSTING_FILE_SIZE)
+                    if (getFileSizeMegaBytes(child) < MAX_POSTING_FILE_SIZE)
                     {
                         String indexStr = child.getName();
                         indexOfFile = Integer.parseInt(indexStr);
@@ -761,7 +724,8 @@ public class Indexer implements Runnable {
     }
 
     private double getFileSizeMegaBytes(File file) {
-        return (double) file.length() / (KB_SIZE * KB_SIZE);
+        double a = (double) file.length() / (KB_SIZE * KB_SIZE);
+        return a;
     }
 
 
