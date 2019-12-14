@@ -1,6 +1,5 @@
 package GUI.Model;
 
-import GUI.ViewModel.ViewModel;
 import Indexer.Indexer;
 import org.apache.commons.io.FileUtils;
 import readFile.ReadFile;
