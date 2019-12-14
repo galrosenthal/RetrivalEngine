@@ -68,7 +68,6 @@ public class MainParse extends AParser {
 //        i.set(0);
 //        currentDoc = d;
 
-        int m = 0;
         //System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
         splitedText = document.getTextArray();
 
@@ -77,42 +76,6 @@ public class MainParse extends AParser {
             String cleanWord = chopDownLastCharPunc(splitedText[index]);
             cleanWord = chopDownFisrtChar(cleanWord);
             String halfCleanWord = chopDownFisrtChar(splitedText[i.get()]);
-
-            //Check if thw word is a number
-//            if (!cleanWord.equals("")) {
-//                System.out.println(cleanWord);
-//                if (Character.isDigit(splitedText[index].charAt(0))) {
-//                    if (NumberUtils.isNumber(splitedText[index])) {
-//                        if (parsePercentage(cleanWord)) {
-////
-//                        } else if (index < splitedText.length - 1 && splitedText[index + 1].equalsIgnoreCase(dollars.toLowerCase())) {
-//                            if (parsePrices(cleanWord)) {
-//
-//                            }
-//                        } else if (parseNumbers(cleanWord)) {
-//
-//                        }
-//                    }
-//
-//                } else {
-//                    if (parseNumberRanges(cleanWord)) {
-//
-//                    } else if (parsePrices(cleanWord)) {
-//
-//                    }
-//                }
-//            } else {
-//                if (parseDates(cleanWord)) {
-//
-//                } else if (parseNameRanges(cleanWord)) {
-//
-//                } else if (Character.isUpperCase(cleanWord.charAt(0))) {
-//                    parseNames(halfCleanWord);
-//                }
-//                else if(parseWords(cleanWord)){
-//
-//                }
-//            }
 
             //Check if the word is empty word
             if(!cleanWord.isEmpty()){
@@ -144,7 +107,7 @@ public class MainParse extends AParser {
                     }
                 }
                 //The first letter is a character and upper case
-                if(Character.isUpperCase(cleanWord.charAt(0))){
+                else if(Character.isUpperCase(cleanWord.charAt(0)) ){//&& cleanWord.matches("^[a-zA-Z]*$")){
                     if(parseDates(cleanWord)){
 
                     }
@@ -155,6 +118,9 @@ public class MainParse extends AParser {
                         parseNames(halfCleanWord);
                     }
                 }
+               /* else if(parseNameRanges(cleanWord)){
+
+                }*/
                 //Check if the char is $
                 else if(cleanWord.charAt(0) == '$'){
                     parsePrices(cleanWord);

@@ -15,7 +15,7 @@ public class Indexer implements Runnable{
     private static volatile Indexer mInstance;
     private final int KB_SIZE = 1024;
     //    private ConcurrentLinkedQueue<ConcurrentHashMap<String,String>> parsedWordsQueue;
-    private ConcurrentLinkedQueue<HashMap<String,String>> parsedWordsQueue;
+    public ConcurrentLinkedQueue<HashMap<String,String>> parsedWordsQueue;
     private String postFiles;
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
@@ -71,7 +71,7 @@ public class Indexer implements Runnable{
         }
 //        System.out.println("Indexer has stopped...");
 //        createPostFiles();
-        System.out.println("Corpus Dictionary size is: " + corpusDictionary.keySet().size());
+        //System.out.println("Corpus Dictionary size is: " + corpusDictionary.keySet().size());
 
     }
 

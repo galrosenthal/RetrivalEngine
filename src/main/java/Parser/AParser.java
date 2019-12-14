@@ -34,7 +34,7 @@ public abstract class AParser implements Runnable {
     protected static ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
-    private static final int numberOfDocsToPost = 100;
+    private static final int numberOfDocsToPost = 50;
     protected volatile boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
@@ -121,13 +121,15 @@ public abstract class AParser implements Runnable {
         {
 //            if(!myReadWriter.writeToDic(termsInText,getName()))
             termsInTextSemaphore.acquireUninterruptibly();
-            System.out.println("Parsed " + termsInText.size() + " terms");
+            //System.out.println("Parsed " + termsInText.size() + " terms");
+//
 //            termsInTextLocker.writeLock().lock();
             if(!Indexer.getInstance().enqueue(termsInText))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
             }
+           // System.out.println("Indexer queue size: " + Indexer.getInstance().parsedWordsQueue.size());
 //            myIndexer.enqueue(termsInText);
 //            termsInText = null;
 //            termsInText = new ConcurrentHashMap<>();

@@ -7,6 +7,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import Indexer.Indexer;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,16 +17,16 @@ import java.util.List;
 public class ReadFile {
 
     private int numOfParsers = 0;
-    private static final int DOC_CREATED_IN_QS = 10000;
+    private static final int DOC_CREATED_IN_QS = 2000;
     public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
-//    public Thread prsNumThrd ;
+    //    public Thread prsNumThrd ;
 //    public Thread prsDatesThrd ;
 //    public Thread prsPrcntThrd;
 //    public Thread prsPriceThrd;
     public List<Thread> allParserThreads;
     public List<AParser> allParsers;
-//    public parsePrices prsPrices = new parsePrices();
+    //    public parsePrices prsPrices = new parsePrices();
 //    public parseNumbers prsNums = new parseNumbers();
 //    public parseDates prsDates = new parseDates();
 //    public parsePercentage prsPrcntg = new parsePercentage();
@@ -47,8 +48,8 @@ public class ReadFile {
         addParserToThreads(mainParse1);
         addParserToThreads(mainParse2);
         addParserToThreads(mainParse3);
-        //addParserToThreads(mainParse4);
-        //addParserToThreads(mainParse5);
+        addParserToThreads(mainParse4);
+        addParserToThreads(mainParse5);
         //addParserToThreads(prsNums);
         //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);
@@ -104,11 +105,11 @@ public class ReadFile {
         {
             e.printStackTrace();
         }
-//        while(!Indexer.getInstance().isQEmpty())
-//        {
-//
-//        }
-//        Indexer.stopThreads = true;
+        while(!Indexer.getInstance().isQEmpty())
+        {
+
+        }
+        Indexer.stopThreads = true;
 
     }
 
@@ -149,6 +150,7 @@ public class ReadFile {
                         numOfParsedDocs++;
                         IR.Document document = new IR.Document(fileDoc);
                         enqDocToAllParsers(document);
+                        shouldWaitForParser();
 //                        System.out.println("Starting parse " + document.getDocNo());
 //                        mainParse1.enqueueDoc(document);
 //                        mainParse1.parse();
@@ -191,11 +193,11 @@ public class ReadFile {
     }
 
     private void shouldWaitForParser() {
-        if(!allPrsrQsEmpty())
+        if(mainParse1.qSize() >= DOC_CREATED_IN_QS)
         {
             try
             {
-                Thread.sleep(5);
+                Thread.sleep(1000);
             }
             catch (Exception e)
             {

@@ -1,5 +1,7 @@
 package GUI.View;
 
+import GUI.Model.Model;
+import GUI.ViewModel.ViewModel;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,18 +16,18 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         String pathTofxml = "../irgui.fxml";
         //URL res = getClass().getResource("../../irgui.fxml");
-        //FXMLLoader loader = new FXMLLoader(res);
-        Parent root = FXMLLoader.load(getClass().getResource("../../irgui.fxml"));
+        FXMLLoader loader = new FXMLLoader();
+        Parent root = loader.load(getClass().getResource("../../irgui.fxml").openStream());
+        Controller controller = loader.getController();
+        Model model = new Model();
+        ViewModel viewModel = new ViewModel(model);
 
 
-
-//        if(res != null){
-//            root = FXMLLoader.load(res);
-//        }
 
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 500 ,500));
         primaryStage.show();
+        controller.initialize(viewModel,primaryStage);
     }
 
 
