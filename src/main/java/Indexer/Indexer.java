@@ -122,6 +122,10 @@ public class Indexer implements Runnable {
     public void writeHashMapToDisk() {
         sortDocListPerTerm();
         try {
+            if(!Paths.get(pathToTempFolder).toFile().exists())
+            {
+                Files.createDirectories(Paths.get(pathToTempFolder));
+            }
             FileOutputStream fileOut = new FileOutputStream(pathToTempFolder + indexerNum.getAndIncrement(), true);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(hundredKtermsMap);
@@ -168,7 +172,7 @@ public class Indexer implements Runnable {
         end = System.nanoTime();
 //            System.out.println("The Sort took " + (end-start)/1000000 + " Milli Seconds");
         String sortedList = Arrays.toString(docList).replaceAll(",", ";");
-        sortedList = Arrays.toString(docList).replaceAll(" ", "");
+//        sortedList = Arrays.toString(docList).replaceAll(" ", "");
         if (sortedList.charAt(0) == '[') {
             sortedList = sortedList.substring(1);
         }
@@ -235,10 +239,14 @@ public class Indexer implements Runnable {
         System.out.println("Sorted " + sortedKeys.size() + " HashMap keys");
         int i = 0;
         char docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
-        while(docLetter == ' ')
-        {
-            docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
-        }
+//        while(docLetter == ' ')
+//        {
+//            docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
+//        }
+//        while(sortedKeys.get(0).equalsIgnoreCase(""))
+//        {
+//            sortedKeys.remove(0);
+//        }
         int termIndexInSortedKeys = 0;
         String corpusPathAndLineDelim = "#";
         Path termFilePath = getFileForTerm(sortedKeys.get(0));
@@ -295,16 +303,23 @@ public class Indexer implements Runnable {
                 int lineNumberInFile = Integer.parseInt(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[1]);
                 StringBuilder addNewHashMapLineToExisting = new StringBuilder();
                 addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(newMap.get(termKey));
+                //Gets and set new Total TF
+                int totalTF = sumTotalTF(termKey,newMap.get(termKey),corpusPathAndLineDelim);
+                String pathAndLineAndTTF = corpusDictionary.get(termKey.toLowerCase());
+                String[] pathLineTTF = pathAndLineAndTTF.split(corpusPathAndLineDelim);
+                pathAndLineAndTTF = pathLineTTF[0] + corpusPathAndLineDelim + pathLineTTF[1] + corpusPathAndLineDelim + totalTF;
+                corpusDictionary.replace(termKey.toLowerCase(),corpusDictionary.get(termKey.toLowerCase()),pathAndLineAndTTF);
+                //sort and set the line in file with the new values
                 String newLineSorted = sortArray(addNewHashMapLineToExisting.toString().split(";"));
                 allTermsOfLetter.set(lineNumberInFile-1,newLineSorted);
-//                sumAndAppendTotalTF();
+
 //                termFilePath = Paths.get(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[0]);
             }
             else
             {
 //                termFilePath = getFileForTerm(termKey);
                 allTermsOfLetter.add(newMap.get(termKey));
-                String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size();
+                String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size() + corpusPathAndLineDelim + sumTotalTF(termKey,newMap.get(termKey),corpusPathAndLineDelim);
                 corpusDictionary.put(termKey.toLowerCase(),pathAndLine);
             }
         }
@@ -315,6 +330,28 @@ public class Indexer implements Runnable {
 
     }
 
+    private int sumTotalTF(String termKey, String docList,String delim) {
+        String[] docListSplitted = docList.split(";");
+        int sum;
+        if(corpusDictionary.containsKey(termKey.toLowerCase()))
+        {
+            sum = Integer.parseInt(corpusDictionary.get(termKey.toLowerCase()).split(delim)[2]);
+        }
+        else
+        {
+            sum = 0;
+        }
+        int tfInSpecificDoc = 0;
+        for (String doc :
+                docListSplitted) {
+            String[] docParams = doc.split(delim);
+            tfInSpecificDoc = Integer.parseInt(docParams[1]);
+            sum += tfInSpecificDoc;
+        }
+
+        return sum;
+    }
+
     /**
      * Gets a term from the hash map
      * and returns the Path to the post file it suppose to be in
@@ -323,6 +360,7 @@ public class Indexer implements Runnable {
      */
     private Path getFileForTerm(String termKey)
     {
+
         if (termKey.length() > 0 && (termKey.charAt(0) == ' ' || termKey.charAt(0) == '/' || termKey.charAt(0) == '\'' || termKey.charAt(0) == '.'))
         {
             termKey = termKey.substring(1);

@@ -17,6 +17,7 @@ public class Model extends Observable implements IModel {
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
         int indexerIndex = 0;
 
+
         for (int i = 0; i < IndexerThreads.length; i++) {
             IndexerThreads[i] = new Thread(Indexer.getInstance());
             IndexerThreads[i].setName("Indexer " + indexerIndex++);
@@ -29,12 +30,16 @@ public class Model extends Observable implements IModel {
         this.corpusPath = corpusPath;
         this.postingPath = postingPath;
         Indexer.getInstance().setPathToPostFiles(postingPath);
-        f.readCorpus(corpus);
 
         for (int i = 0; i < IndexerThreads.length; i++) {
             System.out.println(IndexerThreads[i].getName() + " has started...");
             IndexerThreads[i].start();
         }
+
+        f.readCorpus(corpus);
+        f.stopThreads();
+
+
 
         try{
             for (int i = 0; i < IndexerThreads.length; i++) {

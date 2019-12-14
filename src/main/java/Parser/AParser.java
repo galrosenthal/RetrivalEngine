@@ -395,6 +395,8 @@ public abstract class AParser implements Runnable {
     protected void parsedTermInsert(String term, String currentDocNo) {
 //        termsInTextLocker.readLock().lock();
 //        termsInTextSemaphore.acquireUninterruptibly();
+        if(term.isEmpty())
+            return;
 
         if (termsInText.containsKey(term)) {
 
