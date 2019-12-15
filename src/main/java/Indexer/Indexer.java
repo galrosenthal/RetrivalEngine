@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Indexer implements Runnable {
@@ -25,17 +26,22 @@ public class Indexer implements Runnable {
     private String pathToPostFolder = "./postingFiles/";
     private String pathToTempFolder = "./dicTemp/";
     public HashMap<String, String> hundredKtermsMap;
+    private static Semaphore hashMapSemaphore;
 
     private Indexer() {
         this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
         corpusDictionary = new HashMap<>();
         hundredKtermsMap = new HashMap<>();
         indexerNum = new AtomicInteger(0);
+        hashMapSemaphore = new Semaphore(1);
 
     }
 
     public boolean isQEmpty() {
-        return parsedWordsQueue.isEmpty();
+        hashMapSemaphore.acquireUninterruptibly();
+        boolean isEmpty = parsedWordsQueue.isEmpty();
+        hashMapSemaphore.release();
+        return isEmpty;
     }
 
     public static Indexer getInstance() {
@@ -50,12 +56,19 @@ public class Indexer implements Runnable {
     }
 
 
-    public synchronized boolean enqueue(HashMap<String, String> parsedWords) {
-        return parsedWordsQueue.add(parsedWords);
+    public synchronized boolean enqueue(HashMap<String, String> parsedWords)
+    {
+        hashMapSemaphore.acquireUninterruptibly();
+        boolean isAdded = parsedWordsQueue.add(parsedWords);
+        hashMapSemaphore.release();
+        return isAdded;
     }
 
     private synchronized HashMap<String, String> dequeue() {
-        return parsedWordsQueue.poll();
+        hashMapSemaphore.acquireUninterruptibly();
+        HashMap dqdMap = parsedWordsQueue.poll();
+        hashMapSemaphore.release();
+        return dqdMap;
     }
 
     public void setPathToPostFiles(String path) {

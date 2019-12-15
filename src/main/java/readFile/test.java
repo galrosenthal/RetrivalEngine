@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class test {
@@ -19,15 +21,25 @@ public class test {
     public static void main(String[] args) {
 //        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
+
+
         //String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
-        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\1files";
 //        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 
-        readDocsHashMapToDisk();
+
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\corpus";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\halfCorpus";
+        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\qurtrCorpus";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\10files";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\2files";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\1files";
+
+//        readDocsHashMapToDisk();
         try
         {
             FileUtils.cleanDirectory(new File("./postingFiles/"));
@@ -68,6 +80,7 @@ public class test {
         startTime = System.nanoTime();
 
         f.readCorpus(corpus);
+        System.out.println("Finished Reading corpus");
         //f.runParsers();
 
         f.stopThreads();
@@ -86,7 +99,7 @@ public class test {
 
         myIndexer.createCorpusDictionary();
 
-        myIndexer.saveCorpusDictionary();
+//        myIndexer.saveCorpusDictionary();
 //        writeDocsHashMapToDisk(MainParse.allDocs);
 //        readDocsHashMapToDisk();
         System.out.println("Corpus Size = " + myIndexer.corpusSize());
@@ -104,13 +117,16 @@ public class test {
             {
                 Files.createDirectories(Paths.get(pathToTempFolder));
             }
-            FileInputStream filein = new FileInputStream(pathToTempFolder + 2675);
+            FileInputStream filein = new FileInputStream(pathToTempFolder + 0);
             ObjectInputStream objectOut = new ObjectInputStream(filein);
             Object a = objectOut.readObject();
             objectOut.close();
             filein.close();
 
             ConcurrentHashMap<String, Document> myMap = (ConcurrentHashMap)a;
+            ArrayList<String> sortedKey = new ArrayList<String>(myMap.keySet());
+            Collections.sort(sortedKey);
+
             System.out.println("Wtfffff");
         } catch (Exception e) {
             e.printStackTrace();

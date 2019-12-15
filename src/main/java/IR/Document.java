@@ -103,19 +103,19 @@ public class Document implements Serializable {
             {
                 increaseTermCountInDoc(newTerm);
             }
-        }
 
-        if(firstInsert)
-        {
-            maxTFTerm = newTerm;
-            firstInsert = false;
-
-        }
-        else
-        {
-            if (termsDictonary.get(newTerm) > termsDictonary.get(maxTFTerm))
+            if(firstInsert)
             {
                 maxTFTerm = newTerm;
+                firstInsert = false;
+
+            }
+            else
+            {
+                if (termsDictonary.get(newTerm) > termsDictonary.get(maxTFTerm))
+                {
+                    maxTFTerm = newTerm;
+                }
             }
         }
     }
@@ -144,8 +144,7 @@ public class Document implements Serializable {
         Document document = (Document) o;
         if(document.textArray.length == 0)
             return false;
-        return this.textArray.length == document.textArray.length &&
-                this.textArray[0].equals(document.textArray[0]);
+        return this.getDocNo().equalsIgnoreCase(document.getDocNo());
     }
 
 //    @Override

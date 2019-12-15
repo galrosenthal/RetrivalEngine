@@ -7,20 +7,20 @@ import Indexer.*;
 import Indexer.ReadWriteTempDic;
 import Tokenizer.Tokenizer;
 import org.apache.commons.lang3.math.NumberUtils;
+import sun.awt.Mutex;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class AParser implements Runnable {
 
+    protected static Mutex m = new Mutex();
     protected final double BILLION = 1000000000;
     protected final double MILLION = 1000000;
     protected final double THOUSAND = 1000;
@@ -35,6 +35,7 @@ public abstract class AParser implements Runnable {
 //    protected ConcurrentHashMap<String,String> termsInText;
     protected HashMap<String,String> termsInText;
     protected static ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
+//    public static BlockingQueue<Document> docQueueWaitingForParse;
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
     private static final int numberOfDocsToPost = 100;
@@ -42,9 +43,13 @@ public abstract class AParser implements Runnable {
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
     public StringBuilder lastDocList;
-    private static ReadWriteLock docEnqDeqLocker = new ReentrantReadWriteLock();
+//    private static ReadWriteLock docEnqDeqLocker = new ReentrantReadWriteLock();
+    protected static Semaphore docEnqDeqLockerSem = new Semaphore(1);
     protected static Semaphore termsInTextSemaphore = new Semaphore(1);
     protected static Semaphore allDocsSemaphore = new Semaphore(1);
+//    protected static Mutex docEnqDeqLockerSem = new Mutex();
+//    protected static Mutex termsInTextSemaphore = new Mutex();
+//    protected static Mutex allDocsSemaphore = new Mutex();
     protected boolean isParsing = false;
     public static ConcurrentHashMap<String, DocumentInfo> allDocs;
 
@@ -56,6 +61,7 @@ public abstract class AParser implements Runnable {
 //        termsInText = new ConcurrentHashMap<>();
         termsInText = new HashMap<>();
         docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
+//        docQueueWaitingForParse = new LinkedBlockingQueue<>();
         numOfParsedDocInIterative = 0;
         createStopWords();
         createMStopWords();
@@ -80,7 +86,10 @@ public abstract class AParser implements Runnable {
     protected void makeDocParsed(Document doc)
     {
         allDocsSemaphore.acquireUninterruptibly();
+//        allDocsSemaphore.lock();
+
         allDocs.put(doc.getDocNo(),new DocumentInfo(doc));
+//        allDocsSemaphore.unlock();
         allDocsSemaphore.release();
     }
 
@@ -91,9 +100,13 @@ public abstract class AParser implements Runnable {
      */
     public boolean isQEmpty()
     {
-        docEnqDeqLocker.readLock().lock();
+//        docEnqDeqLocker.readLock().lock();
+//        docEnqDeqLockerSem.lock();
+        docEnqDeqLockerSem.acquireUninterruptibly();
         boolean isItEmpty = docQueueWaitingForParse.isEmpty();
-        docEnqDeqLocker.readLock().unlock();
+//        docEnqDeqLocker.readLock().unlock();
+//        docEnqDeqLockerSem.unlock();
+        docEnqDeqLockerSem.release();
         return isItEmpty;
     }
 
@@ -104,12 +117,21 @@ public abstract class AParser implements Runnable {
      */
     public boolean enqueueDoc(Document d)
     {
-        if(d != null && !docQueueWaitingForParse.contains(d))
+        if(d != null/* && !docQueueWaitingForParse.contains(d)*/)
         {
-            docEnqDeqLocker.writeLock().lock();
-            boolean inserted = docQueueWaitingForParse.add(d);
-            docEnqDeqLocker.writeLock().unlock();
-            return inserted;
+//            if(d.getDocNo().contains("7"))
+//            {
+//                System.out.println(d.getDocNo());
+//            }
+//            docEnqDeqLocker.writeLock().lock();
+//            docEnqDeqLockerSem.lock();
+            //docEnqDeqLockerSem.acquireUninterruptibly();
+                docQueueWaitingForParse.add(d);
+
+//            docEnqDeqLocker.writeLock().unlock();
+//            docEnqDeqLockerSem.unlock();
+            //docEnqDeqLockerSem.release();
+            return true;
         }
         return false;
     }
@@ -120,9 +142,14 @@ public abstract class AParser implements Runnable {
      */
     protected Document dequeueDoc()
     {
-        docEnqDeqLocker.readLock().lock();
-        Document dqd = docQueueWaitingForParse.poll();
-        docEnqDeqLocker.readLock().unlock();
+//        docEnqDeqLocker.readLock().lock();
+//        docEnqDeqLockerSem.lock();
+//        docEnqDeqLockerSem.acquireUninterruptibly();
+        Document dqd = null;
+            dqd = docQueueWaitingForParse.poll();
+//        docEnqDeqLocker.readLock().unlock();
+//        docEnqDeqLockerSem.unlock();
+//        docEnqDeqLockerSem.release();
         return dqd;
     }
 
@@ -131,6 +158,7 @@ public abstract class AParser implements Runnable {
     {
         if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
         {
+//            termsInTextSemaphore.lock();
             termsInTextSemaphore.acquireUninterruptibly();
             if(!Indexer.getInstance().enqueue(termsInText))
             {
@@ -139,14 +167,18 @@ public abstract class AParser implements Runnable {
             }
             termsInText = new HashMap<>();
             numOfParsedDocInIterative = 0;
+//            termsInTextSemaphore.unlock();
             termsInTextSemaphore.release();
 
+//            allDocsSemaphore.lock();
             allDocsSemaphore.acquireUninterruptibly();
             if(!DocumentIndexer.enQnewDocs(allDocs))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
             }
+            allDocs = new ConcurrentHashMap<>();
+//            allDocsSemaphore.unlock();
             allDocsSemaphore.release();
 
 
@@ -408,10 +440,11 @@ public abstract class AParser implements Runnable {
      */
     protected void parsedTermInsert(String term, Document doc) {
 //        termsInTextLocker.readLock().lock();
-//        termsInTextSemaphore.acquireUninterruptibly();
-        if(term.isEmpty())
+        if(term == null||term.isEmpty()  )
             return;
 
+//        termsInTextSemaphore.lock();
+        termsInTextSemaphore.acquireUninterruptibly();
         String currentDocNo = doc.getDocNo();
         if (termsInText.containsKey(term)) {
 
@@ -448,7 +481,8 @@ public abstract class AParser implements Runnable {
 
         doc.insertFoundTermInDoc(term);
 //        termsInTextLocker.readLock().unlock();
-//        termsInTextSemaphore.release();
+//        termsInTextSemaphore.unlock();
+        termsInTextSemaphore.release();
     }
 
     /**

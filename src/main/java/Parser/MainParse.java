@@ -1,9 +1,11 @@
 package Parser;
 
 import IR.Document;
+//import com.sun.corba.se.impl.orbutil.concurrent.Mutex;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.englishStemmer;
+import sun.awt.Mutex;
 
 import java.text.DecimalFormat;
 import java.time.Month;
@@ -19,7 +21,8 @@ public class MainParse extends AParser {
     private String pattern = "(([0-9]+\\-[0-9]+)|([a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+)|([a-zA-Z]+-[a-zA-Z]+)|[0-9]+\\-[a-zA-Z]+)";
     private Pattern pRange = Pattern.compile(pattern);
     private Matcher matcherRange;
-    private static Semaphore docDequeuerLock;
+    private static Semaphore docDequeuerLock = new Semaphore(1);
+//    private static Mutex docDequeuerLock = new Mutex();
     private Document currentDoc = null;
     private DecimalFormat format3Decimals;
     private final String dollars = "Dollars";
@@ -33,7 +36,7 @@ public class MainParse extends AParser {
         super();
 
         this.parseName = "Main Parser";
-        docDequeuerLock = new Semaphore(1);
+//        docDequeuerLock = new Mutex();
         format3Decimals = new DecimalFormat("#.###");
 
 
@@ -62,22 +65,33 @@ public class MainParse extends AParser {
 //                currentDoc = dequeueDoc();
 //            }
 //        System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
-        docDequeuerLock.acquireUninterruptibly();
-        currentDoc = dequeueDoc();
-        if (currentDoc == null) {
+        try {
+            docDequeuerLock.acquireUninterruptibly();
+            currentDoc = dequeueDoc();
+
+            if (currentDoc == null) {
+                docDequeuerLock.release();
+                return;
+            }
+//            if(currentDoc.getDocNo().contains("75"))
+//            {
+//                System.out.println("FoundIt");
+//            }
             docDequeuerLock.release();
-            return;
+            i.set(0);
+            parse(currentDoc);
+            makeDocParsed(currentDoc);
+            numOfParsedDocInIterative++;
+            releaseToIndexerFile();
         }
-        docDequeuerLock.release();
-        i.set(0);
-        parse(currentDoc);
-        makeDocParsed(currentDoc);
-        numOfParsedDocInIterative++;
-        releaseToIndexerFile();
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public void parse(Document document) {
-        termsInTextSemaphore.acquireUninterruptibly();
+//        termsInTextSemaphore.acquireUninterruptibly();
         d = document;
         isParsing = true;
 //        i.set(0);
@@ -175,7 +189,7 @@ public class MainParse extends AParser {
                 }
             }
         }
-        termsInTextSemaphore.release();
+//        termsInTextSemaphore.release();
         isParsing = false;
     }
 

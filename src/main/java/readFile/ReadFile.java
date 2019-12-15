@@ -40,7 +40,8 @@ public class ReadFile {
     public MainParse mainParse2 = new MainParse();
     public MainParse mainParse3 = new MainParse();
     public MainParse mainParse4 = new MainParse();
-    public MainParse mainParse5 = new MainParse();
+//    public MainParse mainParse5 = new MainParse();
+//    public MainParse mainParse6 = new MainParse();
 //    private Indexer myIndexer = Indexer.getInstance();
 //    private final int numberOfDocsToPost = 1000;
 
@@ -52,6 +53,8 @@ public class ReadFile {
         addParserToThreads(mainParse2);
         addParserToThreads(mainParse3);
         addParserToThreads(mainParse4);
+//        addParserToThreads(mainParse5);
+//        addParserToThreads(mainParse6);
         //addParserToThreads(prsNums);
         //addParserToThreads(prsDates);
         //addParserToThreads(prsPrcntg);
@@ -154,6 +157,10 @@ public class ReadFile {
                         numOfParsedDocs++;
                         testSleepOn4Files++;
                         IR.Document document = new IR.Document(fileDoc);
+//                        if(document.getDocNo().contains("73"))
+//                        {
+//                            System.out.println(document.getDocNo());
+//                        }
                         enqDocToAllParsers(document);
 //                        shouldWaitForParser();
 //                        System.out.println("Starting parse " + document.getDocNo());
