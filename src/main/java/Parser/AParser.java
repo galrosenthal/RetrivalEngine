@@ -38,6 +38,7 @@ public abstract class AParser implements Runnable {
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
     private static final int numberOfDocsToPost = 100;
+    private static final int numOfDocsToSave = 100000;
     protected volatile boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
@@ -140,18 +141,17 @@ public abstract class AParser implements Runnable {
             termsInText = new HashMap<>();
             numOfParsedDocInIterative = 0;
             termsInTextSemaphore.release();
-
+        }
+        if(numOfParsedDocInIterative >= numOfDocsToSave || doneReadingDocs) {
             allDocsSemaphore.acquireUninterruptibly();
-            if(!DocumentIndexer.enQnewDocs(allDocs))
-            {
+            System.out.println("releasing " + allDocs.size() + " doc map");
+            if (!DocumentIndexer.enQnewDocs(allDocs)) {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
             }
+            allDocs = new ConcurrentHashMap<>();
             allDocsSemaphore.release();
-
-
         }
-
     }
 
     private String getName() {

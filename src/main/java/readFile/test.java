@@ -27,7 +27,7 @@ public class test {
 //        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 
-        readDocsHashMapToDisk();
+//        readDocsHashMapToDisk();
         try
         {
             FileUtils.cleanDirectory(new File("./postingFiles/"));
