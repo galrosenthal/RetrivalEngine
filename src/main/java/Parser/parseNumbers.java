@@ -1,299 +1,299 @@
-package Parser;
-
-import IR.Document;
-
-import java.text.DecimalFormat;
-
-public class parseNumbers extends AParser{
-
-
-    //    private List<String> numbersInText;
-//    private List<String> allNumbersInText;
-//    private HashMap<String,Integer> allNumbersInText;
-    private DecimalFormat format3Decimals;
-    private Document currentDoc;
-
-    @Override
-    public void run() {
-        System.out.println("Num Parser has started");
-        while(!stopThread)
-        {
-            parse();
-        }
-        System.out.println("Num Parser has stopped");
-
-    }
-
-
-    public parseNumbers() {
-        super();
-//        allNumbersInText = new HashMap<>();
-        parseName = "NumberParser";
-
-        format3Decimals = new DecimalFormat("#.###");
-    }
-
-
-    @Override
-    public void parse()
-    {
-
-        while(!isQEmpty())
-        {
-            Document d = dequeueDoc();
-//            System.out.println("There are " + this.qSize() + " docs in the queue left");
-
-
-            if(d == null)
-            {
-                continue;
-            }
-
-//        this.splitDocText(d);
-            currentDoc = d;
-            docText = d.getDocText().text().split(" ");
-
-            int countNumberMatch=0,allNumbers=0;
-            for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
-                String word = docText[wordIndex];
-                if (stopWords.contains(word.toLowerCase())) {
-                    continue;
-                }
-                word = chopDownLastCharPunc(word);
-                word = chopDownFisrtChar(word);
-                if (word.matches("^\\d.*")) {
-                    if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1])) {
-                        String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
-                        if (theWordParsed == null) {
-                            //FUCK
-
-                        } else {
-                            countNumberMatch++;
-                            parsedTermInsert(theWordParsed, currentDoc.getDocNo());
-                            wordIndex++;
-                            continue;
-                        }
-
-                    }
-
-
-                    if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
-                        String[] splitHifWord = word.split("-");
-                        parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
-                        parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
-
-                        continue;
-                    }
-
-                    //TODO: this is related to טווחים וביטויים section
-//                else if(word.matches("^\\d+-\\d+$"))
-//                {
-//                    countNumberMatch++;
-////                    numbersInText.add(word.split("-")[0]);
-////                    numbersInText.add(word.split("-")[1]);
-//                    numbersInText.add(word);
+//package Parser;
+//
+//import IR.Document;
+//
+//import java.text.DecimalFormat;
+//
+//public class parseNumbers extends AParser{
+//
+//
+//    //    private List<String> numbersInText;
+////    private List<String> allNumbersInText;
+////    private HashMap<String,Integer> allNumbersInText;
+//    private DecimalFormat format3Decimals;
+//    private Document currentDoc;
+//
+//    @Override
+//    public void run() {
+//        System.out.println("Num Parser has started");
+//        while(!stopThread)
+//        {
+//            parse();
+//        }
+//        System.out.println("Num Parser has stopped");
+//
+//    }
+//
+//
+//    public parseNumbers() {
+//        super();
+////        allNumbersInText = new HashMap<>();
+//        parseName = "NumberParser";
+//
+//        format3Decimals = new DecimalFormat("#.###");
+//    }
+//
+//
+//    @Override
+//    public void parse()
+//    {
+//
+//        while(!isQEmpty())
+//        {
+//            Document d = dequeueDoc();
+////            System.out.println("There are " + this.qSize() + " docs in the queue left");
+//
+//
+//            if(d == null)
+//            {
+//                continue;
+//            }
+//
+////        this.splitDocText(d);
+//            currentDoc = d;
+//            docText = d.getDocText().text().split(" ");
+//
+//            int countNumberMatch=0,allNumbers=0;
+//            for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
+//                String word = docText[wordIndex];
+//                if (stopWords.contains(word.toLowerCase())) {
+//                    continue;
 //                }
-
-
-                    else if (word.matches("^\\d+/\\d+$")) {
-                        countNumberMatch++;
-                        parsedTermInsert(word, currentDoc.getDocNo());
-                        continue;
-                    } else {
-                        countNumberMatch++;
-                        parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
-                    }
-
-
-                }
-            }
-            numOfParsedDocInIterative++;
-            this.releaseToIndexerFile();
-
-        }
-
-
-        //System.out.println("\n\n\n"+countNumberMatch+"/"+allNumbers);
-
-
-    }
-    public void parseNoThread(Document d){
-        currentDoc = d;
-        docText = d.getDocText().text().split(" ");
-
-        int countNumberMatch=0,allNumbers=0;
-        for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
-            String word = docText[wordIndex];
-            if (stopWords.contains(word.toLowerCase())) {
-                continue;
-            }
-            word = chopDownLastCharPunc(word);
-            word = chopDownFisrtChar(word);
-            if (word.matches("^\\d.*")) {
-                if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1])) {
-                    String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
-                    if (theWordParsed == null) {
-                        //FUCK
-
-                    } else {
-                        countNumberMatch++;
-                        parsedTermInsert(theWordParsed, currentDoc.getDocNo());
-                        wordIndex++;
-                        continue;
-                    }
-
-                }
-
-
-                if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
-                    String[] splitHifWord = word.split("-");
-                    parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
-                    parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
-
-                    continue;
-                }
-
-                //TODO: this is related to טווחים וביטויים section
-//                else if(word.matches("^\\d+-\\d+$"))
-//                {
-//                    countNumberMatch++;
-////                    numbersInText.add(word.split("-")[0]);
-////                    numbersInText.add(word.split("-")[1]);
-//                    numbersInText.add(word);
+//                word = chopDownLastCharPunc(word);
+//                word = chopDownFisrtChar(word);
+//                if (word.matches("^\\d.*")) {
+//                    if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1])) {
+//                        String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
+//                        if (theWordParsed == null) {
+//                            //FUCK
+//
+//                        } else {
+//                            countNumberMatch++;
+//                            parsedTermInsert(theWordParsed, currentDoc.getDocNo());
+//                            wordIndex++;
+//                            continue;
+//                        }
+//
+//                    }
+//
+//
+//                    if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
+//                        String[] splitHifWord = word.split("-");
+//                        parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
+//                        parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+//
+//                        continue;
+//                    }
+//
+//                    //TODO: this is related to טווחים וביטויים section
+////                else if(word.matches("^\\d+-\\d+$"))
+////                {
+////                    countNumberMatch++;
+//////                    numbersInText.add(word.split("-")[0]);
+//////                    numbersInText.add(word.split("-")[1]);
+////                    numbersInText.add(word);
+////                }
+//
+//
+//                    else if (word.matches("^\\d+/\\d+$")) {
+//                        countNumberMatch++;
+//                        parsedTermInsert(word, currentDoc.getDocNo());
+//                        continue;
+//                    } else {
+//                        countNumberMatch++;
+//                        parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
+//                    }
+//
+//
 //                }
-
-
-                else if (word.matches("^\\d+/\\d+$")) {
-                    countNumberMatch++;
-                    parsedTermInsert(word, currentDoc.getDocNo());
-                    continue;
-                } else {
-                    countNumberMatch++;
-                    parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
-                }
-
-
-            }
-        }
-        numOfParsedDocInIterative++;
-        //this.releaseToIndexerFile();
-    }
-
-
-    /**
-     * Gets a String with a number
-     * and
-     * Returns a String with number formatted as desired in the Instructions (Thousand->K,Million->M...)
-     * @param number
-     * @return
-     */
-    private String quantifiedWordForDic(String number)
-    {
-        number = chopDownLastCharPunc(number);
-        double importantNumber;
-
-        String result = "";
-        try
-        {
-            importantNumber = getNumberFromString(number);
-        }
-        catch (Exception e)
-        {
-            return result;
-        }
-        if(importantNumber < THOUSAND)
-        {
-            importantNumber = importantNumber;
-            result = format3Decimals.format(importantNumber);
-        }
-        else if(importantNumber < MILLION)
-        {
-            importantNumber = importantNumber/THOUSAND;
-
-            result = format3Decimals.format(importantNumber);
-            result += "K";
-        }
-        else if(importantNumber < BILLION)
-        {
-            importantNumber = importantNumber/MILLION;
-            result = format3Decimals.format(importantNumber);
-            result += "M";
-        }
-        else
-        {
-            importantNumber = importantNumber/BILLION;
-            result = format3Decimals.format(importantNumber);
-            result += "B";
-        }
-
-        return result;
-    }
-
-    /**
-     * Gets 2 Strings one is a number and the second is the quntifier (Thousand,Million,Billion)
-     * and
-     * Returns a String with number formatted as desired in the Instructions (Thousand->K,Million->M...)
-     * @param number
-     * @param quntifier
-     * @return
-     */
-    protected String quantifiedWordForDic(String number,String quntifier) {
-        quntifier = chopDownLastCharPunc(quntifier);
-        number = chopDownLastCharPunc(number);
-
-        double importantNumber;
-        try {
-            importantNumber = getNumberFromString(number);
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
-        String result = importantNumber+"";
-        if(quntifier.equalsIgnoreCase("thousand"))
-        {
-            //Thousand
-            result += "K";
-
-        }
-        else if(quntifier.equalsIgnoreCase("million") )
-        {
-            //Million
-            result += "M";
-        }
-        else if(quntifier.equalsIgnoreCase("billion") )
-        {
-            //billion
-            result += "B";
-        }
-
-
-        return result;
-    }
-
-    private double getNumberFromString(String number) throws NumberFormatException {
-        number = chopDownLastCharPunc(number);
-        double numberInString = 0.0;
-        if(number.matches("^(\\d+|\\d{1,3}(,\\d{3})*)(\\.\\d+)?$"))
-        {
-            numberInString = Double.parseDouble(number.replaceAll(",",""));
-//                    System.out.println(word);
-        }
-
-        return numberInString;
-    }
-
-    /**
-     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
-     * @param quntifier
-     * @return
-     */
-    protected boolean nextWordIsQuntifier(String quntifier) {
-        quntifier = chopDownLastCharPunc(quntifier);
-        if(quntifier.matches("^(Thousand|Million|Billion)"))
-        {
-            return true;
-        }
-        return false;
-    }
-}
+//            }
+//            numOfParsedDocInIterative++;
+//            this.releaseToIndexerFile();
+//
+//        }
+//
+//
+//        //System.out.println("\n\n\n"+countNumberMatch+"/"+allNumbers);
+//
+//
+//    }
+//    public void parseNoThread(Document d){
+//        currentDoc = d;
+//        docText = d.getDocText().text().split(" ");
+//
+//        int countNumberMatch=0,allNumbers=0;
+//        for (int wordIndex = 0; wordIndex < docText.length; wordIndex++) {
+//            String word = docText[wordIndex];
+//            if (stopWords.contains(word.toLowerCase())) {
+//                continue;
+//            }
+//            word = chopDownLastCharPunc(word);
+//            word = chopDownFisrtChar(word);
+//            if (word.matches("^\\d.*")) {
+//                if (wordIndex < docText.length - 1 && nextWordIsQuntifier(docText[wordIndex + 1])) {
+//                    String theWordParsed = quantifiedWordForDic(word, docText[wordIndex + 1]);
+//                    if (theWordParsed == null) {
+//                        //FUCK
+//
+//                    } else {
+//                        countNumberMatch++;
+//                        parsedTermInsert(theWordParsed, currentDoc.getDocNo());
+//                        wordIndex++;
+//                        continue;
+//                    }
+//
+//                }
+//
+//
+//                if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
+//                    String[] splitHifWord = word.split("-");
+//                    parsedTermInsert(splitHifWord[0], currentDoc.getDocNo());
+//                    parsedTermInsert(splitHifWord[1], currentDoc.getDocNo());
+//
+//                    continue;
+//                }
+//
+//                //TODO: this is related to טווחים וביטויים section
+////                else if(word.matches("^\\d+-\\d+$"))
+////                {
+////                    countNumberMatch++;
+//////                    numbersInText.add(word.split("-")[0]);
+//////                    numbersInText.add(word.split("-")[1]);
+////                    numbersInText.add(word);
+////                }
+//
+//
+//                else if (word.matches("^\\d+/\\d+$")) {
+//                    countNumberMatch++;
+//                    parsedTermInsert(word, currentDoc.getDocNo());
+//                    continue;
+//                } else {
+//                    countNumberMatch++;
+//                    parsedTermInsert(quantifiedWordForDic(word), currentDoc.getDocNo());
+//                }
+//
+//
+//            }
+//        }
+//        numOfParsedDocInIterative++;
+//        //this.releaseToIndexerFile();
+//    }
+//
+//
+//    /**
+//     * Gets a String with a number
+//     * and
+//     * Returns a String with number formatted as desired in the Instructions (Thousand->K,Million->M...)
+//     * @param number
+//     * @return
+//     */
+//    private String quantifiedWordForDic(String number)
+//    {
+//        number = chopDownLastCharPunc(number);
+//        double importantNumber;
+//
+//        String result = "";
+//        try
+//        {
+//            importantNumber = getNumberFromString(number);
+//        }
+//        catch (Exception e)
+//        {
+//            return result;
+//        }
+//        if(importantNumber < THOUSAND)
+//        {
+//            importantNumber = importantNumber;
+//            result = format3Decimals.format(importantNumber);
+//        }
+//        else if(importantNumber < MILLION)
+//        {
+//            importantNumber = importantNumber/THOUSAND;
+//
+//            result = format3Decimals.format(importantNumber);
+//            result += "K";
+//        }
+//        else if(importantNumber < BILLION)
+//        {
+//            importantNumber = importantNumber/MILLION;
+//            result = format3Decimals.format(importantNumber);
+//            result += "M";
+//        }
+//        else
+//        {
+//            importantNumber = importantNumber/BILLION;
+//            result = format3Decimals.format(importantNumber);
+//            result += "B";
+//        }
+//
+//        return result;
+//    }
+//
+//    /**
+//     * Gets 2 Strings one is a number and the second is the quntifier (Thousand,Million,Billion)
+//     * and
+//     * Returns a String with number formatted as desired in the Instructions (Thousand->K,Million->M...)
+//     * @param number
+//     * @param quntifier
+//     * @return
+//     */
+//    protected String quantifiedWordForDic(String number,String quntifier) {
+//        quntifier = chopDownLastCharPunc(quntifier);
+//        number = chopDownLastCharPunc(number);
+//
+//        double importantNumber;
+//        try {
+//            importantNumber = getNumberFromString(number);
+//        }
+//        catch (Exception e)
+//        {
+//            return null;
+//        }
+//        String result = importantNumber+"";
+//        if(quntifier.equalsIgnoreCase("thousand"))
+//        {
+//            //Thousand
+//            result += "K";
+//
+//        }
+//        else if(quntifier.equalsIgnoreCase("million") )
+//        {
+//            //Million
+//            result += "M";
+//        }
+//        else if(quntifier.equalsIgnoreCase("billion") )
+//        {
+//            //billion
+//            result += "B";
+//        }
+//
+//
+//        return result;
+//    }
+//
+//    private double getNumberFromString(String number) throws NumberFormatException {
+//        number = chopDownLastCharPunc(number);
+//        double numberInString = 0.0;
+//        if(number.matches("^(\\d+|\\d{1,3}(,\\d{3})*)(\\.\\d+)?$"))
+//        {
+//            numberInString = Double.parseDouble(number.replaceAll(",",""));
+////                    System.out.println(word);
+//        }
+//
+//        return numberInString;
+//    }
+//
+//    /**
+//     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
+//     * @param quntifier
+//     * @return
+//     */
+//    protected boolean nextWordIsQuntifier(String quntifier) {
+//        quntifier = chopDownLastCharPunc(quntifier);
+//        if(quntifier.matches("^(Thousand|Million|Billion)"))
+//        {
+//            return true;
+//        }
+//        return false;
+//    }
+//}
