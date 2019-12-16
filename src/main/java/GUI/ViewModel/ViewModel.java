@@ -3,6 +3,7 @@ package GUI.ViewModel;
 import GUI.Model.IModel;
 import GUI.Model.Model;
 
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -29,5 +30,13 @@ public class ViewModel extends Observable implements Observer {
             notifyObservers(arg);
         }
 
+    }
+
+    public void loadDictinary(boolean withStemm) {
+        model.loadDictionary(withStemm);
+    }
+
+    public HashMap<String,String> getDictionary() {
+       return model.getDictionary();
     }
 }

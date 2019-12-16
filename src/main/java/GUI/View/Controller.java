@@ -1,21 +1,31 @@
 package GUI.View;
 
 import GUI.ViewModel.*;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableArray;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableListBase;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextField;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
+import javafx.stage.*;
 
+import javax.swing.*;
 import java.io.File;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 public class Controller implements Observer {
+
 
 
     ViewModel viewModel;
@@ -33,6 +43,9 @@ public class Controller implements Observer {
     public TextField txt_field_Posting;
     public CheckBox chk_Stemm;
     public Button btn_reset;
+    public TextArea text_Dictionary;
+    public TilePane tilePane;
+
 
     public void startParse(){
         btn_strtPrs.setDisable(true);
@@ -79,6 +92,77 @@ public class Controller implements Observer {
             int num = (int) arg;
             btn_strtPrs.setDisable(false);
             btn_reset.setDisable(false);
+        }
+    }
+
+    public void loadDirectory(ActionEvent actionEvent) {
+            viewModel.loadDictinary(chk_Stemm.isSelected());
+    }
+
+    public void showDirectory(ActionEvent actionEvent) {
+        try {
+            HashMap<String ,String> dic = viewModel.getDictionary();
+            TableView tableView = new TableView<>();
+            TableColumn<String, Map> column1 = new TableColumn("Term");
+            column1.setCellValueFactory(new PropertyValueFactory<>("term"));
+
+            TableColumn<String, Map> column2 = new TableColumn("Amount");
+            column2.setCellValueFactory(new PropertyValueFactory<>("amount"));
+            PropertyValueFactory factory = new PropertyValueFactory<>("firstName");
+            tableView.getColumns().add(column1);
+            tableView.getColumns().add(column2);
+            //tableView.setItems(getInitialTableData());
+            for (String term:dic.keySet()) {
+                tableView.getItems().add(new Map(term,dic.get(term).split("#")[2]));
+            }
+            //tableView.getItems().add(new Map("oran","3"));
+
+
+
+            VBox vbox = new VBox();
+            vbox.getChildren().add(tableView);
+            Scene scene = new Scene(vbox);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    public static class Map{
+        private SimpleStringProperty term;
+        private SimpleStringProperty amount;
+
+        public Map(String term, String amount) {
+            this.amount = new SimpleStringProperty(amount);
+            this.term = new SimpleStringProperty(term);
+        }
+
+        public void setTerm(String term) {
+            this.term.set(term);
+        }
+
+        public void setAmount(String amount) {
+            this.amount.set(amount);
+        }
+
+        public String getTerm() {
+            return term.get();
+        }
+
+        public SimpleStringProperty termProperty() {
+            return term;
+        }
+
+        public String getAmount() {
+            return amount.get();
+        }
+
+        public SimpleStringProperty amountProperty() {
+            return amount;
         }
     }
 }

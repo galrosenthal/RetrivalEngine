@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import readFile.ReadFile;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Observable;
 
 public class Model extends Observable implements IModel {
@@ -13,7 +14,13 @@ public class Model extends Observable implements IModel {
     private static final int MAX_NUMBER_OF_THREADS = 1;
 
 
-    public void startParse(String corpusPath,String postingPath,boolean withStemm){
+    @Override
+    public void loadDictionary(boolean withStemm) {
+        Indexer myIndexer = Indexer.getInstance();
+        myIndexer.loadDictionary(withStemm);
+    }
+
+    public void startParse(String corpusPath, String postingPath, boolean withStemm){
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
         int indexerIndex = 0;
 
@@ -56,7 +63,7 @@ public class Model extends Observable implements IModel {
         Indexer myIndexer = Indexer.getInstance();
         myIndexer.createCorpusDictionary();
 
-        myIndexer.saveCorpusDictionary();
+        myIndexer.saveCorpusDictionary(withStemm);
         System.out.println("Corpus Size = " + myIndexer.corpusSize());
 
 
@@ -79,6 +86,13 @@ public class Model extends Observable implements IModel {
         {
             //System.out.println("Could not clean Dirs");
         }
+    }
+
+    public HashMap<String,String> getDictionary(){
+
+        Indexer myIndexer = Indexer.getInstance();
+
+        return myIndexer.getCorpusDictionary();
     }
 
 
