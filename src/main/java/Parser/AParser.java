@@ -1,8 +1,9 @@
 package Parser;
 
 import IR.Document;
+import IR.DocumentInfo;
 import IR.Term;
-import Indexer.Indexer;
+import Indexer.*;
 import Indexer.ReadWriteTempDic;
 import Tokenizer.Tokenizer;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -12,6 +13,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -36,13 +38,16 @@ public abstract class AParser implements Runnable {
     protected static int numOfParsedDocInIterative;
     private Indexer myIndexer = Indexer.getInstance();
     private static final int numberOfDocsToPost = 100;
+    private static final int numOfDocsToSave = 100000;
     protected volatile boolean stopThread = false;
     protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
     public StringBuilder lastDocList;
     private static ReadWriteLock docEnqDeqLocker = new ReentrantReadWriteLock();
     protected static Semaphore termsInTextSemaphore = new Semaphore(1);
+    protected static Semaphore allDocsSemaphore = new Semaphore(1);
     protected boolean isParsing = false;
+    public static ConcurrentHashMap<String, DocumentInfo> allDocs;
 
 //    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
 
@@ -57,6 +62,7 @@ public abstract class AParser implements Runnable {
         createMStopWords();
         doneReadingDocs = false;
         stopThread = false;
+        allDocs = new ConcurrentHashMap<>();
 
 
 
@@ -70,6 +76,13 @@ public abstract class AParser implements Runnable {
         releaseToIndexerFile();
         stopThread = true;
 
+    }
+
+    protected void makeDocParsed(Document doc)
+    {
+        allDocsSemaphore.acquireUninterruptibly();
+        allDocs.put(doc.getDocNo(),new DocumentInfo(doc));
+        allDocsSemaphore.release();
     }
 
 
@@ -119,27 +132,26 @@ public abstract class AParser implements Runnable {
     {
         if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
         {
-//            if(!myReadWriter.writeToDic(termsInText,getName()))
             termsInTextSemaphore.acquireUninterruptibly();
-            //System.out.println("Parsed " + termsInText.size() + " terms");
-//            termsInTextLocker.writeLock().lock();
             if(!Indexer.getInstance().enqueue(termsInText))
             {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?
             }
-//            myIndexer.enqueue(termsInText);
-//            termsInText = null;
-//            termsInText = new ConcurrentHashMap<>();
             termsInText = new HashMap<>();
-//            termsInTextLocker.writeLock().unlock();
             numOfParsedDocInIterative = 0;
             termsInTextSemaphore.release();
-
-//            termsInText.clear();
-
+//        }
+//        if(numOfParsedDocInIterative >= numOfDocsToSave || doneReadingDocs) {
+            allDocsSemaphore.acquireUninterruptibly();
+//            System.out.println("releasing " + allDocs.size() + " doc map");
+            if (!DocumentIndexer.enQnewDocs(allDocs)) {
+                System.out.println("Fuck it");
+                //TODO: maybe throw exception?
+            }
+            allDocs = new ConcurrentHashMap<>();
+            allDocsSemaphore.release();
         }
-
     }
 
     private String getName() {

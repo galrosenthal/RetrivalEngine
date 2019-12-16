@@ -1,5 +1,6 @@
 package readFile;
 
+import Indexer.*;
 import Parser.AParser;
 import Parser.MainParse;
 import Tokenizer.Tokenizer;
@@ -7,7 +8,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import Indexer.Indexer;
 
 import java.io.File;
 import java.io.IOException;
@@ -113,6 +113,7 @@ public class ReadFile {
 
         }
         Indexer.stopThreads = true;
+        DocumentIndexer.stopThreads = true;
 
     }
 

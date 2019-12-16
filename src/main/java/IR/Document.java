@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -17,7 +18,7 @@ import java.util.HashMap;
  * @see HashMap
  * @see Term
  */
-public class Document {
+public class Document implements Serializable {
 
 
     //    private ConcurrentHashMap
@@ -26,6 +27,7 @@ public class Document {
     private Elements allDocElements;
     private Elements docText;
     private Elements docNo;
+    private Elements docDate;
     private String[] textArray;
     private String maxTFTerm;
     private boolean firstInsert;
@@ -35,6 +37,7 @@ public class Document {
         this.allDocElements = fileDocInCorpus.getAllElements();
         docText = fileDocInCorpus.getElementsByTag("text");
         docNo = fileDocInCorpus.getElementsByTag("docno");
+        docDate = fileDocInCorpus.getElementsByTag("date1");
         textArray = StringUtils.split(docText.text());
         maxTFTerm = "";
         firstInsert = true;
@@ -56,6 +59,9 @@ public class Document {
 
     }
 
+    public String getDocDate() {
+        return docDate.text();
+    }
 
     public Elements getDocText() {
         return docText;
@@ -139,7 +145,7 @@ public class Document {
         if(document.textArray.length == 0)
             return false;
         return this.textArray.length == document.textArray.length &&
-                this.textArray[0].equals(document.textArray[0]);
+                this.textArray[0].equals(document.textArray[0]) && this.getDocNo().equalsIgnoreCase(document.getDocNo());
     }
 
 //    @Override
