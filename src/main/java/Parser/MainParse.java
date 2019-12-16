@@ -1,6 +1,7 @@
 package Parser;
 
 import IR.Document;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.tartarus.snowball.SnowballStemmer;
 import org.tartarus.snowball.ext.englishStemmer;
@@ -102,7 +103,7 @@ public class MainParse extends AParser {
             }
 
             //Check if the word is empty word
-            if(!cleanWord.isEmpty()){
+            if(!cleanWord.isEmpty() && !StringUtils.containsAny(cleanWord,"?|*&<>={}()�¥")){
 
                 //Check if the first char is number
                 if(Character.isDigit(cleanWord.charAt(0))){
@@ -827,7 +828,7 @@ public class MainParse extends AParser {
         while ((wordB.length()>0) && Character.isUpperCase(wordB.charAt(0))) {
             char lastChar = wordB.charAt(wordB.length()-1);
 
-            if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar < 'Z')){
+            if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar > 'Z')){
                 sentence.append(chopDownLastCharPunc(wordB.toString()));
 
                 //String[] sentenceLengh = sentence.toString().split(" ");

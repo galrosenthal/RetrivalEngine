@@ -57,7 +57,7 @@ public class Model extends Observable implements IModel {
         }
 
 
-        ReadFile f = new ReadFile(false);
+        ReadFile f = new ReadFile(withStemm);
         File corpus = new File(corpusPath);
         long startTime,endTime;
         startTime = System.nanoTime();
