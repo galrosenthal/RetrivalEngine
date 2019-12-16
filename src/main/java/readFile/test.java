@@ -19,13 +19,21 @@ public class test {
     public static void main(String[] args) {
 //        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\1files";
 //        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
+
+
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\corpus";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\halfCorpus";
+        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\qurtrCorpus";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\10files";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\2files";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\1files";
 
 //        readDocsHashMapToDisk();
         try

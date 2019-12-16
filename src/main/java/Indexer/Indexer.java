@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Indexer implements Runnable {
-    private static final double MAX_POSTING_FILE_SIZE = 5000000;
+    private static final double MAX_POSTING_FILE_SIZE = Double.MAX_VALUE;
     private static final int MAX_TERMS_TO_INDEX = 500000;
     private int countMergedTerms = 0;
     private static volatile Indexer mInstance;
