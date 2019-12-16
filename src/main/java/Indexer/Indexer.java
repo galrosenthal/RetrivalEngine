@@ -256,6 +256,7 @@ public class Indexer implements Runnable {
         Path termFilePath = getFileForTerm(sortedKeys.get(0));
         List<String> allTermsOfLetter = new ArrayList<>();
 
+
         /**Creates the Post file if not exists*/
         if(termFilePath.toFile().exists())
         {
@@ -273,6 +274,10 @@ public class Indexer implements Runnable {
                 sortedKeys){
 
             Path termFilePathTemp;
+            if(termKey.equalsIgnoreCase("as congress"))
+            {
+                System.out.println(newMap.get(termKey));
+            }
             /**If the term is alredy inside the Corpus gets the File Path of its posting file*/
             if(corpusDictionary.containsKey(termKey.toLowerCase()))
             {
@@ -664,6 +669,10 @@ public class Indexer implements Runnable {
     public void removeEntitys() {
         for (String term :
                 entityToDrop.keySet()) {
+            if(term.equalsIgnoreCase("as congress"))
+            {
+                System.out.println("It is an Entity");
+            }
             if(entityToDrop.get(term) == 1 )
             {
                 corpusDictionary.remove(term);

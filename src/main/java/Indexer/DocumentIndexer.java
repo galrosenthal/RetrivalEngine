@@ -12,7 +12,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DocumentIndexer implements Runnable{
-    private static final int MAX_DOCS_TO_INDEX = 200000;
+    private static final int MAX_DOCS_TO_INDEX = Integer.MAX_VALUE;
     private static volatile DocumentIndexer mInstance;
     private static ConcurrentLinkedQueue<ConcurrentHashMap> docsHashMapsQ;
     public static volatile boolean stopThreads = false;
