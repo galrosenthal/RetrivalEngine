@@ -718,14 +718,14 @@ public class MainParse extends AParser {
                 if(nextWordIsQuntifier(quant))
                 {/**$Price Quantifier**/
                     String termToInsert = quantifiedWordForPrices(wordInText.substring(1),quant);
-                    parsedTermInsert("$"+ termToInsert,d,"Prices");
+                    parsedTermInsert(termToInsert + " " + dollars,d,"Prices");
                     isParsed = true;
                     i.set(wordIndex+1);
                 }
                 else
                 {/**$Price**/
                     String termToInsert = quantifiedWordForPrices(wordInText.substring(1));
-                    parsedTermInsert("$"+termToInsert,d,"Prices");
+                    parsedTermInsert(termToInsert + " " + dollars,d,"Prices");
                     isParsed = true;
                     i.set(wordIndex+1);
                 }
