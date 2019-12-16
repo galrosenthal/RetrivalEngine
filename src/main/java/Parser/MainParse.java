@@ -832,7 +832,7 @@ public class MainParse extends AParser {
 
                 //String[] sentenceLengh = sentence.toString().split(" ");
                 if(numOfWords > 1 && numOfWords < 5){
-                    parsedTermInsert(sentence.substring(0, sentence.length() - 1), d);
+                    parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
                     isParse = true;
                 }
                 numOfWords=0;
@@ -855,7 +855,7 @@ public class MainParse extends AParser {
             //String[] sentenceLengh = sentence.toString().split(" ");
 
             //System.out.println(sentence);
-            parsedTermInsert(sentence.substring(0, sentence.length() - 1), d);
+            parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
             numOfWords=0;
             sentence.setLength(0);
             isParse = true;
@@ -881,7 +881,7 @@ public class MainParse extends AParser {
         //else if (wordB.toString().chars().allMatch(Character::isLetter)){
         else {
             //System.out.println(word);
-            parsedTermInsert(word,d);
+            parsedTermInsert(word,d,"parseWords");
             isParsed = true;
         }
 
@@ -906,7 +906,7 @@ public class MainParse extends AParser {
     public boolean parseEmails(String word){
         boolean isParsed = false;
         if(word.matches("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+")){
-            parsedTermInsert(word,d);
+            parsedTermInsert(word,d,"parseEmails");
             isParsed = true;
         }
 
@@ -926,7 +926,7 @@ public class MainParse extends AParser {
             String [] splitWord = word.split("/");
             for(String wordIn: splitWord) {
                 if(isAlphaBet(wordIn) && !stopWords.contains(wordIn)){
-                    parsedTermInsert(wordIn,d);
+                    parsedTermInsert(wordIn,d,"parseSlash");
                     isParsed = true;
                 }
 

@@ -21,6 +21,7 @@ public class Indexer implements Runnable {
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
     //    public ConcurrentHashMap<String,String> corpusDictionary;
+    public static HashMap<String,Integer> entityToDrop;
     public HashMap<String, String> corpusDictionary;
     private String indexerName = "Indexer ";
     private static AtomicInteger indexerNum;
@@ -33,8 +34,10 @@ public class Indexer implements Runnable {
         corpusDictionary = new HashMap<>();
         hundredKtermsMap = new HashMap<>();
         indexerNum = new AtomicInteger(0);
+        entityToDrop = new HashMap<>();
 
     }
+
 
     public boolean isQEmpty() {
         return parsedWordsQueue.isEmpty();
@@ -249,6 +252,7 @@ public class Indexer implements Runnable {
         int i = 0;
 
         String corpusPathAndLineDelim = "#";
+        String termDocListDelim = "#";
         Path termFilePath = getFileForTerm(sortedKeys.get(0));
         List<String> allTermsOfLetter = new ArrayList<>();
 
@@ -328,6 +332,20 @@ public class Indexer implements Runnable {
                 specificTermKey = termKey;
             }
 
+            /**Checks whether or not the term parse by parsePhrases parser*/
+            if(isEntityTerm(newMap.get(termKey)))
+            {
+                if(!entityToDrop.containsKey(specificTermKey))
+                {
+                    entityToDrop.put(specificTermKey,1);
+                }
+                else
+                {
+                    int numOfTimesInCorpus = entityToDrop.get(specificTermKey);
+                    entityToDrop.replace(specificTermKey,numOfTimesInCorpus,++numOfTimesInCorpus);
+                }
+            }
+
 
             /**If the Term is already inside the corpus
              * get the line of it
@@ -376,6 +394,15 @@ public class Indexer implements Runnable {
             writePostFileOfLetter(termFilePath,allTermsOfLetter);
         }
 
+    }
+
+    private boolean isEntityTerm(String docList) {
+        String[] docSplitted = docList.split(";");
+        if(docSplitted[0].split("#")[2].equalsIgnoreCase("parsephrases"))
+        {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -633,6 +660,18 @@ public class Indexer implements Runnable {
             e.printStackTrace();
         }
     }
+
+    public void removeEntitys() {
+        for (String term :
+                entityToDrop.keySet()) {
+            if(entityToDrop.get(term) == 1 )
+            {
+                corpusDictionary.remove(term);
+            }
+        }
+    }
+
+
 
 
 }

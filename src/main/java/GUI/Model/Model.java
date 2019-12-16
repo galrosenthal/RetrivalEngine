@@ -79,7 +79,10 @@ public class Model extends Observable implements IModel {
             e.printStackTrace();
         }
 
+        System.gc();
         myIndexer.createCorpusDictionary();
+
+        myIndexer.removeEntitys();
 
         myIndexer.saveCorpusDictionary(false);
 //        writeDocsHashMapToDisk(MainParse.allDocs);

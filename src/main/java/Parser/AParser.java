@@ -392,21 +392,21 @@ public abstract class AParser implements Runnable {
         this.termsInText.clear();
     }
 
-    protected void parsedTermInsert(String term, Document doc,String parserName) {
-        if(term.isEmpty())
-        {
-            System.out.println("Term is Empty " + parserName);
-        }
-        parsedTermInsert(term,doc);
-
-    }
+//    protected void parsedTermInsert(String term, Document doc,String parserName) {
+//        if(term.isEmpty())
+//        {
+//            System.out.println("Term is Empty " + parserName);
+//        }
+//        parsedTermInsert(term,doc);
+//
+//    }
 
 
     /**
      * Gets a parsed number and inserting it to the Dictionary
      * @param term
      */
-    protected void parsedTermInsert(String term, Document doc) {
+    protected void parsedTermInsert(String term, Document doc, String parserName) {
 //        termsInTextLocker.readLock().lock();
 //        termsInTextSemaphore.acquireUninterruptibly();
         if(term.isEmpty())
@@ -432,18 +432,21 @@ public abstract class AParser implements Runnable {
                     oldtf += 1;
                     docAlreadyParsed = true;
                 }
-                lastDocList.append(docAndtf[0] + tfDelim + oldtf + ";");
+                lastDocList.append(docAndtf[0]).append(tfDelim).append(oldtf).append(tfDelim).append(parserName).append(";");
             }
             if(!docAlreadyParsed)
             {
-                lastDocList.append(currentDocNo + tfDelim + "1;");
+//                lastDocList.append(currentDocNo + tfDelim + "1;");
+                lastDocList.append(currentDocNo).append(tfDelim).append(1).append(tfDelim).append(parserName).append(";");
             }
             lastDocList = new StringBuilder(lastDocList.substring(0,lastDocList.length()-1));
 
             termsInText.replace(term,docList.toString(),lastDocList.toString());
 
         } else {
-            termsInText.put(term, currentDocNo + tfDelim + "1");
+            lastDocList = new StringBuilder("");
+            lastDocList.append(currentDocNo).append(tfDelim).append(1).append(tfDelim).append(parserName);
+            termsInText.put(term, lastDocList.toString());
         }
 
         doc.insertFoundTermInDoc(term);
