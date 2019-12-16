@@ -12,7 +12,7 @@ import java.util.Observable;
 public class Model extends Observable implements IModel {
     String corpusPath;
     String postingPath;
-    private static final int MAX_NUMBER_OF_THREADS = 1;
+    private static final int MAX_NUMBER_OF_THREADS = 2;
 
 
     @Override
@@ -22,9 +22,6 @@ public class Model extends Observable implements IModel {
     }
 
     public void startParse(String corpusPath, String postingPath, boolean withStemm){
-        Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
-        int indexerIndex = 0;
-
         try
         {
             FileUtils.cleanDirectory(new File("./postingFiles/"));
@@ -38,28 +35,37 @@ public class Model extends Observable implements IModel {
 
         Indexer myIndexer = Indexer.getInstance();
         DocumentIndexer docIndexer = DocumentIndexer.getInstance();
-        for (int i = 0; i < IndexerThreads.length; i++) {
-            IndexerThreads[i] = new Thread(Indexer.getInstance());
-            IndexerThreads[i].setName("Indexer " + indexerIndex++);
-        }
 
-        ReadFile f = new ReadFile(withStemm);
-        File corpus = new File(corpusPath);
-        long startTime,endTime;
-        startTime = System.nanoTime();
-        this.corpusPath = corpusPath;
-        this.postingPath = postingPath;
-        Indexer.getInstance().setPathToPostFiles(postingPath);
+//        myIndexer.createCorpusDictionary();
+
+//        Indexer.getInstance().setPathToPostFiles(postfilePath);
+        Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
+
+        int indexerIndex = 0;
+
+        IndexerThreads[0] = new Thread(myIndexer);
+        IndexerThreads[0].setName("Term Indexer");
+        IndexerThreads[1] = new Thread(docIndexer);
+        IndexerThreads[1].setName("Doc Indexer");
+
 
         for (int i = 0; i < IndexerThreads.length; i++) {
+//            IndexerThreads[i] = new Thread(myIndexer);
+//            IndexerThreads[i].setName("Indexer " + indexerIndex++);
             System.out.println(IndexerThreads[i].getName() + " has started...");
             IndexerThreads[i].start();
         }
 
+
+        ReadFile f = new ReadFile(false);
+        File corpus = new File(corpusPath);
+        long startTime,endTime;
+        startTime = System.nanoTime();
+
         f.readCorpus(corpus);
+        //f.runParsers();
+
         f.stopThreads();
-
-
 
         try{
             for (int i = 0; i < IndexerThreads.length; i++) {
@@ -75,7 +81,9 @@ public class Model extends Observable implements IModel {
 
         myIndexer.createCorpusDictionary();
 
-        myIndexer.saveCorpusDictionary(withStemm);
+        myIndexer.saveCorpusDictionary(false);
+//        writeDocsHashMapToDisk(MainParse.allDocs);
+//        readDocsHashMapToDisk();
         System.out.println("Corpus Size = " + myIndexer.corpusSize());
 
 

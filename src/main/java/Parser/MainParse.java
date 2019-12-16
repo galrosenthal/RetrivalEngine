@@ -841,7 +841,7 @@ public class MainParse extends AParser {
             } else {
                 numOfWords++;
                 sentence.append(wordB).append(" ");
-                parsedTermInsert(wordB.toString(), d);
+                //parsedTermInsert(wordB.toString(), d);
             }
             if(i.get() < splitedText.length-1){
                 wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
