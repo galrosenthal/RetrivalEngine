@@ -17,7 +17,7 @@ public class test {
     private static final int MAX_NUMBER_OF_THREADS = 2;
 
     public static void main(String[] args) {
-//        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
+        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpus";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
         //String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
@@ -30,7 +30,7 @@ public class test {
 
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\corpus";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\halfCorpus";
-        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\qurtrCorpus";
+       // String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\qurtrCorpus";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\10files";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\2files";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\1files";

@@ -105,6 +105,7 @@ public class Controller implements Observer {
             HashMap<String ,String> dic = viewModel.getDictionary();
             ArrayList<String> sortedKeys = new ArrayList<String>(dic.keySet());
             Collections.sort(sortedKeys);
+
             TableView tableView = new TableView<>();
             TableColumn<String, Map> column1 = new TableColumn("Term");
             column1.setCellValueFactory(new PropertyValueFactory<>("term"));

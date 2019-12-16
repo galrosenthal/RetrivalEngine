@@ -845,6 +845,7 @@ public class MainParse extends AParser {
             }
             if(i.get() < splitedText.length-1){
                 wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
+                wordB = chopDownFisrtChar(wordB);
             }
             else{
                 break;
