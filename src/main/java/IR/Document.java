@@ -145,7 +145,7 @@ public class Document implements Serializable {
         if(document.textArray.length == 0)
             return false;
         return this.textArray.length == document.textArray.length &&
-                this.textArray[0].equals(document.textArray[0]);
+                this.textArray[0].equals(document.textArray[0]) && this.getDocNo().equalsIgnoreCase(document.getDocNo());
     }
 
 //    @Override

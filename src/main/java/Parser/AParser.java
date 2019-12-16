@@ -141,10 +141,10 @@ public abstract class AParser implements Runnable {
             termsInText = new HashMap<>();
             numOfParsedDocInIterative = 0;
             termsInTextSemaphore.release();
-        }
-        if(numOfParsedDocInIterative >= numOfDocsToSave || doneReadingDocs) {
+//        }
+//        if(numOfParsedDocInIterative >= numOfDocsToSave || doneReadingDocs) {
             allDocsSemaphore.acquireUninterruptibly();
-            System.out.println("releasing " + allDocs.size() + " doc map");
+//            System.out.println("releasing " + allDocs.size() + " doc map");
             if (!DocumentIndexer.enQnewDocs(allDocs)) {
                 System.out.println("Fuck it");
                 //TODO: maybe throw exception?

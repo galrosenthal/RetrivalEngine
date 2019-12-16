@@ -19,9 +19,9 @@ public class test {
     public static void main(String[] args) {
 //        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-        //String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
+        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
-        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
+//        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\1files";
 //        String postfilePath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval";
@@ -104,13 +104,23 @@ public class test {
             {
                 Files.createDirectories(Paths.get(pathToTempFolder));
             }
-            FileInputStream filein = new FileInputStream(pathToTempFolder + 2675);
+            FileInputStream filein = new FileInputStream(pathToTempFolder + 0);
             ObjectInputStream objectOut = new ObjectInputStream(filein);
             Object a = objectOut.readObject();
             objectOut.close();
             filein.close();
 
             ConcurrentHashMap<String, Document> myMap = (ConcurrentHashMap)a;
+
+//            filein = new FileInputStream(pathToTempFolder + 1);
+//            objectOut = new ObjectInputStream(filein);
+//            a = objectOut.readObject();
+//            objectOut.close();
+//            filein.close();
+//
+//
+//            ConcurrentHashMap<String, Document> myMap2 = (ConcurrentHashMap)a;
+
             System.out.println("Wtfffff");
         } catch (Exception e) {
             e.printStackTrace();
