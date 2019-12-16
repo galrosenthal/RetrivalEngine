@@ -102,31 +102,29 @@ public class Controller implements Observer {
     public void showDirectory(ActionEvent actionEvent) {
         try {
             HashMap<String ,String> dic = viewModel.getDictionary();
+            ArrayList<String> sortedKeys = new ArrayList<String>(dic.keySet());
+            Collections.sort(sortedKeys);
             TableView tableView = new TableView<>();
             TableColumn<String, Map> column1 = new TableColumn("Term");
             column1.setCellValueFactory(new PropertyValueFactory<>("term"));
 
             TableColumn<String, Map> column2 = new TableColumn("Amount");
             column2.setCellValueFactory(new PropertyValueFactory<>("amount"));
-            PropertyValueFactory factory = new PropertyValueFactory<>("firstName");
+
             tableView.getColumns().add(column1);
             tableView.getColumns().add(column2);
-            //tableView.setItems(getInitialTableData());
+
             for (String term:dic.keySet()) {
                 tableView.getItems().add(new Map(term,dic.get(term).split("#")[2]));
             }
-            //tableView.getItems().add(new Map("oran","3"));
-
-
 
             VBox vbox = new VBox();
             vbox.getChildren().add(tableView);
             Scene scene = new Scene(vbox);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-
-
+            Stage stage = new Stage();
+            stage.setTitle("Show Dictionary");
+            stage.setScene(scene);
+            stage.show();
         } catch (Exception e) {
 
         }
