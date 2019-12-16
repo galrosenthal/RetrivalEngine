@@ -35,7 +35,7 @@ public class test {
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\2files";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\1files";
 
-        readDocsHashMapToDisk();
+        //readDocsHashMapToDisk();
         try
         {
             FileUtils.cleanDirectory(new File("./postingFiles/"));

@@ -3,6 +3,7 @@ package GUI.Model;
 import Indexer.Indexer;
 import org.apache.commons.io.FileUtils;
 import readFile.ReadFile;
+import Indexer.DocumentIndexer;
 
 import java.io.File;
 import java.util.HashMap;
@@ -24,7 +25,19 @@ public class Model extends Observable implements IModel {
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
         int indexerIndex = 0;
 
+        try
+        {
+            FileUtils.cleanDirectory(new File("./postingFiles/"));
+            FileUtils.cleanDirectory(new File("./dicTemp/"));
+            FileUtils.cleanDirectory(new File("./docsTempDir/"));
+        }
+        catch (Exception e)
+        {
+            System.out.println("Could not clean Dirs");
+        }
 
+        Indexer myIndexer = Indexer.getInstance();
+        DocumentIndexer docIndexer = DocumentIndexer.getInstance();
         for (int i = 0; i < IndexerThreads.length; i++) {
             IndexerThreads[i] = new Thread(Indexer.getInstance());
             IndexerThreads[i].setName("Indexer " + indexerIndex++);
@@ -60,7 +73,6 @@ public class Model extends Observable implements IModel {
             e.printStackTrace();
         }
 
-        Indexer myIndexer = Indexer.getInstance();
         myIndexer.createCorpusDictionary();
 
         myIndexer.saveCorpusDictionary(withStemm);

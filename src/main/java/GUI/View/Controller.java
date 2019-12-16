@@ -116,7 +116,7 @@ public class Controller implements Observer {
             tableView.getColumns().add(column1);
             tableView.getColumns().add(column2);
 
-            for (String term:dic.keySet()) {
+            for (String term:sortedKeys) {
                 tableView.getItems().add(new Map(term,dic.get(term).split("#")[2]));
             }
 
