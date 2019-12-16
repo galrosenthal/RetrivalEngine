@@ -1,6 +1,7 @@
 package GUI.View;
 
 import GUI.ViewModel.*;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -132,10 +133,10 @@ public class Controller implements Observer {
 
     public static class Map{
         private SimpleStringProperty term;
-        private SimpleStringProperty amount;
+        private SimpleIntegerProperty amount;
 
         public Map(String term, String amount) {
-            this.amount = new SimpleStringProperty(amount);
+            this.amount = new SimpleIntegerProperty(Integer.parseInt(amount));
             this.term = new SimpleStringProperty(term);
         }
 
@@ -143,7 +144,7 @@ public class Controller implements Observer {
             this.term.set(term);
         }
 
-        public void setAmount(String amount) {
+        public void setAmount(int amount) {
             this.amount.set(amount);
         }
 
@@ -155,11 +156,11 @@ public class Controller implements Observer {
             return term;
         }
 
-        public String getAmount() {
+        public int getAmount() {
             return amount.get();
         }
 
-        public SimpleStringProperty amountProperty() {
+        public SimpleIntegerProperty amountProperty() {
             return amount;
         }
     }
