@@ -138,6 +138,13 @@ public class Indexer implements Runnable {
         }
     }
 
+    public HashMap<String, String> getCorpusDictionary() {
+        if(corpusDictionary.size() == 0){
+            loadDictionary(false);
+        }
+        return corpusDictionary;
+    }
+
     /**
      * Sorts the HashMap value if is as expected,
      * DocList String:
@@ -474,7 +481,50 @@ public class Indexer implements Runnable {
     }
 
 
-    public void saveCorpusDictionary() {
+    public void saveCorpusDictionary(boolean withStemm) {
+        try {
+            FileOutputStream fileOut;
+            if(!Paths.get(pathToPostFolder).toFile().exists())
+            {
+                Files.createDirectories(Paths.get(pathToPostFolder));
+            }
+            if(withStemm){
+                 fileOut = new FileOutputStream(pathToPostFolder+ "DictionaryWithStemm",true);
+            }
+            else{
+                 fileOut = new FileOutputStream(pathToPostFolder+ "Dictionary",true);
+            }
 
+            //File DictionaryFile = new File(pathToDictionaryFolder);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(corpusDictionary);
+            objectOut.flush();
+            objectOut.close();
+            fileOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    public void loadDictionary(boolean withStemm) {
+        File hashMapFile;
+        try {
+            if (withStemm) {
+                hashMapFile = Paths.get(pathToPostFolder + "DictionaryWithStemm").toFile();
+            } else {
+                hashMapFile = Paths.get(pathToPostFolder + "Dictionary").toFile();
+            }
+
+            FileInputStream fileIn = new FileInputStream(hashMapFile);
+            ObjectInputStream objectOut = new ObjectInputStream(fileIn);
+            corpusDictionary = (HashMap<String, String>) objectOut.readObject();
+            objectOut.close();
+            fileIn.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

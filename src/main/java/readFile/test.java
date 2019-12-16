@@ -19,7 +19,7 @@ public class test {
     public static void main(String[] args) {
 //        String corpusPath = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 //        String path = "C:\\Users\\Gal\\Documents\\corpusCopy";
-//        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
+        //String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\corpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\Stduies\\Third Year\\Semester A\\halfCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\qurtrCorpus";
 //        String corpusPath = "C:\\Users\\Gal\\Documents\\10files";
@@ -46,6 +46,7 @@ public class test {
         {
             System.out.println("Could not clean Dirs");
         }
+
         Indexer myIndexer = Indexer.getInstance();
         DocumentIndexer docIndexer = DocumentIndexer.getInstance();
 
@@ -94,7 +95,7 @@ public class test {
 
         myIndexer.createCorpusDictionary();
 
-        myIndexer.saveCorpusDictionary();
+        myIndexer.saveCorpusDictionary(false);
 //        writeDocsHashMapToDisk(MainParse.allDocs);
 //        readDocsHashMapToDisk();
         System.out.println("Corpus Size = " + myIndexer.corpusSize());

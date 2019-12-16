@@ -154,7 +154,7 @@ public class MainParse extends AParser {
 
                     }
                     else{
-                        parseNames(halfCleanWord);
+                        parsePhrases(halfCleanWord);
                     }
                 }
                 else{
@@ -818,7 +818,7 @@ public class MainParse extends AParser {
 
      */
 
-    public boolean parseNames(String word){
+    public boolean parsePhrases(String word){
         boolean isParse = false;
         int numOfWords=0;
         StringBuilder wordB = new StringBuilder(word);

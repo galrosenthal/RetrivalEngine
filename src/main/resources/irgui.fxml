@@ -42,8 +42,8 @@
                <GridPane.margin>
                   <Insets left="30.0" right="10.0" />
                </GridPane.margin></Button>
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Open Dictionary" GridPane.columnIndex="1" />
-            <Button mnemonicParsing="false" prefHeight="25.0" prefWidth="154.0" text="Load Dictionary" GridPane.columnIndex="4" />
+            <Button onAction="#showDirectory"  mnemonicParsing="false" prefHeight="25.0" prefWidth="143.0" text="Open Dictionary" GridPane.columnIndex="1" />
+            <Button onAction="#loadDirectory" mnemonicParsing="false" prefHeight="25.0" prefWidth="154.0" text="Load Dictionary" GridPane.columnIndex="4" />
             <Label prefHeight="25.0" prefWidth="115.0" text="Path to Corpus:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label prefHeight="29.0" prefWidth="118.0" text="Path to Posting files: " GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <Button mnemonicParsing="false" onAction="#choosePathForCorpus" text="Browse" GridPane.columnIndex="4" GridPane.rowIndex="3" />

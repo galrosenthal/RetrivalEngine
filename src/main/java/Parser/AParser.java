@@ -393,7 +393,7 @@ public abstract class AParser implements Runnable {
     }
 
     protected void parsedTermInsert(String term, Document doc,String parserName) {
-        if(term.equalsIgnoreCase(""))
+        if(term.isEmpty())
         {
             System.out.println("Term is Empty " + parserName);
         }
