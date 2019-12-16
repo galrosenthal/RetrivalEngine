@@ -132,10 +132,10 @@ public class Controller implements Observer {
 
     public static class Map{
         private SimpleStringProperty term;
-        private SimpleStringProperty amount;
+        private SimpleIntegerProperty amount;
 
         public Map(String term, String amount) {
-            this.amount = new SimpleStringProperty(amount);
+            this.amount = new SimpleIntegerProperty(Integer.parseInt(amount));
             this.term = new SimpleStringProperty(term);
         }
 
@@ -144,7 +144,7 @@ public class Controller implements Observer {
         }
 
         public void setAmount(String amount) {
-            this.amount.set(amount);
+            this.amount.set(Integer.parseInt(amount));
         }
 
         public String getTerm() {
@@ -155,11 +155,11 @@ public class Controller implements Observer {
             return term;
         }
 
-        public String getAmount() {
+        public int getAmount() {
             return amount.get();
         }
 
-        public SimpleStringProperty amountProperty() {
+        public SimpleIntegerProperty amountProperty() {
             return amount;
         }
     }

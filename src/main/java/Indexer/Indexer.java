@@ -1,5 +1,7 @@
 package Indexer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -245,19 +247,12 @@ public class Indexer implements Runnable {
         Collections.sort(sortedKeys);
         System.out.println("Sorted " + sortedKeys.size() + " HashMap keys");
         int i = 0;
-        //char docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
-//        while(docLetter == ' ')
-//        {
-//            docLetter = sortedKeys.get(0).toLowerCase().charAt(i++);
-//        }
-//        while(sortedKeys.get(0).equalsIgnoreCase(""))
-//        {
-//            sortedKeys.remove(0);
-//        }
-        int termIndexInSortedKeys = 0;
+
         String corpusPathAndLineDelim = "#";
         Path termFilePath = getFileForTerm(sortedKeys.get(0));
         List<String> allTermsOfLetter = new ArrayList<>();
+
+        /**Creates the Post file if not exists*/
         if(termFilePath.toFile().exists())
         {
             try{
@@ -269,26 +264,35 @@ public class Indexer implements Runnable {
             }
         }
 
+        /**For each term inside the new HashMap, inserting it to the Corpus Dictionary considering many conditions*/
         for (String termKey :
                 sortedKeys){
 
             Path termFilePathTemp;
+            /**If the term is alredy inside the Corpus gets the File Path of its posting file*/
             if(corpusDictionary.containsKey(termKey.toLowerCase()))
             {
                 String valueFromCorpus = corpusDictionary.get(termKey.toLowerCase());
                 String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
                 termFilePathTemp = Paths.get(splittedValue[0]);
             }
+            /**Generating a specific term path*/
             else
             {
                 termFilePathTemp = getFileForTerm(termKey);
             }
 
-            if (!(termFilePathTemp.toString().equalsIgnoreCase(termFilePath.toString()))) {
-                //the new termFile is not the same as last one
+            /**The new termFile is not the same as the last one, Which might indicatre we are inserting term with another letter*/
+            if (!(termFilePathTemp.toString().equalsIgnoreCase(termFilePath.toString())))
+            {
+                /**First Write all the lines captured of the last Letter to its post file*/
                 writePostFileOfLetter(termFilePath,allTermsOfLetter);
+
+                /**Change file path to the new letter post file*/
                 termFilePath = termFilePathTemp;
-                if (termFilePath.toFile().exists()) {
+                if (termFilePath.toFile().exists())
+                {
+                    /**If the file exits read all lines from it so we can append to it and changes specific lines in it*/
                     try {
 
                         System.out.println("Reading all lines from file: " + termFilePath.toFile().getPath());
@@ -299,23 +303,59 @@ public class Indexer implements Runnable {
                         e.printStackTrace();
                     }
                 }
-                else {
+                else
+                {
+                    /**Generate new lines list*/
                     allTermsOfLetter = new ArrayList<>();
                 }
             }
 
-            if (corpusDictionary.containsKey(termKey.toLowerCase()))
+
+            /**If the Corpus contains the Term in Lower Case then use lower case
+             * if the Corpus contains the Term in Upper case use Upper case
+             * and it it does not contains the Term keep the term as inserted*/
+            String specificTermKey;
+            if(corpusDictionary.containsKey(termKey.toLowerCase()))
+            {
+                specificTermKey = termKey.toLowerCase();
+            }
+            else if(corpusDictionary.containsKey(termKey.toUpperCase()))
+            {
+                specificTermKey = termKey.toUpperCase();
+            }
+            else
+            {
+                specificTermKey = termKey;
+            }
+
+
+            /**If the Term is already inside the corpus
+             * get the line of it
+             * get the doc list
+             * merge doc lists from file and HashMap
+             * sum its new total TF
+             * check Capital Letters constraints
+             * replace the old value with the new one
+             * replace the line in the file with the merged doc list*/
+            if (corpusDictionary.containsKey(specificTermKey))
             {
 
-                int lineNumberInFile = Integer.parseInt(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[1]);
+                int lineNumberInFile = Integer.parseInt(corpusDictionary.get(specificTermKey).split(corpusPathAndLineDelim)[1]);
                 StringBuilder addNewHashMapLineToExisting = new StringBuilder();
                 addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(newMap.get(termKey));
                 //Gets and set new Total TF
-                int totalTF = sumTotalTF(termKey,newMap.get(termKey),corpusPathAndLineDelim);
-                String pathAndLineAndTTF = corpusDictionary.get(termKey.toLowerCase());
+                int totalTF = sumTotalTF(specificTermKey,newMap.get(termKey),corpusPathAndLineDelim);
+                String pathAndLineAndTTF = corpusDictionary.get(specificTermKey);
                 String[] pathLineTTF = pathAndLineAndTTF.split(corpusPathAndLineDelim);
                 pathAndLineAndTTF = pathLineTTF[0] + corpusPathAndLineDelim + pathLineTTF[1] + corpusPathAndLineDelim + totalTF;
-                corpusDictionary.replace(termKey.toLowerCase(),corpusDictionary.get(termKey.toLowerCase()),pathAndLineAndTTF);
+
+
+
+                //Check Capital Letter Constraints and update the corpus with the new ttf
+                checkCapitalLetterConstraintsAndChangeInCorpus(termKey,specificTermKey,pathAndLineAndTTF);
+
+
+//                corpusDictionary.replace(specificTermKey,corpusDictionary.get(specificTermKey),pathAndLineAndTTF);
                 //sort and set the line in file with the new values
                 String newLineSorted = sortArray(addNewHashMapLineToExisting.toString().split(";"));
                 allTermsOfLetter.set(lineNumberInFile-1,newLineSorted);
@@ -326,8 +366,9 @@ public class Indexer implements Runnable {
             {
 //                termFilePath = getFileForTerm(termKey);
                 allTermsOfLetter.add(newMap.get(termKey));
-                String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size() + corpusPathAndLineDelim + sumTotalTF(termKey,newMap.get(termKey),corpusPathAndLineDelim);
-                corpusDictionary.put(termKey.toLowerCase(),pathAndLine);
+                String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size() + corpusPathAndLineDelim + sumTotalTF(specificTermKey,newMap.get(termKey),corpusPathAndLineDelim);
+                specificTermKey = setCapitalLettersConstraintForNewTerm(specificTermKey);
+                corpusDictionary.put(specificTermKey,pathAndLine);
             }
         }
         if(allTermsOfLetter.size() != 0)
@@ -337,6 +378,73 @@ public class Indexer implements Runnable {
 
     }
 
+    /**
+     * Gets 2 Strings one is the new Term from the HashMap and one from the CorpusDictionary
+     * and sets the term in the Corpus as the constraints.
+     * @param termInHashMap - the term in the HashMap
+     * @param termInCorpus - the term in the Corpus
+     */
+    private void checkCapitalLetterConstraintsAndChangeInCorpus(String termInHashMap, String termInCorpus, String pathLineTTF) {
+        String theNewTermToSave;
+        if(StringUtils.isAllLowerCase(termInHashMap))
+        {
+            theNewTermToSave = termInHashMap;
+        }
+        else if(StringUtils.isAllUpperCase(termInHashMap.charAt(0)+""))
+        {
+            if(termInCorpus.equals(termInHashMap.toUpperCase()))
+            {
+                theNewTermToSave = termInHashMap.toUpperCase();
+            }
+            else
+            {
+                theNewTermToSave = termInCorpus;
+            }
+        }
+        else
+        {
+            theNewTermToSave = termInHashMap.toLowerCase();
+        }
+
+
+        corpusDictionary.remove(termInCorpus);
+
+
+        corpusDictionary.put(theNewTermToSave,pathLineTTF);
+
+
+    }
+
+    /**
+     * For new term inserted to the corpus
+     * check the Capital Letter constraint
+     * if it has First Letter Capital save it as ALL Capital
+     * else save is ALL Lower Case
+     * @param specificTermKey - the term to check constraints for
+     * @return A Term after changing it by the constraints
+     */
+    private String setCapitalLettersConstraintForNewTerm(String specificTermKey)
+    {
+        if(StringUtils.isAllUpperCase(specificTermKey.charAt(0)+""))
+        {
+            specificTermKey = specificTermKey.toUpperCase();
+        }
+        else
+        {
+            specificTermKey = specificTermKey.toLowerCase();
+        }
+        return specificTermKey;
+
+    }
+
+    /**
+     * Gets a term, docList and Delimeter
+     * and sums the term TotalTF in all Docs it is in
+     * @param termKey - a term
+     * @param docList - list of all docs seperated by delim
+     * @param delim - delimeter to seperate params on each doc
+     * @return The sum of the Total TF of the term
+     */
     private int sumTotalTF(String termKey, String docList,String delim) {
         String[] docListSplitted = docList.split(";");
         int sum;

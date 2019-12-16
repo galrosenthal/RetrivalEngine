@@ -28,14 +28,14 @@ public class test {
 //        String path = "C:\\Users\\orans\\Documents\\University\\Third year\\Semester E\\Information Retrieval\\corpusTest";
 
 
-//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\corpus";
+        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\corpus";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\halfCorpus";
-        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\qurtrCorpus";
+//        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\qurtrCorpus";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\10files";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\2files";
 //        String corpusPath = "d:\\documents\\users\\rosengal\\Documents\\1files";
 
-//        readDocsHashMapToDisk();
+        readDocsHashMapToDisk();
         try
         {
             FileUtils.cleanDirectory(new File("./postingFiles/"));
