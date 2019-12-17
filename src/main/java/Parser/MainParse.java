@@ -412,17 +412,15 @@ public class MainParse extends AParser {
                 values = word.split("-");
                 if (values.length > 1) {
                     if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
-                        if(isAlphaBet(values[0]) && !stopWords.contains(values[0])){
                             parsedTermInsert(values[0], d,"NameRanges");
-                        }
-                        if(isAlphaBet(values[1])&& !stopWords.contains(values[0])){
                             parsedTermInsert(values[1], d,"NameRanges");
-                        }
                     }
 
                     //System.out.println(word);
                     isParsed = true;
-                    parsedTermInsert(word, d,"NameRanges");
+                    if(isAlphaBet(values[0]) && !stopWords.contains(values[0]) && isAlphaBet(values[1]) && !stopWords.contains(values[1])){
+                        parsedTermInsert(word, d,"NameRanges");
+                    }
                 }
             }
         }

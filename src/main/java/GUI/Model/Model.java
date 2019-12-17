@@ -24,7 +24,7 @@ public class Model extends Observable implements IModel {
     public void startParse(String corpusPath, String postingPath, boolean withStemm){
         try
         {
-            FileUtils.cleanDirectory(new File("./postingFiles/"));
+            FileUtils.cleanDirectory(new File(postingPath));
             FileUtils.cleanDirectory(new File("./dicTemp/"));
             FileUtils.cleanDirectory(new File("./docsTempDir/"));
         }
@@ -38,7 +38,7 @@ public class Model extends Observable implements IModel {
 
 //        myIndexer.createCorpusDictionary();
 
-//        Indexer.getInstance().setPathToPostFiles(postfilePath);
+        Indexer.getInstance().setPathToPostFiles(postingPath);
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
 
         int indexerIndex = 0;

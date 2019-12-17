@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.*;
@@ -103,6 +104,10 @@ public class Controller implements Observer {
     public void showDirectory(ActionEvent actionEvent) {
         try {
             HashMap<String ,String> dic = viewModel.getDictionary();
+
+            if(dic == null){
+                viewModel.loadDictinary(chk_Stemm.isSelected());
+            }
             ArrayList<String> sortedKeys = new ArrayList<String>(dic.keySet());
             Collections.sort(sortedKeys);
 
@@ -120,9 +125,9 @@ public class Controller implements Observer {
                 tableView.getItems().add(new Map(term,dic.get(term).split("#")[2]));
             }
 
-            VBox vbox = new VBox();
-            vbox.getChildren().add(tableView);
-            Scene scene = new Scene(vbox);
+            StackPane stkPane = new StackPane();
+            stkPane.getChildren().add(tableView);
+            Scene scene = new Scene(stkPane);
             Stage stage = new Stage();
             stage.setTitle("Show Dictionary");
             stage.setScene(scene);
