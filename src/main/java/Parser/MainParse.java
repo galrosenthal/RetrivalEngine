@@ -959,14 +959,14 @@ public class MainParse extends AParser {
     public boolean parseApostrophes(String word){
         boolean isParsed = false;
         StringBuilder wordB = new StringBuilder(word);
-
-        if(wordB.charAt(wordB.length()-1) == '\''){
-            parsedTermInsert(wordB.substring(0,wordB.length() -1),d,"parseApostrophes");
-            isParsed = true;
-        }
-        else if(wordB.charAt(wordB.length()-2) == '\'' && wordB.charAt(wordB.length()-1) == 's'){
-            parsedTermInsert(wordB.substring(0,wordB.length() -2),d,"parseApostrophes");
-            isParsed = true;
+        if(!wordB.toString().isEmpty() && !stopWords.contains(wordB) && wordB.length()> 2) {
+            if (wordB.charAt(wordB.length() - 1) == '\'') {
+                parsedTermInsert(wordB.substring(0, wordB.length() - 1), d, "parseApostrophes");
+                isParsed = true;
+            } else if (wordB.charAt(wordB.length() - 2) == '\'' && wordB.charAt(wordB.length() - 1) == 's') {
+                parsedTermInsert(wordB.substring(0, wordB.length() - 2), d, "parseApostrophes");
+                isParsed = true;
+            }
         }
 
 
