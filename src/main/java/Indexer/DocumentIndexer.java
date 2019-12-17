@@ -172,4 +172,12 @@ public class DocumentIndexer implements Runnable{
             e.printStackTrace();
         }
     }
+
+    public void resetDocumentIndexer(){
+        docsHashMapsQ = new ConcurrentLinkedQueue<>();
+        numOfFile = new AtomicInteger(0);
+        docDequeuerSemaphore = new Semaphore(1);
+        dicOfDocs = new ConcurrentHashMap<>();
+        stopThreads = false;
+    }
 }

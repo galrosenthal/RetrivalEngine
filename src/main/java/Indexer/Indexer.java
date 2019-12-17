@@ -671,7 +671,17 @@ public class Indexer implements Runnable {
         }
     }
 
-
+    /**
+     * Reset the variables of the indexer
+     */
+    public void resetIndexer(){
+        this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
+        corpusDictionary = new HashMap<>();
+        hundredKtermsMap = new HashMap<>();
+        indexerNum = new AtomicInteger(0);
+        entityToDrop = new HashMap<>();
+        stopThreads = false;
+    }
 
 
 }

@@ -897,6 +897,11 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
+    /**
+     * Check if the word is only alphabet
+     * @param word to parse
+     * @return true if it is aplhabet, false if not
+     */
     public static boolean isAlphaBet(String word) {
         char[] chars = word.toCharArray();
         for(char c : chars){
@@ -907,10 +912,10 @@ public class MainParse extends AParser {
         return true;
     }
 
-    /*
-
-        Parse emails
-
+    /**
+     * Parse words which they are emails
+     * @param word to parse
+     * @return true if the word is parsed. false else
      */
     public boolean parseEmails(String word){
         boolean isParsed = false;
@@ -922,10 +927,11 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
-    /*
-
-        Parse Slash
-
+    /**
+     * Parse words with / inside, the parser split the word by / and save the words as
+     * two diffrent words
+     * @param word to parse
+     * @return true if the parser parse the word
      */
     public boolean parseSlash(String word){
         boolean isParsed = false;
@@ -945,6 +951,11 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
+    /**
+     * The function check if there is / in the word
+     * @param word we want to parse
+     * @return true if there is / in the word
+     */
     public boolean containsSlash(String word){
 
         char[] chars = word.toCharArray();
@@ -956,6 +967,12 @@ public class MainParse extends AParser {
         return false;
     }
 
+    /**
+     * Parse all the world with 's or ' at the end.
+     * The parser remove the ' as follow
+     * @param word word from the document
+     * @return if the parser succeeded to parse
+     */
     public boolean parseApostrophes(String word){
         boolean isParsed = false;
         StringBuilder wordB = new StringBuilder(word);
