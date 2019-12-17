@@ -184,7 +184,7 @@ public class Indexer implements Runnable {
         end = System.nanoTime();
 //            System.out.println("The Sort took " + (end-start)/1000000 + " Milli Seconds");
         String sortedList = Arrays.toString(docList).replaceAll(",", ";");
-//        sortedList = Arrays.toString(docList).replaceAll(" ", "");
+        sortedList = sortedList.replaceAll(" ", "");
         if (sortedList.charAt(0) == '[') {
             sortedList = sortedList.substring(1);
         }
@@ -256,6 +256,7 @@ public class Indexer implements Runnable {
         Path termFilePath = getFileForTerm(sortedKeys.get(0));
         List<String> allTermsOfLetter = new ArrayList<>();
 
+
         /**Creates the Post file if not exists*/
         if(termFilePath.toFile().exists())
         {
@@ -272,11 +273,45 @@ public class Indexer implements Runnable {
         for (String termKey :
                 sortedKeys){
 
+
             Path termFilePathTemp;
-            /**If the term is alredy inside the Corpus gets the File Path of its posting file*/
-            if(corpusDictionary.containsKey(termKey.toLowerCase()))
+
+            String parserName = getParserName(newMap.get(termKey));
+
+
+            //TODO: BUGGGGGGGGGGGGGGGGGGGGGGGG
+            /**If the Corpus contains the Term in Lower Case then use lower case
+             * if the Corpus contains the Term in Upper case use Upper case
+             * and it it does not contains the Term keep the term as inserted*/
+            String specificTermKey;
+            if(parserName.equalsIgnoreCase("parsewords")) {
+                if (corpusDictionary.containsKey(termKey.toLowerCase())) {
+                    specificTermKey = termKey.toLowerCase();
+                } else if (corpusDictionary.containsKey(termKey.toUpperCase())) {
+                    if(StringUtils.isAllUpperCase(termKey.charAt(0)+""))
+                    {
+                        specificTermKey = termKey.toUpperCase();
+                    }
+                    else
+                    {
+                        specificTermKey = termKey.toLowerCase();
+                    }
+                }
+                else
+                {
+                    specificTermKey = termKey;
+                }
+            }
+            else
             {
-                String valueFromCorpus = corpusDictionary.get(termKey.toLowerCase());
+                specificTermKey = termKey;
+            }
+
+
+            /**If the term is alredy inside the Corpus gets the File Path of its posting file*/
+            if(corpusDictionary.containsKey(specificTermKey))
+            {
+                String valueFromCorpus = corpusDictionary.get(specificTermKey);
                 String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
                 termFilePathTemp = Paths.get(splittedValue[0]);
             }
@@ -315,25 +350,9 @@ public class Indexer implements Runnable {
             }
 
 
-            /**If the Corpus contains the Term in Lower Case then use lower case
-             * if the Corpus contains the Term in Upper case use Upper case
-             * and it it does not contains the Term keep the term as inserted*/
-            String specificTermKey;
-            if(corpusDictionary.containsKey(termKey.toLowerCase()))
-            {
-                specificTermKey = termKey.toLowerCase();
-            }
-            else if(corpusDictionary.containsKey(termKey.toUpperCase()))
-            {
-                specificTermKey = termKey.toUpperCase();
-            }
-            else
-            {
-                specificTermKey = termKey;
-            }
 
             /**Checks whether or not the term parse by parsePhrases parser*/
-            if(isEntityTerm(newMap.get(termKey)))
+            if(isEntity(newMap.get(termKey)))
             {
                 if(!entityToDrop.containsKey(specificTermKey))
                 {
@@ -360,7 +379,8 @@ public class Indexer implements Runnable {
 
                 int lineNumberInFile = Integer.parseInt(corpusDictionary.get(specificTermKey).split(corpusPathAndLineDelim)[1]);
                 StringBuilder addNewHashMapLineToExisting = new StringBuilder();
-                addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(newMap.get(termKey));
+                String docListWithoutParserName = removeParserName(termKey,newMap.get(termKey),termDocListDelim,";");
+                addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(docListWithoutParserName);
                 //Gets and set new Total TF
                 int totalTF = sumTotalTF(specificTermKey,newMap.get(termKey),corpusPathAndLineDelim);
                 String pathAndLineAndTTF = corpusDictionary.get(specificTermKey);
@@ -370,7 +390,7 @@ public class Indexer implements Runnable {
 
 
                 //Check Capital Letter Constraints and update the corpus with the new ttf
-                checkCapitalLetterConstraintsAndChangeInCorpus(termKey,specificTermKey,pathAndLineAndTTF);
+                checkCapitalLetterConstraintsAndChangeInCorpus(termKey,specificTermKey,pathAndLineAndTTF,parserName);
 
 
 //                corpusDictionary.replace(specificTermKey,corpusDictionary.get(specificTermKey),pathAndLineAndTTF);
@@ -383,9 +403,18 @@ public class Indexer implements Runnable {
             else
             {
 //                termFilePath = getFileForTerm(termKey);
-                allTermsOfLetter.add(newMap.get(termKey));
+                //first remove the parser name
+                String docListWithoutParserName = removeParserName(termKey,newMap.get(termKey),termDocListDelim,";");
+
+                allTermsOfLetter.add(docListWithoutParserName);
                 String pathAndLine = termFilePath.toString() + corpusPathAndLineDelim + allTermsOfLetter.size() + corpusPathAndLineDelim + sumTotalTF(specificTermKey,newMap.get(termKey),corpusPathAndLineDelim);
-                specificTermKey = setCapitalLettersConstraintForNewTerm(specificTermKey);
+
+
+                if(parserName.equalsIgnoreCase("parsewords"))
+                {
+                    //Set Capital Letters for terms which were parsed in the word parser
+                    specificTermKey = setCapitalLettersConstraintForNewTerm(specificTermKey);
+                }
                 corpusDictionary.put(specificTermKey,pathAndLine);
             }
         }
@@ -396,7 +425,42 @@ public class Indexer implements Runnable {
 
     }
 
-    private boolean isEntityTerm(String docList) {
+    /**
+     * Get the doc list of a term
+     * and returns its ParserName
+     * @param docList - doc list
+     * @return the parser name of the term
+     */
+    private String getParserName(String docList) {
+        String[] docSplitted = docList.split(";");
+        String parserName = docSplitted[0].split("#")[2];
+        return parserName;
+    }
+
+    /**
+     * Gets a docList line for the posting file
+     * and for each entry in the line
+     * removes the parser name
+     * @param docList - the line to insert to the posting file
+     * @param docDelim - a delimiter of the doc Params
+     * @param postFileDelim - a delimiter for the doc List
+     * @return The line without the parser name
+     */
+    private String removeParserName(String term,String docList, String docDelim,String postFileDelim) {
+
+        String[] docListSplitted = docList.split(postFileDelim);
+        StringBuilder docListWithoutParserName = new StringBuilder();
+        for (String doc :
+                docListSplitted) {
+            docListWithoutParserName.append(doc.split(docDelim)[0]).append(docDelim).append(doc.split(docDelim)[1]).append(postFileDelim);
+        }
+        String lastValue = docListWithoutParserName.toString();
+        lastValue = lastValue.substring(0,docListWithoutParserName.length()-1);
+        lastValue = lastValue.replaceAll(" ","");
+        return lastValue;
+    }
+
+    private boolean isEntity(String docList) {
         String[] docSplitted = docList.split(";");
         if(docSplitted[0].split("#")[2].equalsIgnoreCase("parsephrases"))
         {
@@ -411,33 +475,27 @@ public class Indexer implements Runnable {
      * @param termInHashMap - the term in the HashMap
      * @param termInCorpus - the term in the Corpus
      */
-    private void checkCapitalLetterConstraintsAndChangeInCorpus(String termInHashMap, String termInCorpus, String pathLineTTF) {
+    private void checkCapitalLetterConstraintsAndChangeInCorpus(String termInHashMap, String termInCorpus, String pathLineTTF,String parserName) {
         String theNewTermToSave;
-        if(StringUtils.isAllLowerCase(termInHashMap))
-        {
-            theNewTermToSave = termInHashMap;
-        }
-        else if(StringUtils.isAllUpperCase(termInHashMap.charAt(0)+""))
-        {
-            if(termInCorpus.equals(termInHashMap.toUpperCase()))
-            {
-                theNewTermToSave = termInHashMap.toUpperCase();
+        if(parserName.equalsIgnoreCase("parsewords")) {
+            if (StringUtils.isAllLowerCase(termInHashMap)) {
+                theNewTermToSave = termInHashMap;
+            } else if (StringUtils.isAllUpperCase(termInHashMap.charAt(0) + "")) {
+                if (termInCorpus.equals(termInHashMap.toUpperCase())) {
+                    theNewTermToSave = termInHashMap.toUpperCase();
+                } else {
+                    theNewTermToSave = termInCorpus;
+                }
+            } else {
+                theNewTermToSave = termInHashMap.toLowerCase();
             }
-            else
-            {
-                theNewTermToSave = termInCorpus;
-            }
+
+
+            corpusDictionary.remove(termInCorpus);
+
+
+            corpusDictionary.put(theNewTermToSave, pathLineTTF);
         }
-        else
-        {
-            theNewTermToSave = termInHashMap.toLowerCase();
-        }
-
-
-        corpusDictionary.remove(termInCorpus);
-
-
-        corpusDictionary.put(theNewTermToSave,pathLineTTF);
 
 
     }
@@ -624,9 +682,11 @@ public class Indexer implements Runnable {
                 Files.createDirectories(Paths.get(pathToPostFolder));
             }
             if(withStemm){
+                //fileOut = new FileOutputStream(pathToPostFolder+ "DictionaryWithStemm",true);
                 fileOut = new FileOutputStream(pathToPostFolder+ "/DictionaryWithStemm",true);
             }
             else{
+                //fileOut = new FileOutputStream(pathToPostFolder+ "Dictionary",true);
                 fileOut = new FileOutputStream(pathToPostFolder+ "/Dictionary",true);
             }
 
@@ -666,6 +726,10 @@ public class Indexer implements Runnable {
     public void removeEntitys() {
         for (String term :
                 entityToDrop.keySet()) {
+            if(term.equalsIgnoreCase("as congress"))
+            {
+                System.out.println("It is an Entity");
+            }
             if(entityToDrop.get(term) == 1 )
             {
                 corpusDictionary.remove(term);

@@ -162,7 +162,6 @@ public class MainParse extends AParser {
                     else {
                         parseWords(cleanWord);
                     }
-
                 }
                 else{
                     if(parseDates(cleanWord)){
@@ -220,7 +219,8 @@ public class MainParse extends AParser {
                         if (Integer.parseInt(year) <= 31) {
                             year = String.format("%02d", Integer.parseInt(year));
                             parsedTermInsert(month + "-" + year, d,"Dates");
-                            //System.out.println(month+"-"+year);
+                            //System.out.println(month
+                            // +"-"+year);
                             //newTerm = new Term(month +"-"+year);
                         } else {
                             parsedTermInsert(month + "-" + year, d,"Dates");
@@ -396,8 +396,8 @@ public class MainParse extends AParser {
             if (wordIndex < splitedText.length - 4) {
                 splitedText[wordIndex + 3] = chopDownLastCharPunc(splitedText[wordIndex + 3]);
                 if (splitedText[wordIndex + 2].equals("and") && NumberUtils.isNumber(splitedText[wordIndex + 1]) && NumberUtils.isNumber(splitedText[wordIndex + 3])) {
-                    //parsedTermInsert(splitedText[wordIndex + 1], d,"NameRanges");
-                    //parsedTermInsert(splitedText[wordIndex + 3], d,"NameRanges");
+                    parsedTermInsert(splitedText[wordIndex + 1], d,"NameRanges");
+                    parsedTermInsert(splitedText[wordIndex + 3], d,"NameRanges");
                     parsedTermInsert("between" + splitedText[wordIndex + 1] + "and" + splitedText[wordIndex + 3], d,"NameRanges");
                     //System.out.println("between " + splitedText[i + 1] + " and " + splitedText[i + 3]);
                     isParsed = true;
@@ -414,16 +414,14 @@ public class MainParse extends AParser {
             } else {
                 values = word.split("-");
                 if (values.length > 1) {
-                    if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
+                    if (isAlphaBet(values[0]) && !stopWords.contains(values[0]) && isAlphaBet(values[1]) && !stopWords.contains(values[1])) {
                             parsedTermInsert(values[0], d,"NameRanges");
                             parsedTermInsert(values[1], d,"NameRanges");
                     }
 
                     //System.out.println(word);
                     isParsed = true;
-                    if(isAlphaBet(values[0]) && !stopWords.contains(values[0]) && isAlphaBet(values[1]) && !stopWords.contains(values[1])){
                         parsedTermInsert(word, d,"NameRanges");
-                    }
                 }
             }
         }
@@ -454,6 +452,7 @@ public class MainParse extends AParser {
                 }
                 //System.out.println(word);
                 isParsed = true;
+                parsedTermInsert(word, d,"NumberRanges");
             }
         }
 
