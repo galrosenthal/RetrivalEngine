@@ -80,7 +80,7 @@ public class Model extends Observable implements IModel {
         System.gc();
         myIndexer.createCorpusDictionary();
 
-        myIndexer.removeEntitys();
+//        myIndexer.removeEntitys();
 
         myIndexer.saveCorpusDictionary(withStemm);
 //        writeDocsHashMapToDisk(MainParse.allDocs);
