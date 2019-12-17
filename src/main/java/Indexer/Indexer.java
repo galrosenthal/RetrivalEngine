@@ -733,7 +733,32 @@ public class Indexer implements Runnable {
                 corpusDictionary.remove(term);
             }
         }
+
+        writeEntityToFile();
     }
+
+    private void writeEntityToFile() {
+
+        StringBuilder line = new StringBuilder();
+        for (String term :
+                entityToDrop.keySet()) {
+            if(entityToDrop.get(term)==1)
+            {
+                line.append(term).append(": ").append(entityToDrop.get(term)).append("\n");
+            }
+        }
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("./entityToDrop.txt"));
+            writer.write(line.toString());
+            writer.flush();
+            writer.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Reset the variables of the indexer

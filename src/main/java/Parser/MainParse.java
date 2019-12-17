@@ -142,9 +142,6 @@ public class MainParse extends AParser {
                     else if(parseSlash(cleanWord)){
 
                     }
-                    else if(parseApostrophes(cleanWord)){
-
-                    }
                     else{
                         parseEmails(cleanWord);
                     }
@@ -897,11 +894,6 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
-    /**
-     * Check if the word is only alphabet
-     * @param word to parse
-     * @return true if it is aplhabet, false if not
-     */
     public static boolean isAlphaBet(String word) {
         char[] chars = word.toCharArray();
         for(char c : chars){
@@ -912,10 +904,10 @@ public class MainParse extends AParser {
         return true;
     }
 
-    /**
-     * Parse words which they are emails
-     * @param word to parse
-     * @return true if the word is parsed. false else
+    /*
+
+        Parse emails
+
      */
     public boolean parseEmails(String word){
         boolean isParsed = false;
@@ -927,11 +919,10 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
-    /**
-     * Parse words with / inside, the parser split the word by / and save the words as
-     * two diffrent words
-     * @param word to parse
-     * @return true if the parser parse the word
+    /*
+
+        Parse Slash
+
      */
     public boolean parseSlash(String word){
         boolean isParsed = false;
@@ -951,11 +942,6 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
-    /**
-     * The function check if there is / in the word
-     * @param word we want to parse
-     * @return true if there is / in the word
-     */
     public boolean containsSlash(String word){
 
         char[] chars = word.toCharArray();
@@ -965,30 +951,6 @@ public class MainParse extends AParser {
             }
         }
         return false;
-    }
-
-    /**
-     * Parse all the world with 's or ' at the end.
-     * The parser remove the ' as follow
-     * @param word word from the document
-     * @return if the parser succeeded to parse
-     */
-    public boolean parseApostrophes(String word){
-        boolean isParsed = false;
-        StringBuilder wordB = new StringBuilder(word);
-        if(!wordB.toString().isEmpty() && !stopWords.contains(wordB) && wordB.length()> 2) {
-            if (wordB.charAt(wordB.length() - 1) == '\'') {
-                parsedTermInsert(wordB.substring(0, wordB.length() - 1), d, "parseApostrophes");
-                isParsed = true;
-            } else if (wordB.charAt(wordB.length() - 2) == '\'' && wordB.charAt(wordB.length() - 1) == 's') {
-                parsedTermInsert(wordB.substring(0, wordB.length() - 2), d, "parseApostrophes");
-                isParsed = true;
-            }
-        }
-
-
-
-        return isParsed;
     }
 }
 
