@@ -682,10 +682,10 @@ public class Indexer implements Runnable {
                 Files.createDirectories(Paths.get(pathToPostFolder));
             }
             if(withStemm){
-                fileOut = new FileOutputStream(pathToPostFolder+ "DictionaryWithStemm",true);
+                fileOut = new FileOutputStream(pathToPostFolder+ "/DictionaryWithStemm",true);
             }
             else{
-                fileOut = new FileOutputStream(pathToPostFolder+ "Dictionary",true);
+                fileOut = new FileOutputStream(pathToPostFolder+ "/Dictionary",true);
             }
 
             //File DictionaryFile = new File(pathToDictionaryFolder);
@@ -703,16 +703,18 @@ public class Indexer implements Runnable {
         File hashMapFile;
         try {
             if (withStemm) {
-                hashMapFile = Paths.get(pathToPostFolder + "DictionaryWithStemm").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/DictionaryWithStemm").toFile();
             } else {
-                hashMapFile = Paths.get(pathToPostFolder + "Dictionary").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/Dictionary").toFile();
             }
+
 
             FileInputStream fileIn = new FileInputStream(hashMapFile);
             ObjectInputStream objectOut = new ObjectInputStream(fileIn);
             corpusDictionary = (HashMap<String, String>) objectOut.readObject();
             objectOut.close();
             fileIn.close();
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -733,7 +735,17 @@ public class Indexer implements Runnable {
         }
     }
 
-
+    /**
+     * Reset the variables of the indexer
+     */
+    public void resetIndexer(){
+        this.parsedWordsQueue = new ConcurrentLinkedQueue<>();
+        corpusDictionary = new HashMap<>();
+        hundredKtermsMap = new HashMap<>();
+        indexerNum = new AtomicInteger(0);
+        entityToDrop = new HashMap<>();
+        stopThreads = false;
+    }
 
 
 }

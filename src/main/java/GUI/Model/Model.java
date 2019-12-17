@@ -13,7 +13,7 @@ public class Model extends Observable implements IModel {
     String corpusPath;
     String postingPath;
     private static final int MAX_NUMBER_OF_THREADS = 2;
-
+    String alertToShow;
 
     @Override
     public void loadDictionary(boolean withStemm) {
@@ -40,8 +40,6 @@ public class Model extends Observable implements IModel {
 
         Indexer.getInstance().setPathToPostFiles(postingPath);
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
-
-        int indexerIndex = 0;
 
         IndexerThreads[0] = new Thread(myIndexer);
         IndexerThreads[0].setName("Term Indexer");
@@ -84,14 +82,20 @@ public class Model extends Observable implements IModel {
 
         myIndexer.removeEntitys();
 
-        myIndexer.saveCorpusDictionary(false);
+        myIndexer.saveCorpusDictionary(withStemm);
 //        writeDocsHashMapToDisk(MainParse.allDocs);
 //        readDocsHashMapToDisk();
         System.out.println("Corpus Size = " + myIndexer.corpusSize());
 
 
         endTime = System.nanoTime();
-        System.out.println("There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
+       alertToShow = "There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all";
+
+
+       if(IndexerThreads[0].isAlive()){
+           System.out.println("I am alive");
+       }
+
         setChanged();
         notifyObservers(1);
     }
@@ -101,14 +105,23 @@ public class Model extends Observable implements IModel {
         try
         {
             if(corpusPath!=null && postingPath!=null){
-                //FileUtils.cleanDirectory(new File(corpusPath));
                 FileUtils.cleanDirectory(new File(postingPath));
+                FileUtils.cleanDirectory(new File("./dicTemp/"));
+                FileUtils.cleanDirectory(new File("./docsTempDir/"));
             }
+
+            Indexer.getInstance().resetIndexer();
+            DocumentIndexer.getInstance().resetDocumentIndexer();
+
+
         }
         catch (Exception e)
         {
             //System.out.println("Could not clean Dirs");
         }
+
+        setChanged();
+        notifyObservers(1);
     }
 
     public HashMap<String,String> getDictionary(){
@@ -118,5 +131,7 @@ public class Model extends Observable implements IModel {
         return myIndexer.getCorpusDictionary();
     }
 
-
+    public String getAlertToShowFinish(){
+        return alertToShow;
+    }
 }

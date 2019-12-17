@@ -22,27 +22,15 @@ public class ReadFile {
     public int testSleepOn4Files = 0;
     private Tokenizer theTokenizer = Tokenizer.getInstance();
     boolean withStemm;
-//    public Thread prsNumThrd ;
-//    public Thread prsDatesThrd ;
-//    public Thread prsPrcntThrd;
-//    public Thread prsPriceThrd;
+
     public List<Thread> allParserThreads;
     public List<AParser> allParsers;
-//    public parsePrices prsPrices = new parsePrices();
-//    public parseNumbers prsNums = new parseNumbers();
-//    public parseDates prsDates = new parseDates();
-//    public parsePercentage prsPrcntg = new parsePercentage();
-//    public parseNames prsNames = new parseNames();
-//    public parseRanges prsRanges = new parseRanges();
-//    public parseWords prsWords = new parseWords();
-//    public parseOther prsOther = new parseOther();
+
     public MainParse mainParse1 = new MainParse();
     public MainParse mainParse2 = new MainParse();
     public MainParse mainParse3 = new MainParse();
     public MainParse mainParse4 = new MainParse();
-    public MainParse mainParse5 = new MainParse();
-//    private Indexer myIndexer = Indexer.getInstance();
-//    private final int numberOfDocsToPost = 1000;
+
 
     public ReadFile(boolean withStemm) {
         this.withStemm = withStemm;

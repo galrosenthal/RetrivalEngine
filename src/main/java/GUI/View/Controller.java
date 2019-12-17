@@ -94,6 +94,16 @@ public class Controller implements Observer {
             int num = (int) arg;
             btn_strtPrs.setDisable(false);
             btn_reset.setDisable(false);
+
+            if(num == 1){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText(viewModel.getAlertToShowFinish());
+                alert.setTitle("Finish!");
+                alert.showAndWait();
+            }
+            else if(num==2){
+
+            }
         }
     }
 
