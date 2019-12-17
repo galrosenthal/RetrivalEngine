@@ -39,4 +39,8 @@ public class ViewModel extends Observable implements Observer {
     public HashMap<String,String> getDictionary() {
        return model.getDictionary();
     }
+
+    public String getAlertToShowFinish(){
+        return model.getAlertToShowFinish();
+    }
 }

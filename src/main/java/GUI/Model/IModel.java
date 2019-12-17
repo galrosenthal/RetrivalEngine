@@ -10,4 +10,5 @@ public interface IModel {
     void loadDictionary(boolean withStemm);
 
      public HashMap<String,String> getDictionary();
+    public String getAlertToShowFinish();
 }

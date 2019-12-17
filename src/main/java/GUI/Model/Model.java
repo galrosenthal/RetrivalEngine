@@ -13,7 +13,7 @@ public class Model extends Observable implements IModel {
     String corpusPath;
     String postingPath;
     private static final int MAX_NUMBER_OF_THREADS = 2;
-
+    String alertToShow;
 
     @Override
     public void loadDictionary(boolean withStemm) {
@@ -82,14 +82,14 @@ public class Model extends Observable implements IModel {
 
         myIndexer.removeEntitys();
 
-        myIndexer.saveCorpusDictionary(false);
+        myIndexer.saveCorpusDictionary(withStemm);
 //        writeDocsHashMapToDisk(MainParse.allDocs);
 //        readDocsHashMapToDisk();
         System.out.println("Corpus Size = " + myIndexer.corpusSize());
 
 
         endTime = System.nanoTime();
-        System.out.println("There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all");
+       alertToShow = "There are "+ f.numOfCorpusFiles + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all";
 
 
        if(IndexerThreads[0].isAlive()){
@@ -119,6 +119,9 @@ public class Model extends Observable implements IModel {
         {
             //System.out.println("Could not clean Dirs");
         }
+
+        setChanged();
+        notifyObservers(1);
     }
 
     public HashMap<String,String> getDictionary(){
@@ -128,5 +131,7 @@ public class Model extends Observable implements IModel {
         return myIndexer.getCorpusDictionary();
     }
 
-
+    public String getAlertToShowFinish(){
+        return alertToShow;
+    }
 }
