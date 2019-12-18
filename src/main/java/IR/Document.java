@@ -16,13 +16,11 @@ import java.util.HashMap;
  * docNo - The DocNumber of the IR.Document
  * @see Element
  * @see HashMap
- * @see Term
  */
 public class Document implements Serializable {
 
 
-    //    private ConcurrentHashMap
-    private HashMap<String,Integer> termsDictonary;// Each IR.Term has an Integer that presets how many times this IR.Term is present in the IR.Document
+    private HashMap<String,Integer> termsDictonary;// Each term has an Integer that presets how many times this term is present in the IR.Document
 
     private Elements allDocElements;
     private Elements docText;
@@ -41,21 +39,6 @@ public class Document implements Serializable {
         textArray = StringUtils.split(docText.text());
         maxTFTerm = "";
         firstInsert = true;
-
-        /**
-         * searches for the element \"Text\" and \"docNo\"
-         */
-//        for (Element elem :
-//                allDocElements) {
-//            if (elem.tag().equals("text"))
-//            {
-//                docText = elem;
-//            }
-//            else if(elem.tag().equals("docno"))
-//            {
-//                docNo = elem;
-//            }
-//        }
 
     }
 
@@ -147,9 +130,4 @@ public class Document implements Serializable {
         return this.textArray.length == document.textArray.length &&
                 this.textArray[0].equals(document.textArray[0]) && this.getDocNo().equalsIgnoreCase(document.getDocNo());
     }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(termsDictonary, allDocElements);
-//    }
 }

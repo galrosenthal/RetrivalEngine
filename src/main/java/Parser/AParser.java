@@ -2,10 +2,7 @@ package Parser;
 
 import IR.Document;
 import IR.DocumentInfo;
-import IR.Term;
 import Indexer.*;
-import Indexer.ReadWriteTempDic;
-import Tokenizer.Tokenizer;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.BufferedReader;
@@ -29,7 +26,6 @@ public abstract class AParser implements Runnable {
     private String tfDelim = "#";
     protected String parseName;
     protected String[] docText;
-    protected Tokenizer toknizr = Tokenizer.getInstance();
     protected static HashSet<String> stopWords;
     protected static HashSet<String> stopMWords;
 //    protected ConcurrentHashMap<String,String> termsInText;
@@ -40,7 +36,6 @@ public abstract class AParser implements Runnable {
     private static final int numberOfDocsToPost = 100;
     private static final int numOfDocsToSave = 100000;
     protected volatile boolean stopThread = false;
-    protected ReadWriteTempDic myReadWriter = ReadWriteTempDic.getInstance();
     private boolean doneReadingDocs;
     public StringBuilder lastDocList;
     private static ReadWriteLock docEnqDeqLocker = new ReentrantReadWriteLock();
@@ -222,11 +217,6 @@ public abstract class AParser implements Runnable {
 
 
 
-
-    protected boolean checkTermExist(Term term)
-    {
-        return toknizr.getTokenList().containsKey(term);
-    }
 
 
     protected void splitDocText(Document d)

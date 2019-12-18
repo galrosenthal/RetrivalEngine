@@ -3,7 +3,6 @@ package readFile;
 import Indexer.*;
 import Parser.AParser;
 import Parser.MainParse;
-import Tokenizer.Tokenizer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,22 +13,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * readFile.ReadFile Class is reading all the documents from the corpus
+ * it has 5 parameters:
+ * numOfParsedDocs - Counts how many documents are in the corpus
+ * withStemm - A boolean thats represents whether or not the parse should use stemming or not
+ * allParserThreads - List of Threads for each parser
+ * allParsers - List of parsers
+ * mainParse{1..4} - 4 parsers
+ */
 public class ReadFile {
 
-    private int numOfParsers = 0;
-    private static final int DOC_CREATED_IN_QS = 2000;
-    public static int numOfCorpusFiles = 0, numOfParsedDocs = 0;
-    public int testSleepOn4Files = 0;
-    private Tokenizer theTokenizer = Tokenizer.getInstance();
-    boolean withStemm;
+    public static int numOfParsedDocs;
+    private boolean withStemm;
 
-    public List<Thread> allParserThreads;
-    public List<AParser> allParsers;
+    private List<Thread> allParserThreads;
+    private List<AParser> allParsers;
 
-    public MainParse mainParse1 = new MainParse();
-    public MainParse mainParse2 = new MainParse();
-    public MainParse mainParse3 = new MainParse();
-    public MainParse mainParse4 = new MainParse();
+    private MainParse mainParse1 = new MainParse();
+    private MainParse mainParse2 = new MainParse();
+    private MainParse mainParse3 = new MainParse();
+    private MainParse mainParse4 = new MainParse();
 
 
     public ReadFile(boolean withStemm) {
@@ -40,14 +44,7 @@ public class ReadFile {
         addParserToThreads(mainParse2);
         addParserToThreads(mainParse3);
         addParserToThreads(mainParse4);
-        //addParserToThreads(prsNums);
-        //addParserToThreads(prsDates);
-        //addParserToThreads(prsPrcntg);
-//        addParserToThreads(prsPrices);
-        //addParserToThreads(prsNames);
-//         addParserToThreads(prsRanges);
-        //addParserToThreads(prsWords);
-        //addParserToThreads(prsOther);
+        numOfParsedDocs = 0;
         runParsers();
 
     }
@@ -63,8 +60,6 @@ public class ReadFile {
                 allParserThreads) {
             t.start();
         }
-
-
     }
 
     public void stopThreads()
@@ -116,11 +111,14 @@ public class ReadFile {
         return true;
     }
 
-    public void releaseAllParsedTermsToIndex()
-    {
-        mainParse1.stopThread();
-    }
 
+    /**
+     * This Functions get a File which can be a directory or a file of the Corpus
+     * and creates a IR.Document for each document inside the file
+     * and then enqueues it into the parsers queue
+     * @param corpus -  a file or folder of the Corpus
+     * @see IR.Document
+     */
     public void readCorpus(File corpus){
         Document doc;
 
@@ -131,39 +129,13 @@ public class ReadFile {
             else{
                 try {
                     doc = Jsoup.parse(folder,"UTF8");
-//                    String body = doc.body().text();
-                    //for (Element sentence : doc.getElementsByTag("DOCNO"))
-                    //   System.out.print(sentence);
-                    // System.out.println(doc.getElementsByTag("DOCNO").text());
                     Elements docs = doc.getElementsByTag("doc");
                     for (Element fileDoc :
                             docs) {
-                        numOfCorpusFiles++;
                         numOfParsedDocs++;
-                        testSleepOn4Files++;
                         IR.Document document = new IR.Document(fileDoc);
                         enqDocToAllParsers(document);
-//                        shouldWaitForParser();
-//                        System.out.println("Starting parse " + document.getDocNo());
-//                        mainParse1.enqueueDoc(document);
-//                        mainParse1.parse();
-//                        System.out.println("Finished parse " + document.getDocNo());
-                        //prsPrcntg.parse();
-
-//                        new Thread(()-> prsNums.parse(document)).start();
-//                        if(numOfParsedDocs > numberOfDocsToPost)
-//                        {
-//                            myIndexer.enqueue(prsNums.getCopyOfTermInText());
-//                            prsNums.clearDic();
-//                            numOfParsedDocs = 0;
-//                        }
-//                        parseDates pDate = new parseDates();
-//                        pDate.parse(document);
-                        //parsePercentage pp = new parsePercentage();
-                        //pp.parse(document);
-                        //prsNums.parse(document);
                     }
-
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -173,29 +145,17 @@ public class ReadFile {
 
     }
 
-    public void runParse()
-    {
-        mainParse1.parse();
-    }
 
+    /**
+     * Enqueues a document to the Static Q of the parsers
+     * @param document - a document to enqueue for the parsers
+     */
     private void enqDocToAllParsers(IR.Document document) {
-        for (AParser prsr :
-                allParsers) {
-            prsr.enqueueDoc(document);
-        }
+//        for (AParser prsr :
+//                allParsers) {
+//            prsr.enqueueDoc(document);
+//        }
+        allParsers.get(0).enqueueDoc(document);
     }
 
-    private void shouldWaitForParser() {
-        if(mainParse1.qSize() >= DOC_CREATED_IN_QS)
-        {
-            try
-            {
-                Thread.sleep(1000);
-            }
-            catch (Exception e)
-            {
-
-            }
-        }
-    }
 }
