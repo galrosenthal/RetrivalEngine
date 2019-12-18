@@ -1,28 +1,18 @@
 package GUI.View;
 
-import GUI.ViewModel.*;
-import javafx.beans.property.IntegerProperty;
+import GUI.ViewModel.ViewModel;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableArray;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableListBase;
-import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
-import javafx.stage.*;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
-import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
@@ -57,8 +47,8 @@ public class Controller implements Observer {
      * to run the program
      */
     public void startParse(){
-        btn_strtPrs.setDisable(true);
-        if(txt_field_Corpus.getText()!= null && txt_field_Posting!= null){
+        if(txt_field_Corpus.getCharacters().length() > 0 && txt_field_Posting.getCharacters().length() > 0){
+            btn_strtPrs.setDisable(true);
             viewModel.startParse(txt_field_Corpus.getText(),txt_field_Posting.getText(),chk_Stemm.isSelected());
         }
         else{
