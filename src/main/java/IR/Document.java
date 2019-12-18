@@ -9,11 +9,14 @@ import java.util.HashMap;
 
 /**
  * IR.Document Class is representing a document in the corpus
- * it has 4 parameters:
+ * it has 7 parameters:
  * termsDictonary - HashMap that hold all the Terms in the Doc and how many times in it.
- * allDocElements - Each doc has many elements in it (DocNumber,Headers,text...etc') so this param is holding all of them
  * docText - The text of the IR.Document
  * docNo - The DocNumber of the IR.Document
+ * docDate - The DocNumber of the IR.Document
+ * textArray - The DocNumber of the IR.Document
+ * maxTFTerm - The DocNumber of the IR.Document
+ * firstInsert - The DocNumber of the IR.Document
  * @see Element
  * @see HashMap
  */
@@ -21,8 +24,6 @@ public class Document implements Serializable {
 
 
     private HashMap<String,Integer> termsDictonary;// Each term has an Integer that presets how many times this term is present in the IR.Document
-
-    private Elements allDocElements;
     private Elements docText;
     private Elements docNo;
     private Elements docDate;
@@ -32,7 +33,6 @@ public class Document implements Serializable {
 
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
-        this.allDocElements = fileDocInCorpus.getAllElements();
         docText = fileDocInCorpus.getElementsByTag("text");
         docNo = fileDocInCorpus.getElementsByTag("docno");
         docDate = fileDocInCorpus.getElementsByTag("date1");
@@ -44,10 +44,6 @@ public class Document implements Serializable {
 
     public String getDocDate() {
         return docDate.text();
-    }
-
-    public Elements getDocText() {
-        return docText;
     }
 
     public String getDocNo() {

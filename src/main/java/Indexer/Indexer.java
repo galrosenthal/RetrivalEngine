@@ -92,7 +92,7 @@ public class Indexer implements Runnable {
     public void run() {
 //        System.out.println("Indexer has Started...");
         while (!stopThreads) {
-            createPostFiles();
+            createTempDictionarys();
         }
         writeHashMapToDisk();
 //        System.out.println("Indexer has stopped...");
@@ -112,7 +112,7 @@ public class Indexer implements Runnable {
     /**
      * Working on the HashMaps in the Q and creates the Indexed Dictionary of the Terms.
      */
-    private void createPostFiles() {
+    private void createTempDictionarys() {
 
         while (!isQEmpty()) {
             HashMap<String, String> dqdHshMap = dequeue();
