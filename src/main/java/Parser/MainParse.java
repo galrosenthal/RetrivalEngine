@@ -1002,7 +1002,7 @@ public class MainParse extends AParser {
                 isParsed = true;
             }
         }
-        
+
         return isParsed;
     }
 }
