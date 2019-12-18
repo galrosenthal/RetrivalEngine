@@ -10,6 +10,9 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Indexer.Indexer is a Singleton Class thats Indexing all the Terms in the Corpus
+ */
 public class Indexer implements Runnable {
     private static final double MAX_POSTING_FILE_SIZE = Double.MAX_VALUE;
     private static final int MAX_TERMS_TO_INDEX = 500000;
@@ -39,6 +42,9 @@ public class Indexer implements Runnable {
     }
 
 
+    /**
+     * @return true if the Q is empty
+     */
     public boolean isQEmpty() {
         return parsedWordsQueue.isEmpty();
     }
@@ -55,14 +61,27 @@ public class Indexer implements Runnable {
     }
 
 
+    /**
+     * Enqueues a new HashMap of terms to the Queue
+     * @param parsedWords - the hashmap to enqueue
+     * @return true if enqueue succeed
+     */
     public synchronized boolean enqueue(HashMap<String, String> parsedWords) {
         return parsedWordsQueue.add(parsedWords);
     }
 
+    /**
+     * Dequeue a new HashMap of terms from the Queue
+     * @return the hashMap Dequeued
+     */
     private synchronized HashMap<String, String> dequeue() {
         return parsedWordsQueue.poll();
     }
 
+    /**
+     * Sets the path to the Posting files folder
+     * @param path - a Path to the posting files folder
+     */
     public void setPathToPostFiles(String path) {
 
         this.pathToPostFolder = path;
@@ -82,40 +101,34 @@ public class Indexer implements Runnable {
 
     }
 
+    /**
+     * @return the size of the Dictionary, the number of unique terms in the corpus
+     */
     public int corpusSize() {
         return corpusDictionary.size();
     }
 
 
+    /**
+     * Working on the HashMaps in the Q and creates the Indexed Dictionary of the Terms.
+     */
     private void createPostFiles() {
 
         while (!isQEmpty()) {
-//            System.out.println("There are " + parsedWordsQueue.size() + " Maps left in the Q");
             HashMap<String, String> dqdHshMap = dequeue();
 
             if (dqdHshMap == null) {
                 continue;
             }
-            long startTime, endTime;
 
-
-//            System.out.println("Merging "+dqdHshMap.size());
             int mapSizeBeforeMerge = hundredKtermsMap.size();
-            startTime = System.nanoTime();
             mergeHashMapIntoHundred(dqdHshMap, hundredKtermsMap);
-            endTime = System.nanoTime();
             int mapSizeAfterMerge = hundredKtermsMap.size();
             countMergedTerms += (mapSizeAfterMerge - mapSizeBeforeMerge);
-//            System.out.println("Merging took "+(endTime - startTime)/1000000000 + " seconds");
 
             if (countMergedTerms >= MAX_TERMS_TO_INDEX) {
-//                System.out.println("Sorting "+hundredKtermsMap.size());
-//                startTime = System.nanoTime();
-//                sortDocListPerTerm();
                 writeHashMapToDisk();
-//                endTime = System.nanoTime();
                 countMergedTerms = 0;
-//                System.out.println("Sorting took "+(endTime - startTime)/1000000000 + " seconds");
             }
 
         }
@@ -143,6 +156,9 @@ public class Indexer implements Runnable {
         }
     }
 
+    /**
+     * @return the HashMap of the Inverted Index Dictionary
+     */
     public HashMap<String, String> getCorpusDictionary() {
         if(corpusDictionary.size() == 0){
             loadDictionary(false);
@@ -158,11 +174,6 @@ public class Indexer implements Runnable {
      * "FBIS3-1#2;FBIS3-2#43;FBIS3-3#5;FBIS3-4#54;FBIS3-5#98;FBIS3-6#12;BIS3-7#32;FBIS3-8#6"
      */
     private void sortDocListPerTerm() {
-//        String[] myString = {"FBIS3-8#6","FBIS3-1#2","FBIS3-7#32","FBIS3-2#43","FBIS3-4#54","FBIS3-3#5","FBIS3-5#98","FBIS3-6#12"};
-//        Arrays.sort(myString);
-//        System.out.println(Arrays.toString(myString));
-//        StringBuilder newString = new StringBuilder(Arrays.toString(myString));
-
         for (String key :
                 hundredKtermsMap.keySet()) {
             String[] docList = hundredKtermsMap.get(key).split(";");
@@ -178,11 +189,8 @@ public class Indexer implements Runnable {
      * @return String containing the docList sorted
      */
     private String sortArray(String[] docList) {
-        long start, end;
-        start = System.nanoTime();
         Arrays.sort(docList);
-        end = System.nanoTime();
-//            System.out.println("The Sort took " + (end-start)/1000000 + " Milli Seconds");
+
         String sortedList = Arrays.toString(docList).replaceAll(",", ";");
         sortedList = sortedList.replaceAll(" ", "");
         if (sortedList.charAt(0) == '[') {
@@ -399,16 +407,13 @@ public class Indexer implements Runnable {
                 checkCapitalLetterConstraintsAndChangeInCorpus(termKey,specificTermKey,pathAndLineAndTTF,parserName);
 
 
-//                corpusDictionary.replace(specificTermKey,corpusDictionary.get(specificTermKey),pathAndLineAndTTF);
                 //sort and set the line in file with the new values
                 String newLineSorted = sortArray(addNewHashMapLineToExisting.toString().split(";"));
                 allTermsOfLetter.set(lineNumberInFile-1,newLineSorted);
 
-//                termFilePath = Paths.get(corpusDictionary.get(termKey.toLowerCase()).split(corpusPathAndLineDelim)[0]);
             }
             else
             {
-//                termFilePath = getFileForTerm(termKey);
                 //first remove the parser name
                 String docListWithoutParserName = removeParserName(termKey,newMap.get(termKey),termDocListDelim,";");
 
@@ -466,6 +471,11 @@ public class Indexer implements Runnable {
         return lastValue;
     }
 
+    /**
+     * Gets a String of Document List from a term, and returns true if it is parsed by the parser of Phrases
+     * @param docList - String to work with
+     * @return true if it is parsed by the parser of Phrases
+     */
     private boolean isEntity(String docList) {
         String[] docSplitted = docList.split(";");
         if(docSplitted[0].split("#")[2].equalsIgnoreCase("parsephrases"))
@@ -674,12 +684,22 @@ public class Indexer implements Runnable {
         return indexOfFile;
     }
 
+    /**
+     * Gets a file and returns the size of it in MB
+     * @param file -  File to check what is the size of it
+     * @return the size of the File in MB
+     */
     private double getFileSizeMegaBytes(File file) {
         double a = (double) file.length() / (KB_SIZE * KB_SIZE);
         return a;
     }
 
 
+    /**
+     * Saves the Dictionary of the Terms generated to a file
+     * the name of the file depends whether or not the withStemm param is true
+     * @param withStemm boolean parameter that indicates whether or not the indexer uses stemming or not
+     */
     public void saveCorpusDictionary(boolean withStemm) {
         try {
             FileOutputStream fileOut;
@@ -707,6 +727,12 @@ public class Indexer implements Runnable {
         }
     }
 
+    /**
+     * Loads the Dictionary of the Terms generated from a file
+     * the name of the file depends whether or not the withStemm param is true
+     * @param withStemm boolean parameter that indicates whether or not the indexer uses stemming or not
+     * @return true if the load succeeded
+     */
     public boolean loadDictionary(boolean withStemm) {
         File hashMapFile;
         try {
@@ -732,6 +758,10 @@ public class Indexer implements Runnable {
         }
     }
 
+
+    /**
+     * Deletes all Entitys in the Corpus which were found only 1 time in all the corpus
+     */
     public void removeEntitys() {
         for (String term :
                 entityToDrop.keySet()) {
@@ -757,6 +787,10 @@ public class Indexer implements Runnable {
     }
 
 
+    /**
+     * Exports the Dictionary of the Terms to a CSV
+     * Used in the Report.
+     */
     public void exportToCSV()
     {
         String eol = System.getProperty("line.separator");
