@@ -278,6 +278,10 @@ public class Indexer implements Runnable {
 
             String parserName = getParserName(newMap.get(termKey));
 
+            if(termKey.toLowerCase().contains("pay"))
+            {
+                System.out.println(termKey);
+            }
 
             //TODO: BUGGGGGGGGGGGGGGGGGGGGGGGG
             /**If the Corpus contains the Term in Lower Case then use lower case

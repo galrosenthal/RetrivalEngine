@@ -28,6 +28,14 @@ public class Model extends Observable implements IModel {
             //FileUtils.cleanDirectory(new File(postingPath));
             FileUtils.cleanDirectory(new File("./dicTemp/"));
             FileUtils.cleanDirectory(new File("./docsTempDir/"));
+            if(withStemm)
+            {
+                FileUtils.cleanDirectory(new File(postingPath + "/postingWithStemm"));
+            }
+            else
+            {
+                FileUtils.cleanDirectory(new File(postingPath + "/postingNoStemm"));
+            }
         }
         catch (Exception e)
         {
