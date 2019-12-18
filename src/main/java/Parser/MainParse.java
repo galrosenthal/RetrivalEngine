@@ -419,14 +419,18 @@ public class MainParse extends AParser {
             } else {
                 values = word.split("-");
                 if (values.length > 1) {
-                    if (isAlphaBet(values[0]) && !stopWords.contains(values[0]) && isAlphaBet(values[1]) && !stopWords.contains(values[1])) {
-                            parsedTermInsert(values[0], d,"NameRanges");
-                            parsedTermInsert(values[1], d,"NameRanges");
+                    for (String value:values) {
+                        if (isAlphaBet(value) && !stopWords.contains(value)){
+                            parsedTermInsert(value, d,"NameRanges");
+                        }
                     }
 
+                    if(word.charAt(0)!= '$'){
+                        parsedTermInsert(word, d,"NameRanges");
+                    }
                     //System.out.println(word);
                     isParsed = true;
-                        parsedTermInsert(word, d,"NameRanges");
+
                 }
             }
         }
@@ -451,13 +455,19 @@ public class MainParse extends AParser {
         } else {
             values = word.split("-");
             if (values.length > 1) {
-                if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
-                    parsedTermInsert(values[0], d,"NumberRanges");
-                    parsedTermInsert(values[1], d,"NumberRanges");
+
+                for (String value:values) {
+                    if (NumberUtils.isNumber(value) && NumberUtils.isNumber(value)){
+                        parsedTermInsert(value, d,"NumberRanges");
+                    }
+                }
+
+                if(word.charAt(0)!= '$'){
+                    parsedTermInsert(word, d,"NumberRanges");
                 }
                 //System.out.println(word);
                 isParsed = true;
-                parsedTermInsert(word, d,"NumberRanges");
+
             }
         }
 
@@ -887,7 +897,7 @@ public class MainParse extends AParser {
         //System.out.println(word);
         StringBuilder wordB = new StringBuilder(word);
 
-        if (wordB.length() < 3 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
+        if (wordB.length() < 2 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
         !isAlphaBet(wordB.toString())) {
             return isParsed;
         }
@@ -992,9 +1002,7 @@ public class MainParse extends AParser {
                 isParsed = true;
             }
         }
-
-
-
+        
         return isParsed;
     }
 }

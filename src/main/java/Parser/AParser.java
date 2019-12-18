@@ -25,7 +25,7 @@ public abstract class AParser implements Runnable {
     protected final double MILLION = 1000000;
     protected final double THOUSAND = 1000;
     protected boolean withStemm;
-    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','[','!','\t','\n','|','*','\'','+','/','_'};
+    protected char[] punctuations = {',','.',';',':','?','(',')','"','{','}','-',']','[','!','\t','\n','|','*','\'','+','/','_','`'};
     private String tfDelim = "#";
     protected String parseName;
     protected String[] docText;
