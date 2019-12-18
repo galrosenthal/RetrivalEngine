@@ -97,6 +97,7 @@ public class Model extends Observable implements IModel {
         myIndexer.removeEntitys();
 
         myIndexer.saveCorpusDictionary(withStemm);
+        myIndexer.exportToCSV();
 //        writeDocsHashMapToDisk(MainParse.allDocs);
 //        readDocsHashMapToDisk();
         System.out.println("Corpus Size = " + myIndexer.corpusSize());

@@ -788,4 +788,28 @@ public class Indexer implements Runnable {
     }
 
 
+    public void exportToCSV()
+    {
+        String eol = System.getProperty("line.separator");
+        String csvFilePath = pathToPostFolder + "/corpus.csv";
+
+        Path pathToCsv = Paths.get(csvFilePath);
+        if(pathToCsv.toFile().exists())
+        {
+            pathToCsv.toFile().delete();
+        }
+
+        try (Writer writer = new FileWriter(pathToCsv.toFile())) {
+            for (Map.Entry<String, String> entry : corpusDictionary.entrySet()) {
+                writer.append(entry.getKey())
+                        .append(',')
+                        .append(entry.getValue().split("#")[2])
+                        .append(eol);
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+
 }
