@@ -16,6 +16,9 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+/**
+ * Parser.AParser is Abstract class represents a parser and what should one have
+ */
 public abstract class AParser implements Runnable {
 
     protected final double BILLION = 1000000000;
@@ -64,6 +67,9 @@ public abstract class AParser implements Runnable {
     }
 
 
+    /**
+     * Stops the threads
+     */
     public void stopThread()
     {
         doneReadingDocs = true;
@@ -73,6 +79,10 @@ public abstract class AParser implements Runnable {
 
     }
 
+    /**
+     * Marks the Doc that was just parsed as parsed and gets all of its Info
+     * @param doc a document to mark as parsed
+     */
     protected void makeDocParsed(Document doc)
     {
         allDocsSemaphore.acquireUninterruptibly();
@@ -123,6 +133,10 @@ public abstract class AParser implements Runnable {
     }
 
 
+    /**
+     * Enqueue the HashMap of term that was parsed in the current iterative to the indexer queue
+     * if the numOfParsedDocInIterative is greater the numberOfDocsToPost(final)
+     */
     protected void releaseToIndexerFile()
     {
         if(numOfParsedDocInIterative >= numberOfDocsToPost || doneReadingDocs)
@@ -145,12 +159,9 @@ public abstract class AParser implements Runnable {
         }
     }
 
-    private String getName() {
-        return parseName;
-    }
 
     /**
-     * Creates a String that contains all the stopwords from the file <b>resources/stopWords.txt</b>
+     * Creates a HashSet that contains all the stopwords from the file <b>resources/stopWords.txt</b>
      */
     protected void createStopWords() {
         if (stopWords == null) {
@@ -172,9 +183,6 @@ public abstract class AParser implements Runnable {
                 }
 
                 stopWordsReader.close();
-//            this.stopWords = (List<String>) Fileo.readObject();
-
-//            Filer.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -182,6 +190,9 @@ public abstract class AParser implements Runnable {
         }
     }
 
+    /**
+     * Creates a HashSet that contains more stopwords from the file <b>resources/moreStopWords.txt</b>
+     */
     protected void createMStopWords() {
         if (stopMWords == null) {
             stopMWords = new HashSet<>();
@@ -202,9 +213,6 @@ public abstract class AParser implements Runnable {
                 }
 
                 stopWordsReader.close();
-//            this.stopWords = (List<String>) Fileo.readObject();
-
-//            Filer.close();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -212,26 +220,16 @@ public abstract class AParser implements Runnable {
         }
     }
 
+    /**
+     * the abstract function that parses a document
+     */
     public abstract void parse();
 
-
-
-
-
-
-    protected void splitDocText(Document d)
-    {
-        if (d != null)
-        {
-           docText = d.getDocText().text().split(" ");
-        }
-        else
-        {
-            docText = null;
-        }
-    }
-
-
+    /**
+     * Gets a String and removes all of the Punctuations from the end of it
+     * @param word a string to remove Punctuations from
+     * @return the choped String
+     */
     protected String chopDownLastCharPunc(String word) {
 
         if(word != null && word.length() >= 1)
@@ -246,20 +244,11 @@ public abstract class AParser implements Runnable {
         return word;
     }
 
-    protected StringBuilder chopDownLastCharPunc(StringBuilder word) {
 
-        if(word != null && word.length() >= 1)
-        {
-//            word = word.toLowerCase();
-            while(isLastCharPunctuation(word))
-            {
-                word =new StringBuilder(word.substring(0,word.length()-1));
-            }
-
-        }
-        return word;
-    }
-
+    /**
+     * @param word a String to check if the last char of it is a Punctuatuion
+     * @return true if the last char of word is Punctuation
+     */
     protected boolean isLastCharPunctuation(String word) {
         if(word == null||word.length() == 0)
         {
@@ -268,7 +257,7 @@ public abstract class AParser implements Runnable {
 
         for (char punc :
                 punctuations) {
-            if(word.length()> 0 && word.charAt(word.length()-1) == punc)
+            if(word.charAt(word.length()-1) == punc)
             {
                 return true;
             }
@@ -276,26 +265,12 @@ public abstract class AParser implements Runnable {
         return false;
     }
 
-    protected boolean isLastCharPunctuation(StringBuilder word) {
-        if(word == null||word.length() == 0)
-        {
-            return false;
-        }
-
-        for (char punc :
-                punctuations) {
-            if(word.length()> 0 && word.charAt(word.length()-1) == punc)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
+    /**
+     * Gets a String and removes all of the Punctuations from the start of it
+     * @param word a string to remove Punctuations from
+     * @return the choped String
+     */
     protected String chopDownFisrtChar(String word) {
-        char[] punctuations = {',','.',';',':','?','|','(','\''};
-
         if(word != null && word.length() >= 2)
         {
             while(isFirstCharPunctuation(word)){
@@ -305,33 +280,20 @@ public abstract class AParser implements Runnable {
         return word;
     }
 
+    /**
+     * @use chopDownFirstChar(String word)
+     */
     protected StringBuilder chopDownFisrtChar(StringBuilder word) {
-        char[] punctuations = {',','.',';',':','?','|','('};
-
-        if(word != null && word.length() >= 2)
-        {
-            while(isFirstCharPunctuation(word)){
-                word =new StringBuilder( word.substring(1));
-            }
-        }
-        return word;
+        String choppedStringFromWord = chopDownFisrtChar(word.toString());
+        StringBuilder choppedWord = new StringBuilder(choppedStringFromWord);
+        return choppedWord;
     }
 
-    protected  boolean isFirstCharPunctuation(StringBuilder word) {
-        if(word != null && word.length() >= 2)
-        {
-            //word = word.toLowerCase();
-            for (char punc :
-                    punctuations) {
-                if(word.charAt(0) == punc)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
+    /**
+     * @param word a String to check if the first char of it is a Punctuatuion
+     * @return true if the first char of word is Punctuation
+     */
     protected  boolean isFirstCharPunctuation(String word) {
         if(word != null && word.length() >= 2)
         {
@@ -347,6 +309,10 @@ public abstract class AParser implements Runnable {
         return false;
     }
 
+    /**
+     * @param word a String to check if it is a Fraction
+     * @return true if the word is a Fraction (num1/num2)
+     */
     protected boolean isFraction(String word){
         boolean isFraction = false;
         word = word.replaceAll(",","");
@@ -361,51 +327,22 @@ public abstract class AParser implements Runnable {
         return isFraction;
     }
 
-    protected double fractionToDecimal(String word){
-        double num1 = Double.parseDouble(word.substring(0,0));
-        double num2 = Double.parseDouble(word.substring(1,1));
-        double fraction = num1/num2;
-        double fractionValue = (double) (fraction * 10);
-        double decimal = fractionValue % 10;
-        double value = decimal * 0.1;
-        return value;
-    }
-
-    public String[] getDocText() {
-        return docText;
-    }
-
-    public void clearDic() {
-        this.termsInText.clear();
-    }
-
-//    protected void parsedTermInsert(String term, Document doc,String parserName) {
-//        if(term.isEmpty())
-//        {
-//            System.out.println("Term is Empty " + parserName);
-//        }
-//        parsedTermInsert(term,doc);
-//
-//    }
-
 
     /**
-     * Gets a parsed number and inserting it to the Dictionary
-     * @param term
+     * Gets a parsed term and inserting it to the Dictionary
+     * @param term the Term to insert into the Dictionary
+     * @param doc the doc the term was parsed from
+     * @param parserName the parser name who parsed the Term
      */
     protected void parsedTermInsert(String term, Document doc, String parserName) {
-//        termsInTextLocker.readLock().lock();
-//        termsInTextSemaphore.acquireUninterruptibly();
         if(term.isEmpty())
             return;
 
         String currentDocNo = doc.getDocNo();
         if (termsInText.containsKey(term)) {
 
-//            int tf = Integer.parseInt(numbersInText.get(parsedNum).split(",")[1]);
-
              String docList = termsInText.get(term);
-            String[] docsSplitted =  docList.toString().split(";");
+            String[] docsSplitted =  docList.split(";");
             boolean docAlreadyParsed = false;
             int oldtf = 0;
             lastDocList = new StringBuilder("");
@@ -423,12 +360,11 @@ public abstract class AParser implements Runnable {
             }
             if(!docAlreadyParsed)
             {
-//                lastDocList.append(currentDocNo + tfDelim + "1;");
                 lastDocList.append(currentDocNo).append(tfDelim).append(1).append(tfDelim).append(parserName).append(";");
             }
             lastDocList = new StringBuilder(lastDocList.substring(0,lastDocList.length()-1));
 
-            termsInText.replace(term,docList.toString(),lastDocList.toString());
+            termsInText.replace(term,docList,lastDocList.toString());
 
         } else {
             lastDocList = new StringBuilder("");
@@ -437,22 +373,12 @@ public abstract class AParser implements Runnable {
         }
 
         doc.insertFoundTermInDoc(term);
-//        termsInTextLocker.readLock().unlock();
-//        termsInTextSemaphore.release();
     }
 
     /**
-     * @return the Dictionary of this parser
+     * Sets the stemming boolean
+     * @param withStemm a boolean that sets the stemming option, whether to use stemming or not
      */
-    public HashMap<String, String> getCopyOfTermInText() {
-        return new HashMap<String,String>(termsInText);
-    }
-
-    public int qSize()
-    {
-        return this.docQueueWaitingForParse.size();
-    }
-
     public void setStemm(boolean withStemm) {
         this.withStemm = withStemm;
     }
