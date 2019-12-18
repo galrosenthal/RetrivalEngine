@@ -9,9 +9,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Observable;
 
+/**
+ * This class runing all the logic of the program, creating threads of parser and indexers and run them,
+ * after they he inform the viewmodel that he is finished , also the class load the dictionary adn save the dictionary
+ */
 public class Model extends Observable implements IModel {
-    String corpusPath;
-    String postingPath;
     private static final int MAX_NUMBER_OF_THREADS = 2;
     String alertToShow;
 
@@ -24,9 +26,14 @@ public class Model extends Observable implements IModel {
             setChanged();
             notifyObservers(3);
         }
-
     }
 
+    /**
+     * Strating the program
+     * @param corpusPath the path which the corpus exist
+     * @param postingPath the path which the posting will be
+     * @param withStemm boolean if the paring with stemming or not
+     */
     public void startParse(String corpusPath, String postingPath, boolean withStemm){
         resetObject();
         try
@@ -62,8 +69,6 @@ public class Model extends Observable implements IModel {
 
 
         for (int i = 0; i < IndexerThreads.length; i++) {
-//            IndexerThreads[i] = new Thread(myIndexer);
-//            IndexerThreads[i].setName("Indexer " + indexerIndex++);
             System.out.println(IndexerThreads[i].getName() + " has started...");
             IndexerThreads[i].start();
         }
@@ -81,7 +86,6 @@ public class Model extends Observable implements IModel {
 
         try{
             for (int i = 0; i < IndexerThreads.length; i++) {
-
                 IndexerThreads[i].join();
                 System.out.println(IndexerThreads[i].getName() + " has stopped...");
             }
@@ -95,7 +99,6 @@ public class Model extends Observable implements IModel {
         myIndexer.createCorpusDictionary();
 
         myIndexer.removeEntitys();
-
         myIndexer.saveCorpusDictionary(withStemm);
         myIndexer.exportToCSV();
 //        writeDocsHashMapToDisk(MainParse.allDocs);
@@ -115,6 +118,11 @@ public class Model extends Observable implements IModel {
         notifyObservers(1);
     }
 
+    /**
+     * Setting the path to the choosing path from the user
+     * @param postingPath
+     * @param withStemm
+     */
     private void setPathToIndexer(String postingPath, boolean withStemm) {
         if(withStemm){
             Indexer.getInstance().setPathToPostFiles(postingPath + "/postingWithStemm");
@@ -124,6 +132,13 @@ public class Model extends Observable implements IModel {
         }
     }
 
+    /**
+     * Implementing reset option in the gui.
+     * Deleting all temp files and cleaning the objects by
+     * using the resetObject method
+     * @param corpusPath
+     * @param postingPath
+     */
     @Override
     public void setReset(String corpusPath,String postingPath) {
         try
@@ -136,17 +151,20 @@ public class Model extends Observable implements IModel {
 
             resetObject();
 
-
         }
         catch (Exception e)
         {
-            //System.out.println("Could not clean Dirs");
+
         }
 
         setChanged();
         notifyObservers(2);
     }
 
+    /**
+     * Give the hash map of the corpus dictionary
+     * @return the orpus dictionary
+     */
     public HashMap<String,String> getDictionary(){
 
         Indexer myIndexer = Indexer.getInstance();
@@ -154,10 +172,17 @@ public class Model extends Observable implements IModel {
         return myIndexer.getCorpusDictionary();
     }
 
+    /**
+     * Gives the controller the message he need to show
+     * @return the message
+     */
     public String getAlertToShowFinish(){
         return alertToShow;
     }
 
+    /**
+     *Calling two function in each class and initialize all the object int the class
+     */
     public  void resetObject(){
         Indexer.getInstance().resetIndexer();
         DocumentIndexer.getInstance().resetDocumentIndexer();

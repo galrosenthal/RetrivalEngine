@@ -26,20 +26,12 @@ import javax.swing.*;
 import java.io.File;
 import java.util.*;
 
+/**
+ * Controller of the JavaFx, Runs all the logic for viewing
+ */
 public class Controller implements Observer {
-
-
-
     ViewModel viewModel;
     Stage primaryStage;
-
-    public void initialize(ViewModel viewModel, Stage primaryStage){
-        this.viewModel = viewModel;
-        this.primaryStage = primaryStage;
-        btn_reset.setDisable(true);
-        btn_loadDic.setDisable(true);
-        btn_showDic.setDisable(true);
-    }
 
     @FXML
     public javafx.scene.control.Button btn_strtPrs;
@@ -52,18 +44,36 @@ public class Controller implements Observer {
     public Button btn_showDic;
     public Button btn_loadDic;
 
+    public void initialize(ViewModel viewModel, Stage primaryStage){
+        this.viewModel = viewModel;
+        this.primaryStage = primaryStage;
+        btn_reset.setDisable(true);
+        btn_loadDic.setDisable(true);
+        btn_showDic.setDisable(true);
+    }
 
+    /**
+     * Implements the startParsing button, check if the user enter the right paths to the corpus and posting files and call the viewmodel
+     * to run the program
+     */
     public void startParse(){
         btn_strtPrs.setDisable(true);
         if(txt_field_Corpus.getText()!= null && txt_field_Posting!= null){
             viewModel.startParse(txt_field_Corpus.getText(),txt_field_Posting.getText(),chk_Stemm.isSelected());
         }
         else{
-            btn_strtPrs.setDisable(false);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Please choose paths for corpus and posting and try again");
+            alert.setTitle("Error");
+            alert.showAndWait();
+            //btn_strtPrs.setDisable(false);
         }
 
     }
 
+    /**
+     * Saves the path the user enter for the posting file
+     */
     public void choosePathToPosting() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Choose Posting files path");
@@ -77,6 +87,9 @@ public class Controller implements Observer {
     }
 
 
+    /**
+     * Saves the path the user enter for the corpus file
+     */
     public void choosePathForCorpus() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Choose corpus path");
@@ -89,10 +102,18 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Implement the reset button, call the viewmodel to run the reset function
+     */
     public void reset(){
         viewModel.setReset(txt_field_Corpus.getText(),txt_field_Posting.getText());
     }
 
+    /**
+     * run when the viewmodel notify when somthing new us updated
+     * @param o
+     * @param arg number which represnt what has been update
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (o == viewModel) {
@@ -119,11 +140,19 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Implements the load Dictionary button
+     * @param actionEvent
+     */
     public void loadDirectory(ActionEvent actionEvent) {
 
         viewModel.loadDictinary(chk_Stemm.isSelected(),txt_field_Posting.getText());
     }
 
+    /**
+     * Implements the Open Directory button, enter all the data of the dictionary to table view which enter into StackPane
+     * @param actionEvent
+     */
     public void showDirectory(ActionEvent actionEvent) {
         try {
             HashMap<String ,String> dic = viewModel.getDictionary();
@@ -160,6 +189,10 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Wrapper class that is used for entering the data of the dictionary to the tableview and
+     * presents them
+     */
     public static class Map{
         private SimpleStringProperty term;
         private SimpleIntegerProperty amount;

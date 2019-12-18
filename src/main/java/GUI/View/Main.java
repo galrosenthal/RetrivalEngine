@@ -25,7 +25,7 @@ public class Main extends Application {
         viewModel.addObserver(controller);
 
 
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("SearchEngine");
         primaryStage.setScene(new Scene(root, 500 ,500));
         primaryStage.show();
         controller.initialize(viewModel,primaryStage);
