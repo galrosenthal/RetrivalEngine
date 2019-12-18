@@ -16,10 +16,15 @@ public class Model extends Observable implements IModel {
     String alertToShow;
 
     @Override
-    public void loadDictionary(boolean withStemm) {
+    public void loadDictionary(boolean withStemm,String postingPath) {
         setPathToIndexer(postingPath, withStemm);
         Indexer myIndexer = Indexer.getInstance();
-        myIndexer.loadDictionary(withStemm);
+        boolean loadSucc = myIndexer.loadDictionary(withStemm);
+        if(loadSucc){
+            setChanged();
+            notifyObservers(3);
+        }
+
     }
 
     public void startParse(String corpusPath, String postingPath, boolean withStemm){

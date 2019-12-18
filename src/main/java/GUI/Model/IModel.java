@@ -7,7 +7,7 @@ public interface IModel {
 
     void setReset(String corpusPath, String postingPath);
 
-    void loadDictionary(boolean withStemm);
+    void loadDictionary(boolean withStemm,String postPath);
 
     public HashMap<String, String> getDictionary();
 

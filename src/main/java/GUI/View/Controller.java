@@ -73,6 +73,7 @@ public class Controller implements Observer {
         if (selectedDirectory != null) {
             txt_field_Posting.setText(selectedDirectory.toString());
         }
+        btn_loadDic.setDisable(false);
     }
 
 
@@ -111,12 +112,16 @@ public class Controller implements Observer {
                 btn_loadDic.setDisable(true);
                 btn_showDic.setDisable(true);
             }
+            else if(num==3){
+                btn_showDic.setDisable(false);
+
+            }
         }
     }
 
     public void loadDirectory(ActionEvent actionEvent) {
 
-        viewModel.loadDictinary(chk_Stemm.isSelected());
+        viewModel.loadDictinary(chk_Stemm.isSelected(),txt_field_Posting.getText());
     }
 
     public void showDirectory(ActionEvent actionEvent) {
@@ -124,7 +129,7 @@ public class Controller implements Observer {
             HashMap<String ,String> dic = viewModel.getDictionary();
 
             if(dic == null){
-                viewModel.loadDictinary(chk_Stemm.isSelected());
+                viewModel.loadDictinary(chk_Stemm.isSelected(),txt_field_Posting.getText());
             }
             ArrayList<String> sortedKeys = new ArrayList<String>(dic.keySet());
             Collections.sort(sortedKeys);

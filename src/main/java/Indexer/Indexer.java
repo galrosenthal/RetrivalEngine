@@ -707,13 +707,13 @@ public class Indexer implements Runnable {
         }
     }
 
-    public void loadDictionary(boolean withStemm) {
+    public boolean loadDictionary(boolean withStemm) {
         File hashMapFile;
         try {
             if (withStemm) {
-                hashMapFile = Paths.get(pathToPostFolder + "/postingWithStemm/DictionaryWithStemm").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/DictionaryWithStemm").toFile();
             } else {
-                hashMapFile = Paths.get(pathToPostFolder + "/postingNoStemm/Dictionary").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/Dictionary").toFile();
             }
 
 
@@ -722,10 +722,13 @@ public class Indexer implements Runnable {
             corpusDictionary = (HashMap<String, String>) objectOut.readObject();
             objectOut.close();
             fileIn.close();
+            return true;
 
         }
         catch (Exception e) {
+
             e.printStackTrace();
+            return false;
         }
     }
 
