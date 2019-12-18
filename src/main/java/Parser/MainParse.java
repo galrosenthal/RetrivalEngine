@@ -200,41 +200,38 @@ public class MainParse extends AParser {
     */
     private boolean parseDates(String word) {
         boolean isParsed = false;
-        if (!stopWords.contains(word))
-        {
-            if (word != null && equalsMonth(word)) {
-                String day;
+        if (word != null && equalsMonth(word)) {
+            String day;
 //                Term newTerm;
-                String month;
-                String year;
-                int wordIndex = i.get();
-                if (wordIndex > 0 && wordIndex < splitedText.length - 1) {
-                    year = chopDownLastCharPunc(splitedText[wordIndex + 1]);
-                    if (NumberUtils.isDigits(splitedText[wordIndex - 1])) {
-                        month = String.format("%02d", getMonthNumber(word));
-                        day = String.format("%02d", Integer.parseInt(splitedText[wordIndex - 1]));
-                        parsedTermInsert(day + "-" + month, d,"Dates");
-                        //System.out.println(day + "-" + month);
-                        isParsed = true;
+            String month;
+            String year;
+            int wordIndex = i.get();
+            if (wordIndex > 0 && wordIndex < splitedText.length - 1) {
+                year = chopDownLastCharPunc(splitedText[wordIndex + 1]);
+                if (NumberUtils.isDigits(splitedText[wordIndex - 1])) {
+                    month = String.format("%02d", getMonthNumber(word));
+                    day = String.format("%02d", Integer.parseInt(splitedText[wordIndex - 1]));
+                    parsedTermInsert(day + "-" + month, d,"Dates");
+                    //System.out.println(day + "-" + month);
+                    isParsed = true;
 
-                    }else if (NumberUtils.isDigits(year)) {
-                        month = String.format("%02d", getMonthNumber(word));
+                }else if (NumberUtils.isDigits(year)) {
+                    month = String.format("%02d", getMonthNumber(word));
 
-                        //If the year is a day in the month
-                        if (Integer.parseInt(year) <= 31) {
-                            year = String.format("%02d", Integer.parseInt(year));
-                            parsedTermInsert(month + "-" + year, d,"Dates");
-                            //System.out.println(month
-                            // +"-"+year);
-                            //newTerm = new Term(month +"-"+year);
-                        } else {
-                            parsedTermInsert(month + "-" + year, d,"Dates");
-                            //System.out.println(month+"-"+year);
-                            //newTerm = new Term(year +"-"+month);
-                        }
-                        isParsed = true;
-                        //i++;
+                    //If the year is a day in the month
+                    if (Integer.parseInt(year) <= 31) {
+                        year = String.format("%02d", Integer.parseInt(year));
+                        parsedTermInsert(month + "-" + year, d,"Dates");
+                        //System.out.println(month
+                        // +"-"+year);
+                        //newTerm = new Term(month +"-"+year);
+                    } else {
+                        parsedTermInsert(month + "-" + year, d,"Dates");
+                        //System.out.println(month+"-"+year);
+                        //newTerm = new Term(year +"-"+month);
                     }
+                    isParsed = true;
+                    //i++;
                 }
             }
         }
@@ -898,7 +895,7 @@ public class MainParse extends AParser {
         StringBuilder wordB = new StringBuilder(word);
 
         if (wordB.length() < 2 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
-        !isAlphaBet(wordB.toString())) {
+                !isAlphaBet(wordB.toString())) {
             return isParsed;
         }
         //else if (wordB.toString().chars().allMatch(Character::isLetter)){
