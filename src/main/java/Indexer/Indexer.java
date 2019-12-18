@@ -289,22 +289,29 @@ public class Indexer implements Runnable {
              * and it it does not contains the Term keep the term as inserted*/
             String specificTermKey;
             if(parserName.equalsIgnoreCase("parsewords")) {
-                if (corpusDictionary.containsKey(termKey.toLowerCase())) {
-                    specificTermKey = termKey.toLowerCase();
-                } else if (corpusDictionary.containsKey(termKey.toUpperCase())) {
-                    if(StringUtils.isAllUpperCase(termKey.charAt(0)+""))
+                if(corpusDictionary.containsKey(termKey.toUpperCase()))
+                {
+                    if(Character.isUpperCase(termKey.charAt(0)))
                     {
                         specificTermKey = termKey.toUpperCase();
                     }
                     else
                     {
+                        String termValueInCorpus = corpusDictionary.get(termKey.toUpperCase());
+                        corpusDictionary.remove(termKey.toUpperCase());
                         specificTermKey = termKey.toLowerCase();
+                        corpusDictionary.put(specificTermKey,termValueInCorpus);
                     }
+                }
+                else if(corpusDictionary.containsKey(termKey.toLowerCase()))
+                {
+                    specificTermKey = termKey.toLowerCase();
                 }
                 else
                 {
                     specificTermKey = termKey;
                 }
+
             }
             else
             {

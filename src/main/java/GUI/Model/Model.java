@@ -17,6 +17,7 @@ public class Model extends Observable implements IModel {
 
     @Override
     public void loadDictionary(boolean withStemm) {
+        setPathToIndexer(postingPath, withStemm);
         Indexer myIndexer = Indexer.getInstance();
         myIndexer.loadDictionary(withStemm);
     }
@@ -46,12 +47,7 @@ public class Model extends Observable implements IModel {
         DocumentIndexer docIndexer = DocumentIndexer.getInstance();
 
 //        myIndexer.createCorpusDictionary();
-        if(withStemm){
-            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingWithStemm");
-        }
-        else{
-            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingNoStemm");
-        }
+        setPathToIndexer(postingPath, withStemm);
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
 
         IndexerThreads[0] = new Thread(myIndexer);
@@ -111,6 +107,15 @@ public class Model extends Observable implements IModel {
 
         setChanged();
         notifyObservers(1);
+    }
+
+    private void setPathToIndexer(String postingPath, boolean withStemm) {
+        if(withStemm){
+            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingWithStemm");
+        }
+        else{
+            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingNoStemm");
+        }
     }
 
     @Override

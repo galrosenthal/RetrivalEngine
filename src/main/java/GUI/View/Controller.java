@@ -108,7 +108,8 @@ public class Controller implements Observer {
     }
 
     public void loadDirectory(ActionEvent actionEvent) {
-            viewModel.loadDictinary(chk_Stemm.isSelected());
+
+        viewModel.loadDictinary(chk_Stemm.isSelected());
     }
 
     public void showDirectory(ActionEvent actionEvent) {
