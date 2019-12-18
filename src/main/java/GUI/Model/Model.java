@@ -22,9 +22,10 @@ public class Model extends Observable implements IModel {
     }
 
     public void startParse(String corpusPath, String postingPath, boolean withStemm){
+        resetObject();
         try
         {
-            FileUtils.cleanDirectory(new File(postingPath));
+            //FileUtils.cleanDirectory(new File(postingPath));
             FileUtils.cleanDirectory(new File("./dicTemp/"));
             FileUtils.cleanDirectory(new File("./docsTempDir/"));
         }
@@ -37,8 +38,12 @@ public class Model extends Observable implements IModel {
         DocumentIndexer docIndexer = DocumentIndexer.getInstance();
 
 //        myIndexer.createCorpusDictionary();
-
-        Indexer.getInstance().setPathToPostFiles(postingPath);
+        if(withStemm){
+            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingWithStemm");
+        }
+        else{
+            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingNoStemm");
+        }
         Thread[] IndexerThreads = new Thread[MAX_NUMBER_OF_THREADS];
 
         IndexerThreads[0] = new Thread(myIndexer);
@@ -110,8 +115,7 @@ public class Model extends Observable implements IModel {
                 FileUtils.cleanDirectory(new File("./docsTempDir/"));
             }
 
-            Indexer.getInstance().resetIndexer();
-            DocumentIndexer.getInstance().resetDocumentIndexer();
+            resetObject();
 
 
         }
@@ -133,5 +137,10 @@ public class Model extends Observable implements IModel {
 
     public String getAlertToShowFinish(){
         return alertToShow;
+    }
+
+    public  void resetObject(){
+        Indexer.getInstance().resetIndexer();
+        DocumentIndexer.getInstance().resetDocumentIndexer();
     }
 }

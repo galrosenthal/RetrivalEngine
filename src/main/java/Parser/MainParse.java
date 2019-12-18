@@ -126,8 +126,13 @@ public class MainParse extends AParser {
                         else if(isFraction(cleanWord)){
                             parseNumbers(cleanWord);
                         }
+                        else if(parseNumberRanges(cleanWord)){
+                        }
+                        else if(parseSlash(cleanWord)){
+
+                        }
                         else{
-                            parseNumberRanges(cleanWord);
+                            parseNumbers(cleanWord);
                         }
                     }
                 }
@@ -942,6 +947,9 @@ public class MainParse extends AParser {
                 if(isAlphaBet(wordIn) && !stopWords.contains(wordIn)){
                     parsedTermInsert(wordIn,d,"parseSlash");
                     isParsed = true;
+                }
+                else if(NumberUtils.isNumber(wordIn)){
+                    parsedTermInsert(wordIn,d,"parseSlash");
                 }
 
             }
