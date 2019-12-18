@@ -277,6 +277,10 @@ public class Indexer implements Runnable {
             Path termFilePathTemp;
 
             String parserName = getParserName(newMap.get(termKey));
+            if(termKey.equalsIgnoreCase("pay"))
+            {
+                System.out.println(newMap.get(termKey));
+            }
 
             //TODO: BUGGGGGGGGGGGGGGGGGGGGGGGG
             /**If the Corpus contains the Term in Lower Case then use lower case

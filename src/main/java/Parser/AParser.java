@@ -363,6 +363,7 @@ public abstract class AParser implements Runnable {
 
     protected boolean isFraction(String word){
         boolean isFraction = false;
+        word = word.replaceAll(",","");
         String[] splittedFraction = word.split("/");
 //        wordForSplitting.split(" ");
 
