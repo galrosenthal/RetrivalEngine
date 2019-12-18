@@ -147,9 +147,6 @@ public class MainParse extends AParser {
                     else if(parseApostrophes(cleanWord)){
 
                     }
-                    else if(parseNumbers(cleanWord)){
-
-                    }
                     else{
                         parseEmails(cleanWord);
                     }
@@ -190,7 +187,7 @@ public class MainParse extends AParser {
         isParsing = false;
     }
 
-    
+
 
     /*
 
