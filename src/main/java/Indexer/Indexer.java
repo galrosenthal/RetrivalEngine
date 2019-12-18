@@ -682,9 +682,11 @@ public class Indexer implements Runnable {
                 Files.createDirectories(Paths.get(pathToPostFolder));
             }
             if(withStemm){
+                //fileOut = new FileOutputStream(pathToPostFolder+ "DictionaryWithStemm",true);
                 fileOut = new FileOutputStream(pathToPostFolder+ "/DictionaryWithStemm",true);
             }
             else{
+                //fileOut = new FileOutputStream(pathToPostFolder+ "Dictionary",true);
                 fileOut = new FileOutputStream(pathToPostFolder+ "/Dictionary",true);
             }
 
