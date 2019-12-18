@@ -488,7 +488,8 @@ public class MainParse extends AParser {
             return isParsed;
         }
         int wordIndex = i.get();
-        if (Character.isDigit(word.charAt(0)))
+
+        if (isWordNumber(word))
         {/**searchong for word starting with number**/
             if (wordIndex < splitedText.length - 1 && nextWordIsQuntifier(splitedText[wordIndex + 1]))
             {/**searching for number and quantifier num1 (Thousand|Million|Billion) **/
@@ -498,11 +499,19 @@ public class MainParse extends AParser {
 
                 } else {
 
-                    parsedTermInsert(theWordParsed, d,"Number");
+                    parsedTermInsert(theWordParsed, d, "Number");
                     i.getAndIncrement();
                     isParsed = true;
                 }
 
+            }
+            else {
+                word = word.replaceAll(",","");
+                /**parsing number**/
+                if(allCharsAreDigits(word)) {
+                    parsedTermInsert(quantifiedWordForDic(word), d, "Number");
+                    isParsed = true;
+                }
             }
 
 //                /**searches for num1-num2**/
@@ -513,22 +522,32 @@ public class MainParse extends AParser {
 //
 //                    isParsed = true;
 //                }
-            /**searches for fraction num1/num2**/
-            else if (isFraction(word)) {
-                parsedTermInsert(word, d,"Number");
-                isParsed = true;
-            }
-            else {
-                /**parsing number**/
-                if(allCharsAreDigits(word)) {
-                    parsedTermInsert(quantifiedWordForDic(word), d, "Number");
-                    isParsed = true;
+        }
+        /**searches for fraction num1/num2**/
+        else if (isFraction(word)) {
+            parsedTermInsert(word, d,"Number");
+            isParsed = true;
+        }
+
+
+
+
+        return isParsed;
+    }
+
+    private boolean isWordNumber(String word) {
+        word = word.replaceAll(",","");
+        for (char d :
+                word.toCharArray()) {
+            if(!Character.isDigit(d))
+            {
+                if(d != '.')
+                {
+                    return false;
                 }
             }
-
-
         }
-        return isParsed;
+        return true;
     }
 
     private boolean allCharsAreDigits(String word) {
