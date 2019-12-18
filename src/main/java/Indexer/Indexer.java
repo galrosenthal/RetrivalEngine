@@ -277,10 +277,6 @@ public class Indexer implements Runnable {
             Path termFilePathTemp;
 
             String parserName = getParserName(newMap.get(termKey));
-            if(termKey.equalsIgnoreCase("pay"))
-            {
-                System.out.println(newMap.get(termKey));
-            }
 
             //TODO: BUGGGGGGGGGGGGGGGGGGGGGGGG
             /**If the Corpus contains the Term in Lower Case then use lower case
@@ -739,40 +735,13 @@ public class Indexer implements Runnable {
     public void removeEntitys() {
         for (String term :
                 entityToDrop.keySet()) {
-            if(term.equalsIgnoreCase("as congress"))
-            {
-                System.out.println("It is an Entity");
-            }
+
             if(entityToDrop.get(term) == 1 )
             {
                 corpusDictionary.remove(term);
             }
         }
-
-//        writeEntityToFile();
     }
-
-//    private void writeEntityToFile() {
-//
-//        StringBuilder line = new StringBuilder();
-//        for (String term :
-//                entityToDrop.keySet()) {
-//            if(entityToDrop.get(term)==1)
-//            {
-//                line.append(term).append(": ").append(entityToDrop.get(term)).append("\n");
-//            }
-//        }
-//        try {
-//            BufferedWriter writer = new BufferedWriter(new FileWriter("./entityToDrop.txt"));
-//            writer.write(line.toString());
-//            writer.flush();
-//            writer.close();
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//        }
-//    }
 
 
     /**
@@ -786,6 +755,4 @@ public class Indexer implements Runnable {
         entityToDrop = new HashMap<>();
         stopThreads = false;
     }
-
-
 }

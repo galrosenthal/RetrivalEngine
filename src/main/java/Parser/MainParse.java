@@ -917,6 +917,7 @@ public class MainParse extends AParser {
         else {
             //System.out.println(word);
             parsedTermInsert(word,d,"parseWords");
+
             isParsed = true;
         }
 
