@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * Connecting between the view to the model
+ */
 public class ViewModel extends Observable implements Observer {
     private IModel model;
 

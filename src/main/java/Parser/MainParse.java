@@ -846,12 +846,11 @@ public class MainParse extends AParser {
     }
 
 
-     /*
-
-        Parse Names
-
+    /**
+     * The parser which responsible to parse all the phrases,
+     * @param word to parse
+     * @return
      */
-
     public boolean parsePhrases(String word){
         boolean isParse = false;
         int numOfWords=0;
@@ -863,8 +862,7 @@ public class MainParse extends AParser {
 
             if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar > 'Z')){
                 sentence.append(chopDownLastCharPunc(wordB.toString()));
-
-                //String[] sentenceLengh = sentence.toString().split(" ");
+                
                 if(numOfWords > 1 && numOfWords < 5){
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
                     isParse = true;
@@ -899,25 +897,23 @@ public class MainParse extends AParser {
         return isParse;
     }
 
-    /*
-
-        Parse Words
-
+    /**
+     * The parser which parse one word, checks if the the word is alpha bet and not stop words ans enter it into the dictionary
+     * @param word to parse
+     * @return true if it parsed the word
      */
     public boolean parseWords(String word){
         boolean isParsed = false;
-        //System.out.println(word);
         StringBuilder wordB = new StringBuilder(word);
 
         if (wordB.length() < 2 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
                 !isAlphaBet(wordB.toString())) {
             return isParsed;
         }
-        //else if (wordB.toString().chars().allMatch(Character::isLetter)){
-        else {
-            //System.out.println(word);
-            parsedTermInsert(word,d,"parseWords");
 
+        else {
+
+            parsedTermInsert(word,d,"parseWords");
             isParsed = true;
         }
 
