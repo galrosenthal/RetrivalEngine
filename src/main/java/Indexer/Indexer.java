@@ -284,22 +284,29 @@ public class Indexer implements Runnable {
              * and it it does not contains the Term keep the term as inserted*/
             String specificTermKey;
             if(parserName.equalsIgnoreCase("parsewords")) {
-                if (corpusDictionary.containsKey(termKey.toLowerCase())) {
-                    specificTermKey = termKey.toLowerCase();
-                } else if (corpusDictionary.containsKey(termKey.toUpperCase())) {
-                    if(StringUtils.isAllUpperCase(termKey.charAt(0)+""))
+                if(corpusDictionary.containsKey(termKey.toUpperCase()))
+                {
+                    if(Character.isUpperCase(termKey.charAt(0)))
                     {
                         specificTermKey = termKey.toUpperCase();
                     }
                     else
                     {
+                        String termValueInCorpus = corpusDictionary.get(termKey.toUpperCase());
+                        corpusDictionary.remove(termKey.toUpperCase());
                         specificTermKey = termKey.toLowerCase();
+                        corpusDictionary.put(specificTermKey,termValueInCorpus);
                     }
+                }
+                else if(corpusDictionary.containsKey(termKey.toLowerCase()))
+                {
+                    specificTermKey = termKey.toLowerCase();
                 }
                 else
                 {
                     specificTermKey = termKey;
                 }
+
             }
             else
             {
@@ -700,13 +707,13 @@ public class Indexer implements Runnable {
         }
     }
 
-    public void loadDictionary(boolean withStemm) {
+    public boolean loadDictionary(boolean withStemm) {
         File hashMapFile;
         try {
             if (withStemm) {
-                hashMapFile = Paths.get(pathToPostFolder + "/postingWithStemm/DictionaryWithStemm").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/DictionaryWithStemm").toFile();
             } else {
-                hashMapFile = Paths.get(pathToPostFolder + "/postingNoStemm/Dictionary").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/Dictionary").toFile();
             }
 
 
@@ -715,10 +722,13 @@ public class Indexer implements Runnable {
             corpusDictionary = (HashMap<String, String>) objectOut.readObject();
             objectOut.close();
             fileIn.close();
+            return true;
 
         }
         catch (Exception e) {
+
             e.printStackTrace();
+            return false;
         }
     }
 

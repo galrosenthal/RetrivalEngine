@@ -32,8 +32,8 @@ public class ViewModel extends Observable implements Observer {
 
     }
 
-    public void loadDictinary(boolean withStemm) {
-        model.loadDictionary(withStemm);
+    public void loadDictinary(boolean withStemm,String postPath) {
+        model.loadDictionary(withStemm,postPath);
     }
 
     public HashMap<String,String> getDictionary() {
