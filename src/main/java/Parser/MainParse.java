@@ -13,6 +13,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Parser.MainParse extends AParser and parse the following type of terms:
+ * 1. Prices parser
+ * 2. Dates parser
+ * 3. Percentage Parser
+ * 4. Number Parser
+ * 5. NumberRanges Parser
+ * 6. Slashes Parser
+ * 7. Apostrophes Parser
+ * 8. Emails Parser
+ * 9. Phrases Parser
+ * 10. Words Parser
+ * 11. NameRanges Parser
+ */
 public class MainParse extends AParser {
     private String[] splitedText;
     private Document d;
@@ -26,8 +40,6 @@ public class MainParse extends AParser {
     private final String dollars = "Dollars";
     private final String us = "U.S.";
     private SnowballStemmer snowballStemmer;
-
-
 
 
     public MainParse() {
@@ -469,15 +481,15 @@ public class MainParse extends AParser {
     }
 
 
-    /*
-
-        Parse Numbers
-
+    /**
+     * Parsing the word only if it is:
+     * numbers only
+     * double numbers
+     * fraction numbers
+     * @param word
+     * @return true if the word was parsed by this parser
      */
     public boolean parseNumbers(String word){
-
-        word = chopDownLastCharPunc(word);
-        word = chopDownFisrtChar(word);
 
         boolean isParsed = false;
         if (stopWords.contains(word.toLowerCase())) {
@@ -502,22 +514,9 @@ public class MainParse extends AParser {
 
             }
             else {
-                word = word.replaceAll(",","");
-                /**parsing number**/
-                if(allCharsAreDigits(word)) {
-                    parsedTermInsert(quantifiedWordForDic(word), d, "Number");
-                    isParsed = true;
-                }
+                parsedTermInsert(quantifiedWordForDic(word), d, "Number");
+                isParsed = true;
             }
-
-//                /**searches for num1-num2**/
-//                if (word.matches("^\\d+(\\.\\d+)?-\\d+(\\.\\d+)?$")) {
-//                    String[] splitHifWord = word.split("-");
-//                    parsedTermInsert(splitHifWord[0], d);
-//                    parsedTermInsert(splitHifWord[1], d);
-//
-//                    isParsed = true;
-//                }
         }
         /**searches for fraction num1/num2**/
         else if (isFraction(word)) {
@@ -525,12 +524,13 @@ public class MainParse extends AParser {
             isParsed = true;
         }
 
-
-
-
         return isParsed;
     }
 
+    /**
+     * @param word a String
+     * @return true if the word contains only numbers or \. for double numbers (5.34)
+     */
     private boolean isWordNumber(String word) {
         word = word.replaceAll(",","");
         for (char d :
@@ -546,14 +546,8 @@ public class MainParse extends AParser {
         return true;
     }
 
-    private boolean allCharsAreDigits(String word) {
-        for (char c :
-                word.toCharArray()) {
-            if(!Character.isDigit(c))
-                return false;
-        }
-        return true;
-    }
+
+
 
 
     /**
@@ -650,40 +644,33 @@ public class MainParse extends AParser {
         return result;
     }
 
+    /**
+     * @param number a String to change into double
+     * @return double of the number
+     * @throws NumberFormatException
+     */
     private double getNumberFromString(String number) throws NumberFormatException {
         number = chopDownLastCharPunc(number);
         double numberInString = 0.0;
-//        if(number.matches("^(\\d+|\\d{1,3}(,\\d{3})*)(\\.\\d+)?$"))
         if(NumberUtils.isNumber(number.replaceAll(",","")))
         {
             numberInString = Double.parseDouble(number.replaceAll(",",""));
-//                    System.out.println(word);
         }
 
         return numberInString;
     }
 
-    //    /**
-//     * Checks whether or not the quntifier is a related one (Thousand,Million,Billion)
-//     * @param quntifier
-//     * @return
-//     */
-//    protected boolean nextWordIsQuntifier(String quntifier) {
-//        quntifier = chopDownLastCharPunc(quntifier);
-//        quntifier = chopDownFisrtChar(quntifier);
-//        if(quntifier.matches("^(Thousand|Million|Billion)"))
-//        {
-//            return true;
-//        }
-//        return false;
-//    }
+
+    /**
+     * Parsing the word only if it is a Price.
+     * @param word a String to parse if it is a Price
+     * @return true if the word was parsed by this parser
+     */
     public boolean parsePrices(String word) {
 
-//        this.splitDocText(d);
         currentDoc = d;
         docText = d.getTextArray();
 
-        int countNumberMatch = 0, allNumbers = 0;
         int wordIndex = i.get();
         String wordInText = docText[wordIndex];
         boolean isParsed = false;
@@ -692,7 +679,6 @@ public class MainParse extends AParser {
         if (stopWords.contains(wordInText.toLowerCase())) {
             return false;
         }
-//        if (wordInText.matches("(^\\d.*)"))
         if (NumberUtils.isNumber(word.charAt(0)+""))
         {//Current word is a number
             if(wordIndex < docText.length-4)
@@ -821,21 +807,13 @@ public class MainParse extends AParser {
         return result;
     }
 
-//    private double getNumberFromString(String number) throws NumberFormatException {
-//        number = chopDownLastCharPunc(number);
-//        double numberInString = 0.0;
-//        if(number.matches("^(\\d+|\\d{1,3}(,\\d{3})*)(\\.\\d+)?$"))
-//        {
-//            numberInString = Double.parseDouble(number.replaceAll(",",""));
-////                    System.out.println(word);
-//        }
-//
-//        return numberInString;
-//    }
 
+    /**
+     * @param quantifier a String to check if it a quantifier for prices or not
+     * @return true if it is a quantifier for prices
+     */
     private boolean nextWordIsQuntifier(String quantifier) {
         quantifier = chopDownLastCharPunc(quantifier);
-//        if(quantifier.matches("^(Thousand|Million|Billion|Trillion|m|bn|trillion|million|bilion)"))
         if(quantifier.equalsIgnoreCase("thousand") || quantifier.equalsIgnoreCase("million") ||
                 quantifier.equalsIgnoreCase("billion") || quantifier.equalsIgnoreCase("trillion") ||
                 quantifier.equalsIgnoreCase("m") || quantifier.equalsIgnoreCase("bn") )
