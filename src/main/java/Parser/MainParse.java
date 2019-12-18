@@ -222,16 +222,12 @@ public class MainParse extends AParser {
                     if (Integer.parseInt(year) <= 31) {
                         year = String.format("%02d", Integer.parseInt(year));
                         parsedTermInsert(month + "-" + year, d,"Dates");
-                        //System.out.println(month
-                        // +"-"+year);
-                        //newTerm = new Term(month +"-"+year);
+
                     } else {
                         parsedTermInsert(month + "-" + year, d,"Dates");
-                        //System.out.println(month+"-"+year);
-                        //newTerm = new Term(year +"-"+month);
+
                     }
                     isParsed = true;
-                    //i++;
                 }
             }
         }
@@ -430,7 +426,7 @@ public class MainParse extends AParser {
                     if(word.charAt(0)!= '$' && word.charAt(0)!= '#'){
                         parsedTermInsert(word, d,"NameRanges");
                     }
-                    //System.out.println(word);
+
                     isParsed = true;
 
                 }
@@ -450,12 +446,6 @@ public class MainParse extends AParser {
     public boolean parseNumberRanges(String word){
         boolean isParsed = false;
 
-        // if(!stopWords.contains(word)) {
-        //  matcherRange = pRange.matcher(word);
-        // while (matcherRange.find()) {
-
-        //System.out.println(matcher.group(1));
-        //String match = matcherRange.group(1);
         String[] values = word.split("--");
         //Kick out of the loop
         if (values.length > 1) {
@@ -473,7 +463,7 @@ public class MainParse extends AParser {
                 if(word.charAt(0)!= '$'&& word.charAt(0)!= '#'){
                     parsedTermInsert(word, d,"NumberRanges");
                 }
-                //System.out.println(word);
+
                 isParsed = true;
 
             }
@@ -889,7 +879,6 @@ public class MainParse extends AParser {
             } else {
                 numOfWords++;
                 sentence.append(wordB).append(" ");
-                //parsedTermInsert(wordB.toString(), d);
             }
             if(i.get() < splitedText.length-1){
                 wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
