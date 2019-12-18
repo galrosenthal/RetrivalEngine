@@ -36,9 +36,6 @@ public class MainParse extends AParser {
         this.parseName = "Main Parser";
         docDequeuerLock = new Semaphore(1);
         format3Decimals = new DecimalFormat("#.###");
-
-
-
 //        i = new AtomicInteger(0);
     }
 
@@ -150,6 +147,9 @@ public class MainParse extends AParser {
                     else if(parseApostrophes(cleanWord)){
 
                     }
+                    else if(parseNumbers(cleanWord)){
+
+                    }
                     else{
                         parseEmails(cleanWord);
                     }
@@ -190,8 +190,7 @@ public class MainParse extends AParser {
         isParsing = false;
     }
 
-
-
+    
 
     /*
 
@@ -418,11 +417,11 @@ public class MainParse extends AParser {
                 if (values.length > 1) {
                     for (String value:values) {
                         if (isAlphaBet(value) && !stopWords.contains(value)){
-                            parsedTermInsert(value, d,"NameRanges");
+                            parseWords(value);
                         }
                     }
 
-                    if(word.charAt(0)!= '$'){
+                    if(word.charAt(0)!= '$' && word.charAt(0)!= '#'){
                         parsedTermInsert(word, d,"NameRanges");
                     }
                     //System.out.println(word);
@@ -455,11 +454,11 @@ public class MainParse extends AParser {
 
                 for (String value:values) {
                     if (NumberUtils.isNumber(value) && NumberUtils.isNumber(value)){
-                        parsedTermInsert(value, d,"NumberRanges");
+                        parseNumbers(value);
                     }
                 }
 
-                if(word.charAt(0)!= '$'){
+                if(word.charAt(0)!= '$'&& word.charAt(0)!= '#'){
                     parsedTermInsert(word, d,"NumberRanges");
                 }
                 //System.out.println(word);
@@ -971,13 +970,12 @@ public class MainParse extends AParser {
             String [] splitWord = word.split("/");
             for(String wordIn: splitWord) {
                 if(isAlphaBet(wordIn) && !stopWords.contains(wordIn)){
-                    parsedTermInsert(wordIn,d,"parseSlash");
+                    parseWords(wordIn);
                     isParsed = true;
                 }
                 else if(NumberUtils.isNumber(wordIn)){
-                    parsedTermInsert(wordIn,d,"parseSlash");
+                    parseNumbers(wordIn);
                 }
-
             }
         }
 
