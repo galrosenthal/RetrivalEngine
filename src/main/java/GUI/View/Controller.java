@@ -37,6 +37,8 @@ public class Controller implements Observer {
         this.viewModel = viewModel;
         this.primaryStage = primaryStage;
         btn_reset.setDisable(true);
+        btn_loadDic.setDisable(true);
+        btn_showDic.setDisable(true);
     }
 
     @FXML
@@ -47,6 +49,8 @@ public class Controller implements Observer {
     public Button btn_reset;
     public TextArea text_Dictionary;
     public TilePane tilePane;
+    public Button btn_showDic;
+    public Button btn_loadDic;
 
 
     public void startParse(){
@@ -96,13 +100,16 @@ public class Controller implements Observer {
             btn_reset.setDisable(false);
 
             if(num == 1){
+                btn_loadDic.setDisable(false);
+                btn_showDic.setDisable(false);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText(viewModel.getAlertToShowFinish());
                 alert.setTitle("Finish!");
                 alert.showAndWait();
             }
             else if(num==2){
-
+                btn_loadDic.setDisable(true);
+                btn_showDic.setDisable(true);
             }
         }
     }

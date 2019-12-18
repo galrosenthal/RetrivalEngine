@@ -147,6 +147,9 @@ public class MainParse extends AParser {
                     else if(parseSlash(cleanWord)){
 
                     }
+                    else if(parseApostrophes(cleanWord)){
+
+                    }
                     else{
                         parseEmails(cleanWord);
                     }
@@ -197,41 +200,38 @@ public class MainParse extends AParser {
     */
     private boolean parseDates(String word) {
         boolean isParsed = false;
-        if (!stopWords.contains(word))
-        {
-            if (word != null && equalsMonth(word)) {
-                String day;
+        if (word != null && equalsMonth(word)) {
+            String day;
 //                Term newTerm;
-                String month;
-                String year;
-                int wordIndex = i.get();
-                if (wordIndex > 0 && wordIndex < splitedText.length - 1) {
-                    year = chopDownLastCharPunc(splitedText[wordIndex + 1]);
-                    if (NumberUtils.isDigits(splitedText[wordIndex - 1])) {
-                        month = String.format("%02d", getMonthNumber(word));
-                        day = String.format("%02d", Integer.parseInt(splitedText[wordIndex - 1]));
-                        parsedTermInsert(day + "-" + month, d,"Dates");
-                        //System.out.println(day + "-" + month);
-                        isParsed = true;
+            String month;
+            String year;
+            int wordIndex = i.get();
+            if (wordIndex > 0 && wordIndex < splitedText.length - 1) {
+                year = chopDownLastCharPunc(splitedText[wordIndex + 1]);
+                if (NumberUtils.isDigits(splitedText[wordIndex - 1])) {
+                    month = String.format("%02d", getMonthNumber(word));
+                    day = String.format("%02d", Integer.parseInt(splitedText[wordIndex - 1]));
+                    parsedTermInsert(day + "-" + month, d,"Dates");
+                    //System.out.println(day + "-" + month);
+                    isParsed = true;
 
-                    }else if (NumberUtils.isDigits(year)) {
-                        month = String.format("%02d", getMonthNumber(word));
+                }else if (NumberUtils.isDigits(year)) {
+                    month = String.format("%02d", getMonthNumber(word));
 
-                        //If the year is a day in the month
-                        if (Integer.parseInt(year) <= 31) {
-                            year = String.format("%02d", Integer.parseInt(year));
-                            parsedTermInsert(month + "-" + year, d,"Dates");
-                            //System.out.println(month
-                            // +"-"+year);
-                            //newTerm = new Term(month +"-"+year);
-                        } else {
-                            parsedTermInsert(month + "-" + year, d,"Dates");
-                            //System.out.println(month+"-"+year);
-                            //newTerm = new Term(year +"-"+month);
-                        }
-                        isParsed = true;
-                        //i++;
+                    //If the year is a day in the month
+                    if (Integer.parseInt(year) <= 31) {
+                        year = String.format("%02d", Integer.parseInt(year));
+                        parsedTermInsert(month + "-" + year, d,"Dates");
+                        //System.out.println(month
+                        // +"-"+year);
+                        //newTerm = new Term(month +"-"+year);
+                    } else {
+                        parsedTermInsert(month + "-" + year, d,"Dates");
+                        //System.out.println(month+"-"+year);
+                        //newTerm = new Term(year +"-"+month);
                     }
+                    isParsed = true;
+                    //i++;
                 }
             }
         }
@@ -416,14 +416,18 @@ public class MainParse extends AParser {
             } else {
                 values = word.split("-");
                 if (values.length > 1) {
-                    if (isAlphaBet(values[0]) && !stopWords.contains(values[0]) && isAlphaBet(values[1]) && !stopWords.contains(values[1])) {
-                            parsedTermInsert(values[0], d,"NameRanges");
-                            parsedTermInsert(values[1], d,"NameRanges");
+                    for (String value:values) {
+                        if (isAlphaBet(value) && !stopWords.contains(value)){
+                            parsedTermInsert(value, d,"NameRanges");
+                        }
                     }
 
+                    if(word.charAt(0)!= '$'){
+                        parsedTermInsert(word, d,"NameRanges");
+                    }
                     //System.out.println(word);
                     isParsed = true;
-                        parsedTermInsert(word, d,"NameRanges");
+
                 }
             }
         }
@@ -448,13 +452,19 @@ public class MainParse extends AParser {
         } else {
             values = word.split("-");
             if (values.length > 1) {
-                if (NumberUtils.isNumber(values[0]) && NumberUtils.isNumber(values[1])) {
-                    parsedTermInsert(values[0], d,"NumberRanges");
-                    parsedTermInsert(values[1], d,"NumberRanges");
+
+                for (String value:values) {
+                    if (NumberUtils.isNumber(value) && NumberUtils.isNumber(value)){
+                        parsedTermInsert(value, d,"NumberRanges");
+                    }
+                }
+
+                if(word.charAt(0)!= '$'){
+                    parsedTermInsert(word, d,"NumberRanges");
                 }
                 //System.out.println(word);
                 isParsed = true;
-                parsedTermInsert(word, d,"NumberRanges");
+
             }
         }
 
@@ -884,8 +894,8 @@ public class MainParse extends AParser {
         //System.out.println(word);
         StringBuilder wordB = new StringBuilder(word);
 
-        if (wordB.length() < 3 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
-        !isAlphaBet(wordB.toString())) {
+        if (wordB.length() < 2 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
+                !isAlphaBet(wordB.toString())) {
             return isParsed;
         }
         //else if (wordB.toString().chars().allMatch(Character::isLetter)){
@@ -898,6 +908,11 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
+    /**
+     * Check if the word is only alphabet
+     * @param word to parse
+     * @return true if it is aplhabet, false if not
+     */
     public static boolean isAlphaBet(String word) {
         char[] chars = word.toCharArray();
         for(char c : chars){
@@ -908,10 +923,10 @@ public class MainParse extends AParser {
         return true;
     }
 
-    /*
-
-        Parse emails
-
+    /**
+     * Parse words which they are emails
+     * @param word to parse
+     * @return true if the word is parsed. false else
      */
     public boolean parseEmails(String word){
         boolean isParsed = false;
@@ -923,10 +938,11 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
-    /*
-
-        Parse Slash
-
+    /**
+     * Parse words with / inside, the parser split the word by / and save the words as
+     * two diffrent words
+     * @param word to parse
+     * @return true if the parser parse the word
      */
     public boolean parseSlash(String word){
         boolean isParsed = false;
@@ -949,6 +965,11 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
+    /**
+     * The function check if there is / in the word
+     * @param word we want to parse
+     * @return true if there is / in the word
+     */
     public boolean containsSlash(String word){
 
         char[] chars = word.toCharArray();
@@ -958,6 +979,28 @@ public class MainParse extends AParser {
             }
         }
         return false;
+    }
+
+    /**
+     * Parse all the world with 's or ' at the end.
+     * The parser remove the ' as follow
+     * @param word word from the document
+     * @return if the parser succeeded to parse
+     */
+    public boolean parseApostrophes(String word){
+        boolean isParsed = false;
+        StringBuilder wordB = new StringBuilder(word);
+        if(!wordB.toString().isEmpty() && !stopWords.contains(wordB) && wordB.length()> 2) {
+            if (wordB.charAt(wordB.length() - 1) == '\'') {
+                parsedTermInsert(wordB.substring(0, wordB.length() - 1), d, "parseApostrophes");
+                isParsed = true;
+            } else if (wordB.charAt(wordB.length() - 2) == '\'' && wordB.charAt(wordB.length() - 1) == 's') {
+                parsedTermInsert(wordB.substring(0, wordB.length() - 2), d, "parseApostrophes");
+                isParsed = true;
+            }
+        }
+
+        return isParsed;
     }
 }
 

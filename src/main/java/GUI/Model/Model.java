@@ -138,7 +138,7 @@ public class Model extends Observable implements IModel {
         }
 
         setChanged();
-        notifyObservers(1);
+        notifyObservers(2);
     }
 
     public HashMap<String,String> getDictionary(){

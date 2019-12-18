@@ -278,11 +278,6 @@ public class Indexer implements Runnable {
 
             String parserName = getParserName(newMap.get(termKey));
 
-            if(termKey.toLowerCase().contains("pay"))
-            {
-                System.out.println(termKey);
-            }
-
             //TODO: BUGGGGGGGGGGGGGGGGGGGGGGGG
             /**If the Corpus contains the Term in Lower Case then use lower case
              * if the Corpus contains the Term in Upper case use Upper case
@@ -716,9 +711,9 @@ public class Indexer implements Runnable {
         File hashMapFile;
         try {
             if (withStemm) {
-                hashMapFile = Paths.get(pathToPostFolder + "/DictionaryWithStemm").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/postingWithStemm/DictionaryWithStemm").toFile();
             } else {
-                hashMapFile = Paths.get(pathToPostFolder + "/Dictionary").toFile();
+                hashMapFile = Paths.get(pathToPostFolder + "/postingNoStemm/Dictionary").toFile();
             }
 
 
