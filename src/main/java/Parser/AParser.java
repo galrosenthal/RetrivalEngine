@@ -135,8 +135,6 @@ public abstract class AParser implements Runnable {
             termsInTextSemaphore.acquireUninterruptibly();
             if(!Indexer.getInstance().enqueue(termsInText))
             {
-                System.out.println("Fuck it");
-                //TODO: maybe throw exception?
             }
             termsInText = new HashMap<>();
             numOfParsedDocInIterative = 0;
@@ -146,8 +144,6 @@ public abstract class AParser implements Runnable {
             allDocsSemaphore.acquireUninterruptibly();
 //            System.out.println("releasing " + allDocs.size() + " doc map");
             if (!DocumentIndexer.enQnewDocs(allDocs)) {
-                System.out.println("Fuck it");
-                //TODO: maybe throw exception?
             }
             allDocs = new ConcurrentHashMap<>();
             allDocsSemaphore.release();
