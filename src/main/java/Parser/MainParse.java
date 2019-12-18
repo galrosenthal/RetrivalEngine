@@ -36,7 +36,6 @@ public class MainParse extends AParser {
         this.parseName = "Main Parser";
         docDequeuerLock = new Semaphore(1);
         format3Decimals = new DecimalFormat("#.###");
-//        i = new AtomicInteger(0);
     }
 
 
@@ -51,15 +50,16 @@ public class MainParse extends AParser {
 
     }
 
+
+    /**
+     * This method called from the readfile class, dequeue from the queue the next document and call the parser to parse the document
+     */
     @Override
     public void parse() {
         if(withStemm && snowballStemmer == null){
             snowballStemmer = new englishStemmer();
         }
-//            while (currentDoc == null) {
-//                currentDoc = dequeueDoc();
-//            }
-//        System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
+
         docDequeuerLock.acquireUninterruptibly();
         currentDoc = dequeueDoc();
         if (currentDoc == null) {
@@ -74,23 +74,29 @@ public class MainParse extends AParser {
         releaseToIndexerFile();
     }
 
+    /**
+     * The main method which runs all the parse methods, this method run each time on all the words in the specific document she
+     * receives and decide which parser should he get by the decision tree.
+     * @param document that being parse
+     */
     public void parse(Document document) {
         termsInTextSemaphore.acquireUninterruptibly();
         d = document;
         isParsing = true;
-//        i.set(0);
-//        currentDoc = d;
-
-        //System.out.println("There are " + docQueueWaitingForParse.size() + " left in the queue");
         splitedText = document.getTextArray();
 
+        //Runs all over the text of the document word by word and parse them
         for (int index = 0; index < splitedText.length; index = i.incrementAndGet()) {
 
             String cleanWord = chopDownLastCharPunc(splitedText[index]);
             cleanWord = chopDownFisrtChar(cleanWord);
             String halfCleanWord = chopDownFisrtChar(splitedText[i.get()]);
 
-            if(withStemm){
+            //Check if we want to use stemming or not
+            if(withStemm ){
+                if(stopWords.contains(cleanWord)){
+                    continue;
+                }
                 snowballStemmer.setCurrent(cleanWord);
                 snowballStemmer.stem();
                 cleanWord = snowballStemmer.getCurrent();
@@ -188,12 +194,11 @@ public class MainParse extends AParser {
     }
 
 
-
-    /*
-
-        ParseDates
-
-    */
+    /**
+     * Parse all the words which represent dates, in a form of day-month or month-year
+     * @param word
+     * @return true if the word parsed, false if not
+     */
     private boolean parseDates(String word) {
         boolean isParsed = false;
         if (word != null && equalsMonth(word)) {
@@ -208,7 +213,6 @@ public class MainParse extends AParser {
                     month = String.format("%02d", getMonthNumber(word));
                     day = String.format("%02d", Integer.parseInt(splitedText[wordIndex - 1]));
                     parsedTermInsert(day + "-" + month, d,"Dates");
-                    //System.out.println(day + "-" + month);
                     isParsed = true;
 
                 }else if (NumberUtils.isDigits(year)) {
@@ -234,6 +238,11 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
+    /**
+     * Help function for the parseDates method, transform the month name to a number of the month
+     * @param monthName a month
+     * @return the number of the month
+     */
     private int getMonthNumber(String monthName) {
         if (monthName.equalsIgnoreCase("Jan")) {
             monthName = "January";
@@ -262,6 +271,11 @@ public class MainParse extends AParser {
     }
 
 
+    /**
+     * Help function for the parseDates method, check if the word is a form of monthes
+     * @param word
+     * @return true if the word is one of the monthes
+     */
     private boolean equalsMonth(String word) {
         boolean isMonth = false;
 
@@ -316,39 +330,34 @@ public class MainParse extends AParser {
     }
 
 
-
-    /*
-
-        Parse Percentages
-
-    */
+    /**
+     * Parse all the words have percent like "%" or eqauls to a form of percent
+     * @param word to parse
+     * @return true if the word parsed, false else
+     */
     public boolean parsePercentage(String word) {
         boolean isParsed = false;
 
         if (word != null && !stopWords.contains(word)) {
 
             if (word.length() > 0 && word.substring(word.length() - 1).equals("%")) {
-                //if (word.length() > 0 && word.matches("\\b(?<!\\.)(?!0+(?:\\.0+)?%)(?:\\d|[1-9]\\d|100)(?:(?<!100)\\.\\d+)?%")) {
-                //word = chopDownFisrtChar(word);
+
                 if ((word.substring(0, word.length() - 1)).matches("^\\d+(\\.\\d+)?")) {
-                    //double num = Double.parseDouble(word.substring(0, word.length() - 1));
                     parsedTermInsert(word, d,"Precentage");
                     isParsed = true;
-                    //Term newTerm = new Term(word);
-                    //System.out.println(word);
+
                 } else if (isFraction(word.substring(0, word.length() - 1))) {
                     int wordIndex = i.get();
                     if (wordIndex > 2 && splitedText[wordIndex - 1].matches("^\\d+(\\.\\d+)?")) {
                         parsedTermInsert(splitedText[wordIndex - 1] + " " + word, d,"Precentage");
-                        //Term newTerm = new Term(wordsInDoc[i - 1] + " " + word);
-                        //System.out.println(splitedText[i - 1] + " " + word);
+
                     } else {
                         parsedTermInsert(word, d,"Precentage");
-                        //Term newTerm = new Term(word);
-                        //System.out.println(word);
                     }
                     isParsed = true;
                 }
+
+             // The word is a form of the word percent
             } else if (word.equalsIgnoreCase("percentage") || word.equalsIgnoreCase("percent") ||
                     word.equalsIgnoreCase("percentages") || word.equalsIgnoreCase("percents")) {
                 int wordIndex = i.get();
@@ -358,19 +367,17 @@ public class MainParse extends AParser {
 
                     if (NumberUtils.isNumber(lastWord)) {
                         parsedTermInsert(lastWord + "%", d,"Precentage");
-                        //Term newTerm = new Term(lastWord + "%");
-                        //System.out.println(lastWord + "%");
+
                         isParsed = true;
 
                     } else if (isFraction(lastWord)) {
                         if (wordIndex > 2 && NumberUtils.isDigits(splitedText[wordIndex - 2])) {
                             parsedTermInsert(splitedText[wordIndex - 2] + " " + word, d,"Precentage");
-                            //Term newTerm = new Term(wordsInDoc[i - 2] + " " + word);
-                            //System.out.println(newTerm.getWordValue());
+
                         } else {
                             parsedTermInsert(word, d,"Precentage");
-                            //System.out.println(newTerm.getWordValue());
                         }
+
                         isParsed = true;
                     }
                 }
@@ -380,10 +387,10 @@ public class MainParse extends AParser {
     }
 
 
-    /*
-
-        Parse Ranges
-
+    /**
+     *Parse the ranges numbers and words who have "-", for example "between 2 and 4"
+     * @param word to parse
+     * @return true if the word parsed, false else
      */
     public boolean parseNameRanges(String word) {
         boolean isParsed = false;
@@ -393,17 +400,19 @@ public class MainParse extends AParser {
             int wordIndex = i.get();
             if (wordIndex < splitedText.length - 4) {
                 splitedText[wordIndex + 3] = chopDownLastCharPunc(splitedText[wordIndex + 3]);
+
                 if (splitedText[wordIndex + 2].equals("and") && NumberUtils.isNumber(splitedText[wordIndex + 1]) && NumberUtils.isNumber(splitedText[wordIndex + 3])) {
                     parsedTermInsert(splitedText[wordIndex + 1], d,"NameRanges");
                     parsedTermInsert(splitedText[wordIndex + 3], d,"NameRanges");
                     parsedTermInsert("between" + splitedText[wordIndex + 1] + "and" + splitedText[wordIndex + 3], d,"NameRanges");
-                    //System.out.println("between " + splitedText[i + 1] + " and " + splitedText[i + 3]);
                     isParsed = true;
                     i.addAndGet(3);
                 }
             }
         }
 
+
+         //There is "-" the word
         if (!isParsed && !stopWords.contains(word)) {
             String[] values = word.split("--");
             //Kick out of the loop
@@ -432,6 +441,12 @@ public class MainParse extends AParser {
         return isParsed;
     }
 
+    /**
+     * Parse all the words which represent range of numbers, for example if the word is 22-23, he saved the
+     * word to dictionary and saved the numbers as terms
+     * @param word to parse
+     * @return true id the word has parsed, false else
+     */
     public boolean parseNumberRanges(String word){
         boolean isParsed = false;
 
@@ -847,9 +862,10 @@ public class MainParse extends AParser {
 
 
     /**
-     * The parser which responsible to parse all the phrases,
+     * The parser which responsible to parse all the phrases,he passes all the words which start with upper case and
+     * chain the to phrase,increment the index according to.
      * @param word to parse
-     * @return
+     * @return true if it parsed the word,else false
      */
     public boolean parsePhrases(String word){
         boolean isParse = false;
@@ -862,7 +878,7 @@ public class MainParse extends AParser {
 
             if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar > 'Z')){
                 sentence.append(chopDownLastCharPunc(wordB.toString()));
-                
+
                 if(numOfWords > 1 && numOfWords < 5){
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
                     isParse = true;
@@ -884,9 +900,6 @@ public class MainParse extends AParser {
             }
         }
         if (numOfWords > 1) {
-            //String[] sentenceLengh = sentence.toString().split(" ");
-
-            //System.out.println(sentence);
             parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
             numOfWords=0;
             sentence.setLength(0);
