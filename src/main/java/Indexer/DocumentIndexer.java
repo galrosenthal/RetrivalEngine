@@ -138,7 +138,9 @@ public class DocumentIndexer implements Runnable{
             docData.append(specificDocInfo.getDocNo()).append(docDelim);
             docData.append(specificDocInfo.getMaxTfTerm()).append(docDelim);
             docData.append(specificDocInfo.getNamUniqueTerms()).append(docDelim);
-            docData.append(specificDocInfo.getDocDate());
+            docData.append(specificDocInfo.getDocDate()).append(docDelim);
+            docData.append(specificDocInfo.getMaxTfOfTerm());
+
 
             // Insert the data to the HashMap
             onlyStringDocData.put(docId,docData.toString());

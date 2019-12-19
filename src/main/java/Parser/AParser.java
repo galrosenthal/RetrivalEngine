@@ -5,9 +5,8 @@ import IR.DocumentInfo;
 import Indexer.*;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +29,7 @@ public abstract class AParser implements Runnable {
     protected String parseName;
     protected String[] docText;
     protected static HashSet<String> stopWords;
-    protected static HashSet<String> stopMWords;
+//    protected static HashSet<String> stopMWords;
 //    protected ConcurrentHashMap<String,String> termsInText;
     protected HashMap<String,String> termsInText;
     protected static ConcurrentLinkedQueue<Document> docQueueWaitingForParse;
@@ -46,6 +45,7 @@ public abstract class AParser implements Runnable {
     protected static Semaphore allDocsSemaphore = new Semaphore(1);
     protected boolean isParsing = false;
     public static ConcurrentHashMap<String, DocumentInfo> allDocs;
+    public static String pathToCorpus;
 
 //    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
 
@@ -56,8 +56,8 @@ public abstract class AParser implements Runnable {
         termsInText = new HashMap<>();
         docQueueWaitingForParse = new ConcurrentLinkedQueue<>();
         numOfParsedDocInIterative = 0;
-        createStopWords();
-        createMStopWords();
+//        createStopWords();
+//        createMStopWords();
         doneReadingDocs = false;
         stopThread = false;
         allDocs = new ConcurrentHashMap<>();
@@ -156,6 +156,10 @@ public abstract class AParser implements Runnable {
         }
     }
 
+    public void setPathToCorpus(String corpusPath) {
+        pathToCorpus = corpusPath;
+        createStopWords();
+    }
 
     /**
      * Creates a HashSet that contains all the stopwords from the file <b>resources/stopWords.txt</b>
@@ -163,12 +167,14 @@ public abstract class AParser implements Runnable {
     protected void createStopWords() {
         if (stopWords == null) {
             stopWords = new HashSet<>();
-            File stopWordsFile = new File("./src/main/resources/stopWords.txt");
-            if (!stopWordsFile.exists()) {
-                System.out.println(stopWordsFile.getAbsolutePath());
-            }
+
 
             try {
+                File stopWordsFile = new File(pathToCorpus+"/../stop_words.txt");
+
+                if (!stopWordsFile.exists()) {
+                    System.out.println(stopWordsFile.getAbsolutePath());
+                }
                 BufferedReader stopWordsReader = new BufferedReader(new FileReader(stopWordsFile));
 
                 String word = stopWordsReader.readLine();
@@ -187,35 +193,36 @@ public abstract class AParser implements Runnable {
         }
     }
 
-    /**
-     * Creates a HashSet that contains more stopwords from the file <b>resources/moreStopWords.txt</b>
-     */
-    protected void createMStopWords() {
-        if (stopMWords == null) {
-            stopMWords = new HashSet<>();
-            File stopWordsFile = new File("./src/main/resources/moreStopWords.txt");
-            if (!stopWordsFile.exists()) {
-                System.out.println(stopWordsFile.getAbsolutePath());
-            }
-
-            try {
-                BufferedReader stopWordsReader = new BufferedReader(new FileReader(stopWordsFile));
-
-                String word = stopWordsReader.readLine();
-                while (word != null) {
-                    stopMWords.add(word.toLowerCase());
-                    stopMWords.add(word);
-                    stopMWords.add(word.toUpperCase());
-                    word = stopWordsReader.readLine();
-                }
-
-                stopWordsReader.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    /**
+//     * Creates a HashSet that contains more stopwords from the file <b>resources/moreStopWords.txt</b>
+//     */
+//    protected void createMStopWords() {
+//        if (stopMWords == null) {
+//            stopMWords = new HashSet<>();
+//
+//
+//            try {
+//                File stopWordsFile = new File(pathToCorpus+"/stop_words.txt");
+//                if (!stopWordsFile.exists()) {
+//                    System.out.println(stopWordsFile.getAbsolutePath());
+//                }
+//                BufferedReader stopWordsReader = new BufferedReader(new FileReader(stopWordsFile));
+//
+//                String word = stopWordsReader.readLine();
+//                while (word != null) {
+//                    stopMWords.add(word.toLowerCase());
+//                    stopMWords.add(word);
+//                    stopMWords.add(word.toUpperCase());
+//                    word = stopWordsReader.readLine();
+//                }
+//
+//                stopWordsReader.close();
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     /**
      * the abstract function that parses a document
