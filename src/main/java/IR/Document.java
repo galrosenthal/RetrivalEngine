@@ -37,7 +37,7 @@ public class Document implements Serializable {
         docText = fileDocInCorpus.getElementsByTag("text");
         docNo = fileDocInCorpus.getElementsByTag("docno");
         docDate = fileDocInCorpus.getElementsByTag("date1");
-        textArray = StringUtils.split(docText.text());
+        textArray = StringUtils.split(docText.text()," =");
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;

@@ -31,9 +31,9 @@ public class MainParse extends AParser {
     private String[] splitedText;
     private Document d;
     private AtomicInteger i = new AtomicInteger(0);
-    private String pattern = "(([0-9]+\\-[0-9]+)|([a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+)|([a-zA-Z]+-[a-zA-Z]+)|[0-9]+\\-[a-zA-Z]+)";
-    private Pattern pRange = Pattern.compile(pattern);
-    private Matcher matcherRange;
+    //private String pattern = "(([0-9]+\\-[0-9]+)|([a-zA-Z]+-[a-zA-Z]+-[a-zA-Z]+)|([a-zA-Z]+-[a-zA-Z]+)|[0-9]+\\-[a-zA-Z]+)";
+    //private Pattern pRange = Pattern.compile(pattern);
+    //private Matcher matcherRange;
     private static Semaphore docDequeuerLock;
     private Document currentDoc = null;
     private DecimalFormat format3Decimals;
@@ -224,10 +224,11 @@ public class MainParse extends AParser {
                 if (NumberUtils.isDigits(splitedText[wordIndex - 1])) {
                     month = String.format("%02d", getMonthNumber(word));
                     day = String.format("%02d", Integer.parseInt(splitedText[wordIndex - 1]));
-                    parsedTermInsert(day + "-" + month, d,"Dates");
+                    parsedTermInsert(month + "-" + day, d,"Dates");
                     isParsed = true;
 
-                }else if (NumberUtils.isDigits(year)) {
+                }
+                if (NumberUtils.isDigits(year)) {
                     month = String.format("%02d", getMonthNumber(word));
 
                     //If the year is a day in the month
@@ -236,7 +237,7 @@ public class MainParse extends AParser {
                         parsedTermInsert(month + "-" + year, d,"Dates");
 
                     } else {
-                        parsedTermInsert(month + "-" + year, d,"Dates");
+                        parsedTermInsert(year + "-" + month, d,"Dates");
 
                     }
                     isParsed = true;
@@ -380,13 +381,16 @@ public class MainParse extends AParser {
 
                     } else if (isFraction(lastWord)) {
                         if (wordIndex > 2 && NumberUtils.isDigits(splitedText[wordIndex - 2])) {
-                            parsedTermInsert(splitedText[wordIndex - 2] + " " + word, d,"Precentage");
-
-                        } else {
-                            parsedTermInsert(word, d,"Precentage");
+                            parsedTermInsert(splitedText[wordIndex - 2] + " " + lastWord +"%", d,"Precentage");
+                            isParsed = true;
+                        }else {
+                            parsedTermInsert(lastWord +"%", d,"Precentage");
+                            isParsed = true;
                         }
-
-                        isParsed = true;
+//                        else
+//                        {
+//                            parsedTermInsert(word, d,"Precentage");
+//                        }
                     }
                 }
             }
@@ -412,7 +416,7 @@ public class MainParse extends AParser {
                 if (splitedText[wordIndex + 2].equals("and") && NumberUtils.isNumber(splitedText[wordIndex + 1]) && NumberUtils.isNumber(splitedText[wordIndex + 3])) {
                     parsedTermInsert(splitedText[wordIndex + 1], d,"NameRanges");
                     parsedTermInsert(splitedText[wordIndex + 3], d,"NameRanges");
-                    parsedTermInsert("between" + splitedText[wordIndex + 1] + "and" + splitedText[wordIndex + 3], d,"NameRanges");
+                    parsedTermInsert("between " + splitedText[wordIndex + 1] + " and " + splitedText[wordIndex + 3], d,"NameRanges");
                     isParsed = true;
                     i.addAndGet(3);
                 }
@@ -860,17 +864,19 @@ public class MainParse extends AParser {
             }
             if(i.get() < splitedText.length-1){
                 wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
-                wordB = chopDownFisrtChar(wordB);
+                //wordB = chopDownFisrtChar(wordB);
             }
             else{
                 break;
             }
         }
         if (numOfWords > 1) {
+
             parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
             numOfWords=0;
             sentence.setLength(0);
             isParse = true;
+            i.decrementAndGet();
         }
 
 
