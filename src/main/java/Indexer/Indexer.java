@@ -1,6 +1,7 @@
 package Indexer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -814,5 +815,14 @@ public class Indexer implements Runnable {
         }
     }
 
-
+    public void countNumOfNumbers(){
+        int count =0;
+        for (String termKey :
+                corpusDictionary.keySet()) {
+            if(NumberUtils.isNumber(termKey)){
+                count++;
+            }
+        }
+        System.out.println("The number of numbers in the dictionary: " + count);
+    }
 }

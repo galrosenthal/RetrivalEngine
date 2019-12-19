@@ -114,7 +114,7 @@ public class MainParse extends AParser {
                 cleanWord = snowballStemmer.getCurrent();
                 snowballStemmer.setCurrent(halfCleanWord);
                 snowballStemmer.stem();
-                cleanWord = snowballStemmer.getCurrent();
+                halfCleanWord = snowballStemmer.getCurrent();
             }
 
             //Check if the word is empty word

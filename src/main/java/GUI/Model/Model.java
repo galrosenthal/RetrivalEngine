@@ -99,6 +99,7 @@ public class Model extends Observable implements IModel {
         myIndexer.createCorpusDictionary();
 
         myIndexer.removeEntitys();
+        myIndexer.countNumOfNumbers();
         myIndexer.saveCorpusDictionary(withStemm);
         myIndexer.exportToCSV();
 //        writeDocsHashMapToDisk(MainParse.allDocs);

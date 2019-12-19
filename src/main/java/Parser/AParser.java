@@ -61,9 +61,6 @@ public abstract class AParser implements Runnable {
         doneReadingDocs = false;
         stopThread = false;
         allDocs = new ConcurrentHashMap<>();
-
-
-
     }
 
 
