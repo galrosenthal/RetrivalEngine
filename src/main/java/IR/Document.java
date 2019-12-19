@@ -29,6 +29,7 @@ public class Document implements Serializable {
     private Elements docDate;
     private String[] textArray;
     private String maxTFTerm;
+    private int maxTF;
     private boolean firstInsert;
 
     public Document(Element fileDocInCorpus) {
@@ -38,6 +39,7 @@ public class Document implements Serializable {
         docDate = fileDocInCorpus.getElementsByTag("date1");
         textArray = StringUtils.split(docText.text());
         maxTFTerm = "";
+        maxTF = 0;
         firstInsert = true;
 
     }
@@ -95,6 +97,7 @@ public class Document implements Serializable {
             if (termsDictonary.get(newTerm) > termsDictonary.get(maxTFTerm))
             {
                 maxTFTerm = newTerm;
+                maxTF = termsDictonary.get(maxTFTerm);
             }
         }
     }
@@ -114,6 +117,10 @@ public class Document implements Serializable {
                 termsDictonary.replace(existingTerm,oldCount,newCount);
             }
         }
+    }
+
+    public int getMaxTF() {
+        return maxTF;
     }
 
     @Override
