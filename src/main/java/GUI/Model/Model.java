@@ -107,7 +107,8 @@ public class Model extends Observable implements IModel {
 
 
         endTime = System.nanoTime();
-       alertToShow = "There are "+ f.numOfParsedDocs + " files in the corpus and it took: " + (endTime - startTime)/1000000000 + " Seconds to iterate over them all";
+       alertToShow = "There are "+ f.numOfParsedDocs + " files in the corpus \n Time: " + (endTime - startTime)/1000000000 + " Seconds\n"+
+       "Corpus Size: " + myIndexer.corpusSize();
 
 
        if(IndexerThreads[0].isAlive()){
