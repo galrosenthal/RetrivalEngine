@@ -26,6 +26,11 @@ public class Model extends Observable implements IModel {
             setChanged();
             notifyObservers(3);
         }
+        else
+        {
+            setChanged();
+            notifyObservers(4);
+        }
     }
 
     /**
@@ -36,6 +41,7 @@ public class Model extends Observable implements IModel {
      */
     public void startParse(String corpusPath, String postingPath, boolean withStemm){
         resetObject();
+        System.out.println(corpusPath);
         try
         {
             //FileUtils.cleanDirectory(new File(postingPath));
@@ -76,6 +82,7 @@ public class Model extends Observable implements IModel {
 
         ReadFile f = new ReadFile(withStemm);
         File corpus = new File(corpusPath);
+        f.setCorpusPath(corpusPath);
         long startTime,endTime;
         startTime = System.nanoTime();
 

@@ -49,6 +49,7 @@ public class Controller implements Observer {
     public void startParse(){
         if(txt_field_Corpus.getCharacters().length() > 0 && txt_field_Posting.getCharacters().length() > 0){
             btn_strtPrs.setDisable(true);
+
             viewModel.startParse(txt_field_Corpus.getText(),txt_field_Posting.getText(),chk_Stemm.isSelected());
         }
         else{
@@ -124,8 +125,19 @@ public class Controller implements Observer {
                 btn_showDic.setDisable(true);
             }
             else if(num==3){
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setContentText("Dictionary Loaded successfully ");
+                alert.setTitle("Load Dictionary!");
+                alert.showAndWait();
                 btn_showDic.setDisable(false);
 
+            }
+            else if(num == 4)
+            {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Error While Trying to load the Dictionary, Please Try changing the Posting Files folder or Parsing again");
+                alert.setTitle("Could Not Load Dictionary!");
+                alert.showAndWait();
             }
         }
     }

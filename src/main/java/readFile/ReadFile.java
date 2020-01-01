@@ -34,7 +34,11 @@ public class ReadFile {
     private MainParse mainParse2 = new MainParse();
     private MainParse mainParse3 = new MainParse();
     private MainParse mainParse4 = new MainParse();
+    private String corpusPath;
 
+    public void setCorpusPath(String corpusPath) {
+        mainParse1.setPathToCorpus(corpusPath);
+    }
 
     public ReadFile(boolean withStemm) {
         this.withStemm = withStemm;
@@ -46,8 +50,9 @@ public class ReadFile {
         addParserToThreads(mainParse4);
         numOfParsedDocs = 0;
         runParsers();
-
     }
+
+
 
     private void addParserToThreads(AParser prsr) {
         allParsers.add(prsr);
