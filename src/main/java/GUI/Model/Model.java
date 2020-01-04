@@ -26,6 +26,11 @@ public class Model extends Observable implements IModel {
             setChanged();
             notifyObservers(3);
         }
+        else
+        {
+            setChanged();
+            notifyObservers(4);
+        }
     }
 
     /**
@@ -76,7 +81,7 @@ public class Model extends Observable implements IModel {
 
         ReadFile f = new ReadFile(withStemm);
         File corpus = new File(corpusPath);
-
+        f.setCorpusPath(corpusPath);
         long startTime,endTime;
         startTime = System.nanoTime();
 

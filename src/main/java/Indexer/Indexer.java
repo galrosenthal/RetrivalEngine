@@ -92,12 +92,12 @@ public class Indexer implements Runnable {
     public void run() {
 //        System.out.println("Indexer has Started...");
         while (!stopThreads) {
-            createPostFiles();
+            createTempDictionarys();
         }
         writeHashMapToDisk();
 //        System.out.println("Indexer has stopped...");
 //        createPostFiles();
-        System.out.println("Corpus Dictionary size is: " + corpusDictionary.keySet().size());
+//        System.out.println("Corpus Dictionary size is: " + corpusDictionary.keySet().size());
 
     }
 
@@ -112,7 +112,7 @@ public class Indexer implements Runnable {
     /**
      * Working on the HashMaps in the Q and creates the Indexed Dictionary of the Terms.
      */
-    private void createPostFiles() {
+    private void createTempDictionarys() {
 
         while (!isQEmpty()) {
             HashMap<String, String> dqdHshMap = dequeue();
@@ -348,7 +348,7 @@ public class Indexer implements Runnable {
                     /**If the file exits read all lines from it so we can append to it and changes specific lines in it*/
                     try {
 
-                        System.out.println("Reading all lines from file: " + termFilePath.toFile().getPath());
+//                        System.out.println("Reading all lines from file: " + termFilePath.toFile().getPath());
 //                        allTermsOfLetter = new ArrayList<>();
                         allTermsOfLetter = Files.readAllLines(termFilePath);
                         termFilePath.toFile().delete();
@@ -753,7 +753,7 @@ public class Indexer implements Runnable {
         }
         catch (Exception e) {
 
-            e.printStackTrace();
+//            e.printStackTrace();
             return false;
         }
     }

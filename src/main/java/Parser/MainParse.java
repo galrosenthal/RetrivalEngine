@@ -892,7 +892,7 @@ public class MainParse extends AParser {
         boolean isParsed = false;
         StringBuilder wordB = new StringBuilder(word);
 
-        if (wordB.length() < 2 || stopMWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
+        if (wordB.length() < 2 || stopWords.contains(wordB.toString().toLowerCase()) || wordB.toString().equals("") ||
                 !isAlphaBet(wordB.toString())) {
             return isParsed;
         }
