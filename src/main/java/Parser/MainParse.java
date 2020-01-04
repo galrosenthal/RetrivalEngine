@@ -227,7 +227,8 @@ public class MainParse extends AParser {
                     parsedTermInsert(month + "-" + day, d,"Dates");
                     isParsed = true;
 
-                }else if (NumberUtils.isDigits(year)) {
+                }
+                if (NumberUtils.isDigits(year)) {
                     month = String.format("%02d", getMonthNumber(word));
 
                     //If the year is a day in the month
@@ -863,17 +864,19 @@ public class MainParse extends AParser {
             }
             if(i.get() < splitedText.length-1){
                 wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
-                wordB = chopDownFisrtChar(wordB);
+                //wordB = chopDownFisrtChar(wordB);
             }
             else{
                 break;
             }
         }
         if (numOfWords > 1) {
+
             parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
             numOfWords=0;
             sentence.setLength(0);
             isParse = true;
+            i.decrementAndGet();
         }
 
 
