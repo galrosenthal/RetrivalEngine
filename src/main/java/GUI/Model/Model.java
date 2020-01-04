@@ -34,7 +34,7 @@ public class Model extends Observable implements IModel {
      * @param postingPath the path which the posting will be
      * @param withStemm boolean if the paring with stemming or not
      */
-    public void startParse(String corpusPath, String postingPath, boolean withStemm){
+        public void startParse(String corpusPath, String postingPath, boolean withStemm){
         resetObject();
         try
         {
@@ -76,6 +76,7 @@ public class Model extends Observable implements IModel {
 
         ReadFile f = new ReadFile(withStemm);
         File corpus = new File(corpusPath);
+
         long startTime,endTime;
         startTime = System.nanoTime();
 
