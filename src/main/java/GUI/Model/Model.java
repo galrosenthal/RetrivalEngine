@@ -1,11 +1,17 @@
 package GUI.Model;
 
 import Indexer.Indexer;
+import Searcher.Searcher;
 import org.apache.commons.io.FileUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import readFile.ReadFile;
 import Indexer.DocumentIndexer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Observable;
 
@@ -16,6 +22,7 @@ import java.util.Observable;
 public class Model extends Observable implements IModel {
     private static final int MAX_NUMBER_OF_THREADS = 2;
     String alertToShow;
+    int id =0;
 
     @Override
     public void loadDictionary(boolean withStemm,String postingPath) {
@@ -185,6 +192,42 @@ public class Model extends Observable implements IModel {
      */
     public String getAlertToShowFinish(){
         return alertToShow;
+    }
+
+    @Override
+    public void runSearchQuery(String query,String corpusPath,boolean withSemantic) {
+        IR.Document queryDoc = new IR.Document(query,Integer.toString(id));
+        id++;
+        runSearch(queryDoc,corpusPath,withSemantic);
+    }
+
+
+
+    @Override
+    public void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic) {
+        Document doc = null;
+        String id;
+
+        try {
+            doc = Jsoup.parse(fileToRead,"UTF8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Elements queries = doc.getElementsByTag("top");
+        Elements q = doc.getAllElements();
+        for (Element fileDoc : queries){
+            String number= fileDoc.childNode(1).childNode(0).toString();
+            id = number.substring(number.length()-4,number.length()-1);
+            String query = fileDoc.getElementsByTag("title").text();
+            IR.Document queryDoc = new IR.Document(query,id);
+            runSearch(queryDoc,corpusPath,withSemantic);
+
+        }
+    }
+
+    private void runSearch(IR.Document query,String corpusPath,boolean withSemantic) {
+        Searcher searcher = new Searcher(corpusPath);
+        searcher.searchQuery(query, withSemantic);
     }
 
     /**

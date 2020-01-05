@@ -29,7 +29,7 @@ public class Main extends Application {
 
 
         primaryStage.setTitle("SearchEngine");
-        primaryStage.setScene(new Scene(root, 500 ,500));
+        primaryStage.setScene(new Scene(root, 600 ,500));
         primaryStage.show();
         controller.initialize(viewModel,primaryStage);
     }

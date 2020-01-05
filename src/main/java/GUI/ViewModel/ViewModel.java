@@ -3,6 +3,7 @@ package GUI.ViewModel;
 import GUI.Model.IModel;
 import GUI.Model.Model;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
@@ -46,4 +47,13 @@ public class ViewModel extends Observable implements Observer {
     public String getAlertToShowFinish(){
         return model.getAlertToShowFinish();
     }
+
+    public void runSearch(String text,String corpusPath, boolean withSemantic) {
+        model.runSearchQuery(text,corpusPath,withSemantic);
+    }
+
+    public void runSearch(File fileToRead,String corpusPath, boolean withSemantic) {
+        model.runSearchUsingFile(fileToRead,corpusPath,withSemantic);
+    }
+
 }

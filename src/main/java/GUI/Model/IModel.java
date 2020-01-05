@@ -1,5 +1,6 @@
 package GUI.Model;
 
+import java.io.File;
 import java.util.HashMap;
 
 /**
@@ -15,4 +16,8 @@ public interface IModel {
     public HashMap<String, String> getDictionary();
 
     public String getAlertToShowFinish();
+
+    void runSearchQuery(String text,String corpusPath,boolean withSemantic);
+
+    void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic);
 }

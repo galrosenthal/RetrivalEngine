@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -20,6 +21,7 @@ import java.util.*;
  * Controller of the JavaFx, Runs all the logic for viewing
  */
 public class Controller implements Observer {
+    File fileToRead;
     ViewModel viewModel;
     Stage primaryStage;
 
@@ -33,6 +35,11 @@ public class Controller implements Observer {
     public TilePane tilePane;
     public Button btn_showDic;
     public Button btn_loadDic;
+    public Button btn_browseQuery;
+    public Button btn_saveQueryResult;
+    public CheckBox chk_searchEntities;
+    public TextField txt_search;
+    public CheckBox chk_addSemantic;
 
     public void initialize(ViewModel viewModel, Stage primaryStage){
         this.viewModel = viewModel;
@@ -188,6 +195,47 @@ public class Controller implements Observer {
             stage.show();
         } catch (Exception e) {
 
+        }
+    }
+
+    /**
+     * Choose queries to search from browse
+     * @param actionEvent
+     */
+    public void choosePathToQueries(ActionEvent actionEvent) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choose queries path");
+        File defaultDirectory = new File("c:/Users");
+        chooser.setInitialDirectory(defaultDirectory);
+        fileToRead = chooser.showOpenDialog(primaryStage);
+
+        if (fileToRead != null) {
+            txt_search.setText(fileToRead.toString());
+        }
+    }
+
+    /**
+     * Run search queries
+     * @param actionEvent
+     */
+    public void RunSearch(ActionEvent actionEvent) {
+        if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
+            viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chk_addSemantic.isSelected());
+        }
+        else if(txt_field_Corpus.getText().length() == 0){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Error While Trying to run the query search, Please choose corpus path");
+                alert.setTitle("Could not run query");
+                alert.showAndWait();
+        }
+        else if(fileToRead != null){
+                viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chk_addSemantic.isSelected());
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to run the query search, Please Try to choose different file or insert query string");
+            alert.setTitle("Could not run query");
+            alert.showAndWait();
         }
     }
 

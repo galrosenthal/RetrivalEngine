@@ -24,8 +24,8 @@ public class Document implements Serializable {
 
 
     private HashMap<String,Integer> termsDictonary;// Each term has an Integer that presets how many times this term is present in the IR.Document
-    private Elements docText;
-    private Elements docNo;
+    private String docText;
+    private String docNo;
     private Elements docDate;
     private String[] textArray;
     private String maxTFTerm;
@@ -34,14 +34,24 @@ public class Document implements Serializable {
 
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
-        docText = fileDocInCorpus.getElementsByTag("text");
-        docNo = fileDocInCorpus.getElementsByTag("docno");
+        docText = fileDocInCorpus.getElementsByTag("text").text();
+        docNo = fileDocInCorpus.getElementsByTag("docno").text();
         docDate = fileDocInCorpus.getElementsByTag("date1");
-        textArray = StringUtils.split(docText.text()," =");
+        textArray = StringUtils.split(docText," =");
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;
 
+    }
+
+    public Document(String query,String id){
+        this.termsDictonary = new HashMap<>();
+       docText = query;
+       docNo = id;
+       textArray = StringUtils.split(docText," =");
+        maxTFTerm = "";
+        maxTF = 0;
+        firstInsert = true;
     }
 
     public String getDocDate() {
@@ -50,7 +60,7 @@ public class Document implements Serializable {
 
     public String getDocNo() {
 
-        return docNo.text();
+        return docNo;
     }
 
     public String[] getTextArray() {
