@@ -2,7 +2,6 @@ package IR;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -24,20 +23,31 @@ public class Document implements Serializable {
 
 
     private HashMap<String,Integer> termsDictonary;// Each term has an Integer that presets how many times this term is present in the IR.Document
-    private Elements docText;
-    private Elements docNo;
-    private Elements docDate;
+    private String docText;
+    private String docNo;
+    private String docDate;
     private String[] textArray;
     private String maxTFTerm;
     private int maxTF;
     private boolean firstInsert;
 
+    public Document()
+    {
+        termsDictonary = new HashMap<>();
+        docDate = "";
+        docNo = "123";
+        docText = "gal123";
+        maxTFTerm = "";
+        maxTF = 0;
+        firstInsert = true;
+    }
+
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
-        docText = fileDocInCorpus.getElementsByTag("text");
-        docNo = fileDocInCorpus.getElementsByTag("docno");
-        docDate = fileDocInCorpus.getElementsByTag("date1");
-        textArray = StringUtils.split(docText.text()," =");
+        docText = fileDocInCorpus.getElementsByTag("text").text();
+        docNo = fileDocInCorpus.getElementsByTag("docno").text();
+        docDate = fileDocInCorpus.getElementsByTag("date1").text();
+        textArray = StringUtils.split(docText," =");
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;
@@ -45,12 +55,12 @@ public class Document implements Serializable {
     }
 
     public String getDocDate() {
-        return docDate.text();
+        return docDate;
     }
 
     public String getDocNo() {
 
-        return docNo.text();
+        return docNo;
     }
 
     public String[] getTextArray() {

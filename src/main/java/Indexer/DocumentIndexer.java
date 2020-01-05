@@ -2,10 +2,11 @@ package Indexer;
 
 import IR.DocumentInfo;
 
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
@@ -32,10 +33,11 @@ public class DocumentIndexer implements Runnable{
     public static volatile boolean stopThreads = false;
     public static AtomicInteger numOfFile;
     public static Semaphore docDequeuerSemaphore;
-    private ConcurrentHashMap<String, String> dicOfDocs;
+    private ConcurrentHashMap<String, DocumentInfo> dicOfDocs;
     private int countMergedDocument = 0;
     private final String docDelim = "#";
     //TODO: save this parameter with the Dictionary somehow
+    // also save the num of docs in the dictionary
     private int avgLengthOfDoc = 0;
 
 
@@ -95,7 +97,10 @@ public class DocumentIndexer implements Runnable{
         // if the were still documents that were not index after the Q is empty and the thread is stopped
         // write them to the disk
         writeDocsToDisk();
+        saveDocParamsToDisk();
     }
+
+
 
     /**
      * Working on the HashMaps in the Q and creates the Indexed Dictionary of the Docs.
@@ -110,10 +115,10 @@ public class DocumentIndexer implements Runnable{
 
 
             int mapSizeBeforeMerge = dicOfDocs.size();
-            ConcurrentHashMap<String,String> replacedMap = replaceDocInfoToStringMap(dqdHshMap);
+//            ConcurrentHashMap<String,String> replacedMap = replaceDocInfoToStringMap(dqdHshMap);
             docDequeuerSemaphore.acquireUninterruptibly();
 //            dicOfDocs.putAll(replacedMap);
-            calculateAvgLengthOfDocumentAndInsertToDicOfDocs(replacedMap);
+            calculateAvgLengthOfDocumentAndInsertToDicOfDocs(dqdHshMap);
             docDequeuerSemaphore.release();
             int mapSizeAfterMerge = dicOfDocs.size();
             countMergedDocument += (mapSizeAfterMerge - mapSizeBeforeMerge);
@@ -153,12 +158,16 @@ public class DocumentIndexer implements Runnable{
         return onlyStringDocData;
     }
 
-    private void calculateAvgLengthOfDocumentAndInsertToDicOfDocs(ConcurrentHashMap<String, String> replacedString)
+    /**
+     * Calculating the avg of doc length in all corpus docs
+     * @param dqdMap
+     */
+    private void calculateAvgLengthOfDocumentAndInsertToDicOfDocs(ConcurrentHashMap<String, DocumentInfo> dqdMap)
     {
-        for(String docId: replacedString.keySet())
+        for(String docId: dqdMap.keySet())
         {
-            avgLengthOfDoc = (Integer.parseInt(replacedString.get(docId).split(docDelim)[2]) + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
-            dicOfDocs.put(docId,replacedString.get(docId));
+            avgLengthOfDoc = (dqdMap.get(docId).getNumUniqueTerms() + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
+            dicOfDocs.put(docId,dqdMap.get(docId));
         }
     }
 
@@ -201,6 +210,97 @@ public class DocumentIndexer implements Runnable{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Save num of total Doc that were indexed and the avg length of a doc in the corpus to the disk.
+     */
+    private void saveDocParamsToDisk()
+    {
+        try {
+            String pathToTempFolder = "./docsTempDir/";
+
+            if (!Paths.get(pathToTempFolder).toFile().exists()) {
+                Files.createDirectories(Paths.get(pathToTempFolder));
+            }
+
+            FileOutputStream paramsFile = new FileOutputStream(pathToTempFolder + "params.txt");
+            StringBuilder params = new StringBuilder();
+            params.append(dicOfDocs.size()).append("\n");;
+            params.append(avgLengthOfDoc).append("\n");;
+
+            paramsFile.write(params.toString().getBytes());
+            paramsFile.flush();
+            paramsFile.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Load the params of all documents from the disk and the Dictionary,
+     * such as:
+     *    num of all doc in the corpus
+     *    avg length of a doc in the corpus
+     */
+    public void loadDictionaryFromDisk()
+    {
+        try
+        {
+            String pathToTempFolder = "./docsTempDir/";
+            if(dicOfDocs != null)
+            {
+                return;
+            }
+            if (!Paths.get(pathToTempFolder).toFile().exists()) {
+                throw new Exception("Could not find the Directory");
+            }
+            Path pathTofolderOfDocs = Paths.get(pathToTempFolder);
+            File folderOfDocs = pathTofolderOfDocs.toFile();
+            int numOfFilesInFolder = 0;
+            if(!folderOfDocs.isDirectory())
+            {
+                throw new Exception("Something went wrong supposed to have directory");
+            }
+            numOfFilesInFolder = folderOfDocs.listFiles().length;
+            numOfFile.set(0);
+            dicOfDocs = new ConcurrentHashMap<>();
+            while(numOfFile.get()<numOfFilesInFolder)
+            {
+                ObjectInputStream getDicFromDisk = new ObjectInputStream(new FileInputStream(pathToTempFolder + numOfFile.getAndIncrement()));
+                Object dic = getDicFromDisk.readObject();
+                ConcurrentHashMap dicFromDisk = (ConcurrentHashMap<String,DocumentInfo>)dic;
+                dicOfDocs.putAll(dicFromDisk);
+                getDicFromDisk.close();
+            }
+
+            File paramsReader = new File(pathToTempFolder+"params.txt");
+            BufferedReader bufReader = new BufferedReader(new FileReader(paramsReader));
+            String line = "";
+            ArrayList<String> allLinesInFile = new ArrayList<>();
+            while((line = bufReader.readLine()) != null)
+            {
+                allLinesInFile.add(line);
+            }
+
+            int dicOfDocSize = Integer.parseInt(allLinesInFile.get(0));
+            avgLengthOfDoc = Integer.parseInt(allLinesInFile.get(1));
+
+            if(dicOfDocSize != dicOfDocs.size())
+            {
+                throw new Exception("Something went wrong reading the Document dictionary, not as same size as saved");
+            }
+
+            paramsReader.delete();
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     /**
