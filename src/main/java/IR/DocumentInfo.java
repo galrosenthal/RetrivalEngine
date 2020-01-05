@@ -15,7 +15,7 @@ public class DocumentInfo implements Serializable
 
 
     private String docDate;
-    private int namUniqueTerms;
+    private int numUniqueTerms;
     private String maxTfTerm;
     private int maxTfOfTerm;
     private String docNo;
@@ -23,7 +23,7 @@ public class DocumentInfo implements Serializable
     public DocumentInfo(Document doc) {
         this.docNo = doc.getDocNo();
         this.maxTfTerm = doc.getMaxTfTerm();
-        this.namUniqueTerms = doc.getNumUniqeTerm();
+        this.numUniqueTerms = doc.getNumUniqeTerm();
         this.docDate = doc.getDocDate();
         this.maxTfOfTerm = doc.getMaxTF();
     }
@@ -36,8 +36,8 @@ public class DocumentInfo implements Serializable
         return docDate;
     }
 
-    public int getNamUniqueTerms() {
-        return namUniqueTerms;
+    public int getNumUniqueTerms() {
+        return numUniqueTerms;
     }
 
     public String getMaxTfTerm() {

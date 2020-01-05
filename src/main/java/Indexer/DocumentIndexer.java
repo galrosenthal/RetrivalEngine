@@ -35,6 +35,9 @@ public class DocumentIndexer implements Runnable{
     private ConcurrentHashMap<String, String> dicOfDocs;
     private int countMergedDocument = 0;
     private final String docDelim = "#";
+    //TODO: save this parameter with the Dictionary somehow
+    private int avgLengthOfDoc = 0;
+
 
     private DocumentIndexer() {
         docsHashMapsQ = new ConcurrentLinkedQueue<>();
@@ -109,7 +112,8 @@ public class DocumentIndexer implements Runnable{
             int mapSizeBeforeMerge = dicOfDocs.size();
             ConcurrentHashMap<String,String> replacedMap = replaceDocInfoToStringMap(dqdHshMap);
             docDequeuerSemaphore.acquireUninterruptibly();
-            dicOfDocs.putAll(replacedMap);
+//            dicOfDocs.putAll(replacedMap);
+            calculateAvgLengthOfDocumentAndInsertToDicOfDocs(replacedMap);
             docDequeuerSemaphore.release();
             int mapSizeAfterMerge = dicOfDocs.size();
             countMergedDocument += (mapSizeAfterMerge - mapSizeBeforeMerge);
@@ -137,7 +141,7 @@ public class DocumentIndexer implements Runnable{
             //Append all Document Info to one String
             docData.append(specificDocInfo.getDocNo()).append(docDelim);
             docData.append(specificDocInfo.getMaxTfTerm()).append(docDelim);
-            docData.append(specificDocInfo.getNamUniqueTerms()).append(docDelim);
+            docData.append(specificDocInfo.getNumUniqueTerms()).append(docDelim);
             docData.append(specificDocInfo.getDocDate()).append(docDelim);
             docData.append(specificDocInfo.getMaxTfOfTerm());
 
@@ -147,6 +151,15 @@ public class DocumentIndexer implements Runnable{
         }
 
         return onlyStringDocData;
+    }
+
+    private void calculateAvgLengthOfDocumentAndInsertToDicOfDocs(ConcurrentHashMap<String, String> replacedString)
+    {
+        for(String docId: replacedString.keySet())
+        {
+            avgLengthOfDoc = (Integer.parseInt(replacedString.get(docId).split(docDelim)[2]) + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
+            dicOfDocs.put(docId,replacedString.get(docId));
+        }
     }
 
 
