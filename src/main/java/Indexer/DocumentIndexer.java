@@ -106,8 +106,8 @@ public class DocumentIndexer implements Runnable{
         }
         // if the were still documents that were not index after the Q is empty and the thread is stopped
         // write them to the disk
-        writeDocsToDisk();
         saveDocParamsToDisk();
+        writeDocsToDisk();
     }
 
 
@@ -185,6 +185,10 @@ public class DocumentIndexer implements Runnable{
      */
     private void calculateAvgLengthOfDocument()
     {
+        if(dicOfDocs == null || dicOfDocs.size() == 0)
+        {
+            return;
+        }
         int sumOfLengths = 0;
         for(String docId: dicOfDocs.keySet())
         {
@@ -291,7 +295,7 @@ public class DocumentIndexer implements Runnable{
             numOfFilesInFolder = folderOfDocs.listFiles().length;
             numOfFile.set(0);
             dicOfDocs = new ConcurrentHashMap<>();
-            while(numOfFile.get()<numOfFilesInFolder)
+            while(numOfFile.get()<numOfFilesInFolder-1)
             {
                 ObjectInputStream getDicFromDisk = new ObjectInputStream(new FileInputStream(pathToTempFolder + numOfFile.getAndIncrement()));
                 Object dic = getDicFromDisk.readObject();

@@ -1,5 +1,10 @@
 package Ranker;
 
+/**
+ * This Class is representing a ranked document for the Ranker class
+ * it is implementing Comparable so it could be inserted into
+ * PriorityQueue and be compared by the BM25 value
+ */
 public class RankedDocument implements Comparable<RankedDocument>
 {
     private String docId;

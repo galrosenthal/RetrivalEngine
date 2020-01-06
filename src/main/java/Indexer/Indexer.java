@@ -753,7 +753,7 @@ public class Indexer implements Runnable {
         }
         catch (Exception e) {
 
-//            e.printStackTrace();
+            e.printStackTrace();
             return false;
         }
     }
