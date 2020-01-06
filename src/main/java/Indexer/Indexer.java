@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Indexer.Indexer is a Singleton Class thats Indexing all the Terms in the Corpus
  */
 public class Indexer implements Runnable {
-    private static final double MAX_POSTING_FILE_SIZE = Double.MAX_VALUE;
+    private static final double MAX_POSTING_FILE_SIZE = 1;
     private static final int MAX_TERMS_TO_INDEX = 500000;
     private int countMergedTerms = 0;
     private static volatile Indexer mInstance;
@@ -685,12 +685,12 @@ public class Indexer implements Runnable {
     }
 
     /**
-     * Gets a file and returns the size of it in MB
+     * Gets a file and returns the size of it in KB
      * @param file -  File to check what is the size of it
      * @return the size of the File in MB
      */
     private double getFileSizeMegaBytes(File file) {
-        double a = (double) file.length() / (KB_SIZE * KB_SIZE);
+        double a = (double) file.length() / KB_SIZE;
         return a;
     }
 
