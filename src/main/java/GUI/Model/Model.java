@@ -12,6 +12,7 @@ import Indexer.DocumentIndexer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Observable;
@@ -200,10 +201,14 @@ public class Model extends Observable implements IModel {
     @Override
     public void runSearchQuery(String query,String corpusPath,boolean withSemantic) {
         List<String> result;
+        ArrayList<String> resultAndId = new ArrayList<>();
         IR.Document queryDoc = new IR.Document(query,Integer.toString(id));
         id++;
         result = runSearch(queryDoc,corpusPath,withSemantic);
-        queryRes =result;
+        //((ArrayList)result).add(Integer.toString(id));
+        resultAndId.addAll(result);
+        resultAndId.add(Integer.toString(id));
+        queryRes =resultAndId;
 
         setChanged();
         notifyObservers(6);

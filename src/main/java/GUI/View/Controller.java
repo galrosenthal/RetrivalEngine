@@ -164,7 +164,33 @@ public class Controller implements Observer {
     }
 
     private void showQueryUsingSearch() {
-        
+        try{
+            ArrayList<String> sortedKeys = new ArrayList<String>(queryRes);
+            String query = sortedKeys.remove(sortedKeys.size()-1);
+            TableView tableView = new TableView<>();
+            TableColumn<String, Map> column1 = new TableColumn("QueryId");
+            column1.setCellValueFactory(new PropertyValueFactory<>("QueryId"));
+
+            TableColumn<String, Map> column2 = new TableColumn("Document");
+            column2.setCellValueFactory(new PropertyValueFactory<>("Document"));
+
+            tableView.getColumns().add(column1);
+            tableView.getColumns().add(column2);
+
+            for (String doc :sortedKeys) {
+                    tableView.getItems().add(new queryFile(query,doc));
+            }
+
+            StackPane stkPane = new StackPane();
+            stkPane.getChildren().add(tableView);
+            Scene scene = new Scene(stkPane);
+            Stage stage = new Stage();
+            stage.setTitle("Show query result");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+
+        }
     }
 
     private void showQueryResultUsinfFile() {
