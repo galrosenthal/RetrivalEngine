@@ -51,7 +51,7 @@
             <Button mnemonicParsing="false" onAction="#choosePathToPosting" text="Browse" GridPane.columnIndex="3" GridPane.rowIndex="5" />
             <TextField fx:id="txt_search" prefHeight="0.0" prefWidth="131.0" promptText="Search" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Button fx:id="btn_browseQuery" onAction="#choosePathToQueries" mnemonicParsing="false" prefHeight="25.0" prefWidth="57.0" text="Browse" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <Button fx:id="btn_saveQueryResult" mnemonicParsing="false" prefHeight="25.0" prefWidth="107.0" text="Save query result" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn_saveQueryResult" onAction="#saveQueryResult" mnemonicParsing="false" prefHeight="25.0" prefWidth="107.0" text="Save query result" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
             <CheckBox fx:id="chk_searchEntities" mnemonicParsing="false" text="Search entities" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <CheckBox fx:id="chk_addSemantic" mnemonicParsing="false" prefHeight="17.0" prefWidth="103.0" text="Add semantic" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>

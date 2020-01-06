@@ -13,8 +13,9 @@ import javafx.scene.layout.TilePane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -152,7 +153,7 @@ public class Controller implements Observer {
             //query result using file
             else if(num == 5){
                 queryResFile = viewModel.getqueryResUsingFile();
-                showQueryResultUsinfFile();
+                showQueryResultUsingfFile();
             }
 
             //query result using search text
@@ -163,6 +164,9 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Showing the results of the related docs of the query using query search text
+     */
     private void showQueryUsingSearch() {
         try{
             ArrayList<String> sortedKeys = new ArrayList<String>(queryRes);
@@ -180,7 +184,7 @@ public class Controller implements Observer {
             for (String doc :sortedKeys) {
                     tableView.getItems().add(new queryFile(query,doc));
             }
-
+            queryRes.add(query);
             StackPane stkPane = new StackPane();
             stkPane.getChildren().add(tableView);
             Scene scene = new Scene(stkPane);
@@ -193,7 +197,10 @@ public class Controller implements Observer {
         }
     }
 
-    private void showQueryResultUsinfFile() {
+    /**
+     * Showing the results of the related docs of the query using query file
+     */
+    private void showQueryResultUsingfFile() {
         try {
 
             ArrayList<String> sortedKeys = new ArrayList<String>(queryResFile.keySet());
@@ -313,6 +320,65 @@ public class Controller implements Observer {
             alert.setContentText("Error While Trying to run the query search, Please Try to choose different file or insert query string");
             alert.setTitle("Could not run query");
             alert.showAndWait();
+        }
+    }
+
+    /**
+     * Saves the query to a file in format that enable TREC_EVAL program using it
+     * @param actionEvent
+     */
+    public void saveQueryResult(ActionEvent actionEvent) {
+        if(queryResFile == null && queryRes == null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to save the query search result, Please run search again");
+            alert.setTitle("Could not save results");
+            alert.showAndWait();
+        }
+        else if(queryResFile != null || queryRes != null){
+            //file chooser
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Save query to File");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Text files", "*.txt");
+            fc.getExtensionFilters().add(extFilter);
+            Window primaryStage = null;
+            File f = fc.showSaveDialog(primaryStage);
+            if(f != null) {
+                if(queryResFile!= null) {
+                    try {
+
+                        BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
+                        for (String res : queryResFile.keySet()) {
+                            for (String doc : queryResFile.get(res)) {
+                                String toWrite = res + "," + "0," + doc + "," + "1,1.1,og";
+                                writeBuffer.append(toWrite);
+                                writeBuffer.newLine();
+                            }
+
+                        }
+                        writeBuffer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(queryRes!=null){
+                    String id = queryRes.remove(queryRes.size()-1);
+                    try {
+                        BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
+
+                        for (String doc:queryRes) {
+                            String toWrite = id + "," + "0," + doc + "," + "1,1.1,og";
+                            writeBuffer.append(toWrite);
+                            writeBuffer.newLine();
+                        }
+
+                        writeBuffer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
         }
     }
 
