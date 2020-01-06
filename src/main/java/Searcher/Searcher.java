@@ -4,6 +4,7 @@ import IR.Document;
 import Indexer.Indexer;
 import Parser.AParser;
 import Parser.MainParse;
+import Ranker.Ranker;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,9 +20,12 @@ public class Searcher {
     }
 
     public List<String> searchQuery(IR.Document query, boolean withSemantic){
+        Ranker ranker = Ranker.getInstance();
         String corpusPathAndLineDelim = "#";
         Path termFilePathTemp;
         Indexer myIndexer = Indexer.getInstance();
+        List<String> result = new ArrayList<>();
+
         HashMap<String,String> corpusDictionary = myIndexer.getCorpusDictionary();
         if(corpusDictionary!=null){
             AParser parser = new MainParse();
@@ -52,10 +56,11 @@ public class Searcher {
             if(withSemantic){
                 System.out.println("with semantic");
             }
+
+            result =ranker.rankQueryDocs(termswithPosting,query.getDocText());
         }
 
-        List<String> result = new ArrayList<>();
-        result= Arrays.asList("doc1","doc2","doc3");
+        //result= Arrays.asList("doc1","doc2","doc3");
 
         return result;
     }

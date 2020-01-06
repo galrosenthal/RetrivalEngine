@@ -113,6 +113,10 @@ public class Document implements Serializable {
         }
     }
 
+    public String getDocText() {
+        return docText;
+    }
+
     /**
      * if the existingTerm is already in the termsDictionary its value is increased by 1
      * @param existingTerm - a term that is already inside the dictionary
