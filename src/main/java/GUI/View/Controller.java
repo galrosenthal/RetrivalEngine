@@ -24,6 +24,8 @@ public class Controller implements Observer {
     File fileToRead;
     ViewModel viewModel;
     Stage primaryStage;
+    HashMap<String,List<String>> queryResFile;
+    List<String> queryRes;
 
     @FXML
     public javafx.scene.control.Button btn_strtPrs;
@@ -146,6 +148,55 @@ public class Controller implements Observer {
                 alert.setTitle("Could Not Load Dictionary!");
                 alert.showAndWait();
             }
+
+            //query result using file
+            else if(num == 5){
+                queryResFile = viewModel.getqueryResUsingFile();
+                showQueryResultUsinfFile();
+            }
+
+            //query result using search text
+            else if(num == 6){
+                queryRes = viewModel.getqueryResUsingSearch();
+                showQueryUsingSearch();
+            }
+        }
+    }
+
+    private void showQueryUsingSearch() {
+        
+    }
+
+    private void showQueryResultUsinfFile() {
+        try {
+
+            ArrayList<String> sortedKeys = new ArrayList<String>(queryResFile.keySet());
+
+            TableView tableView = new TableView<>();
+            TableColumn<String, Map> column1 = new TableColumn("QueryId");
+            column1.setCellValueFactory(new PropertyValueFactory<>("QueryId"));
+
+            TableColumn<String, Map> column2 = new TableColumn("Document");
+            column2.setCellValueFactory(new PropertyValueFactory<>("Document"));
+
+            tableView.getColumns().add(column1);
+            tableView.getColumns().add(column2);
+
+            for (String query :sortedKeys) {
+                for (String doc:queryResFile.get(query)) {
+                    tableView.getItems().add(new queryFile(query,doc));
+                }
+            }
+
+            StackPane stkPane = new StackPane();
+            stkPane.getChildren().add(tableView);
+            Scene scene = new Scene(stkPane);
+            Stage stage = new Stage();
+            stage.setTitle("Show query result");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+
         }
     }
 
@@ -276,4 +327,39 @@ public class Controller implements Observer {
             return amount;
         }
     }
+
+    public static class queryFile {
+        private SimpleStringProperty queryId;
+        private SimpleStringProperty document;
+
+        public queryFile(String queryId, String document) {
+            this.queryId = new SimpleStringProperty(queryId);
+            this.document = new SimpleStringProperty(document);
+        }
+
+        public String getQueryId() {
+            return queryId.get();
+        }
+
+        public SimpleStringProperty queryIdProperty() {
+            return queryId;
+        }
+
+        public String getDocument() {
+            return document.get();
+        }
+
+        public SimpleStringProperty documentProperty() {
+            return document;
+        }
+
+        public void setQueryId(String queryId) {
+            this.queryId.set(queryId);
+        }
+
+        public void setDocument(String document) {
+            this.document.set(document);
+        }
+    }
+
 }

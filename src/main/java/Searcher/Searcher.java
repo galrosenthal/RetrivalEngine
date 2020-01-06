@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Searcher {
     String corpusPath;
@@ -20,7 +18,7 @@ public class Searcher {
         this.corpusPath = corpusPath;
     }
 
-    public void searchQuery(IR.Document query, boolean withSemantic){
+    public List<String> searchQuery(IR.Document query, boolean withSemantic){
         String corpusPathAndLineDelim = "#";
         Path termFilePathTemp;
         Indexer myIndexer = Indexer.getInstance();
@@ -55,5 +53,10 @@ public class Searcher {
                 System.out.println("with semantic");
             }
         }
+
+        List<String> result = new ArrayList<>();
+        result= Arrays.asList("doc1","doc2","doc3");
+
+        return result;
     }
 }

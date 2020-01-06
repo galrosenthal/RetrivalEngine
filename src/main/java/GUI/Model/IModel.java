@@ -2,6 +2,7 @@ package GUI.Model;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Interface which implements all the functions the viewmodel using them
@@ -20,4 +21,8 @@ public interface IModel {
     void runSearchQuery(String text,String corpusPath,boolean withSemantic);
 
     void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic);
+
+    HashMap<String, List<String>> getqueryResUsingFile();
+
+    List<String> getQueryResUsingSearch();
 }

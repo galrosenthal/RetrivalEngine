@@ -13,6 +13,7 @@ import Indexer.DocumentIndexer;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -23,6 +24,8 @@ public class Model extends Observable implements IModel {
     private static final int MAX_NUMBER_OF_THREADS = 2;
     String alertToShow;
     int id =0;
+    HashMap<String,List<String>> queryResFile;
+    List<String> queryRes;
 
     @Override
     public void loadDictionary(boolean withStemm,String postingPath) {
@@ -196,15 +199,21 @@ public class Model extends Observable implements IModel {
 
     @Override
     public void runSearchQuery(String query,String corpusPath,boolean withSemantic) {
+        List<String> result;
         IR.Document queryDoc = new IR.Document(query,Integer.toString(id));
         id++;
-        runSearch(queryDoc,corpusPath,withSemantic);
+        result = runSearch(queryDoc,corpusPath,withSemantic);
+        queryRes =result;
+
+        setChanged();
+        notifyObservers(6);
     }
 
 
 
     @Override
     public void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic) {
+        HashMap<String,List<String>> queryResult = new HashMap<>();
         Document doc = null;
         String id;
 
@@ -220,14 +229,25 @@ public class Model extends Observable implements IModel {
             id = number.substring(number.length()-4,number.length()-1);
             String query = fileDoc.getElementsByTag("title").text();
             IR.Document queryDoc = new IR.Document(query,id);
-            runSearch(queryDoc,corpusPath,withSemantic);
+            List<String> result = runSearch(queryDoc,corpusPath,withSemantic);
+            queryResult.put(id,result);
 
         }
+        queryResFile = queryResult;
+        setChanged();
+        notifyObservers(5);
     }
 
-    private void runSearch(IR.Document query,String corpusPath,boolean withSemantic) {
+    private List<String> runSearch(IR.Document query,String corpusPath,boolean withSemantic) {
         Searcher searcher = new Searcher(corpusPath);
-        searcher.searchQuery(query, withSemantic);
+        List<String> result = searcher.searchQuery(query, withSemantic);
+
+        return result;
+    }
+
+    @Override
+    public HashMap<String, List<String>> getqueryResUsingFile() {
+        return queryResFile;
     }
 
     /**
@@ -236,5 +256,10 @@ public class Model extends Observable implements IModel {
     public  void resetObject(){
         Indexer.getInstance().resetIndexer();
         DocumentIndexer.getInstance().resetDocumentIndexer();
+    }
+
+    @Override
+    public List<String> getQueryResUsingSearch() {
+        return queryRes;
     }
 }

@@ -5,6 +5,7 @@ import GUI.Model.Model;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -56,4 +57,11 @@ public class ViewModel extends Observable implements Observer {
         model.runSearchUsingFile(fileToRead,corpusPath,withSemantic);
     }
 
+    public HashMap<String, List<String>> getqueryResUsingFile() {
+        return model.getqueryResUsingFile();
+    }
+
+    public List<String> getqueryResUsingSearch() {
+        return model.getQueryResUsingSearch();
+    }
 }
