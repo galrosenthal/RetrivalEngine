@@ -896,7 +896,6 @@ public class MainParse extends AParser {
                 !isAlphaBet(wordB.toString())) {
             return isParsed;
         }
-
         else {
 
             parsedTermInsert(word,d,"parseWords");

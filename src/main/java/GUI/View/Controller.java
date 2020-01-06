@@ -11,17 +11,22 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
 
 /**
  * Controller of the JavaFx, Runs all the logic for viewing
  */
 public class Controller implements Observer {
+    File fileToRead;
     ViewModel viewModel;
     Stage primaryStage;
+    HashMap<String,List<String>> queryResFile;
+    List<String> queryRes;
 
     @FXML
     public javafx.scene.control.Button btn_strtPrs;
@@ -33,6 +38,11 @@ public class Controller implements Observer {
     public TilePane tilePane;
     public Button btn_showDic;
     public Button btn_loadDic;
+    public Button btn_browseQuery;
+    public Button btn_saveQueryResult;
+    public CheckBox chk_searchEntities;
+    public TextField txt_search;
+    public CheckBox chk_addSemantic;
 
     public void initialize(ViewModel viewModel, Stage primaryStage){
         this.viewModel = viewModel;
@@ -139,6 +149,87 @@ public class Controller implements Observer {
                 alert.setTitle("Could Not Load Dictionary!");
                 alert.showAndWait();
             }
+
+            //query result using file
+            else if(num == 5){
+                queryResFile = viewModel.getqueryResUsingFile();
+                showQueryResultUsingfFile();
+            }
+
+            //query result using search text
+            else if(num == 6){
+                queryRes = viewModel.getqueryResUsingSearch();
+                showQueryUsingSearch();
+            }
+        }
+    }
+
+    /**
+     * Showing the results of the related docs of the query using query search text
+     */
+    private void showQueryUsingSearch() {
+        try{
+            ArrayList<String> sortedKeys = new ArrayList<String>(queryRes);
+            String query = sortedKeys.remove(sortedKeys.size()-1);
+            TableView tableView = new TableView<>();
+            TableColumn<String, Map> column1 = new TableColumn("QueryId");
+            column1.setCellValueFactory(new PropertyValueFactory<>("QueryId"));
+
+            TableColumn<String, Map> column2 = new TableColumn("Document");
+            column2.setCellValueFactory(new PropertyValueFactory<>("Document"));
+
+            tableView.getColumns().add(column1);
+            tableView.getColumns().add(column2);
+
+            for (String doc :sortedKeys) {
+                    tableView.getItems().add(new queryFile(query,doc));
+            }
+            queryRes.add(query);
+            StackPane stkPane = new StackPane();
+            stkPane.getChildren().add(tableView);
+            Scene scene = new Scene(stkPane);
+            Stage stage = new Stage();
+            stage.setTitle("Show query result");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+
+        }
+    }
+
+    /**
+     * Showing the results of the related docs of the query using query file
+     */
+    private void showQueryResultUsingfFile() {
+        try {
+
+            ArrayList<String> sortedKeys = new ArrayList<String>(queryResFile.keySet());
+
+            TableView tableView = new TableView<>();
+            TableColumn<String, Map> column1 = new TableColumn("QueryId");
+            column1.setCellValueFactory(new PropertyValueFactory<>("QueryId"));
+
+            TableColumn<String, Map> column2 = new TableColumn("Document");
+            column2.setCellValueFactory(new PropertyValueFactory<>("Document"));
+
+            tableView.getColumns().add(column1);
+            tableView.getColumns().add(column2);
+
+            for (String query :sortedKeys) {
+                for (String doc:queryResFile.get(query)) {
+                    tableView.getItems().add(new queryFile(query,doc));
+                }
+            }
+
+            StackPane stkPane = new StackPane();
+            stkPane.getChildren().add(tableView);
+            Scene scene = new Scene(stkPane);
+            Stage stage = new Stage();
+            stage.setTitle("Show query result");
+            stage.setScene(scene);
+            stage.show();
+        } catch (Exception e) {
+
         }
     }
 
@@ -192,6 +283,106 @@ public class Controller implements Observer {
     }
 
     /**
+     * Choose queries to search from browse
+     * @param actionEvent
+     */
+    public void choosePathToQueries(ActionEvent actionEvent) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choose queries path");
+        File defaultDirectory = new File("c:/Users");
+        chooser.setInitialDirectory(defaultDirectory);
+        fileToRead = chooser.showOpenDialog(primaryStage);
+
+        if (fileToRead != null) {
+            txt_search.setText(fileToRead.toString());
+        }
+    }
+
+    /**
+     * Run search queries
+     * @param actionEvent
+     */
+    public void RunSearch(ActionEvent actionEvent) {
+        if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
+            viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chk_addSemantic.isSelected());
+        }
+        else if(txt_field_Corpus.getText().length() == 0){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("Error While Trying to run the query search, Please choose corpus path");
+                alert.setTitle("Could not run query");
+                alert.showAndWait();
+        }
+        else if(fileToRead != null){
+                viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chk_addSemantic.isSelected());
+        }
+        else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to run the query search, Please Try to choose different file or insert query string");
+            alert.setTitle("Could not run query");
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Saves the query to a file in format that enable TREC_EVAL program using it
+     * @param actionEvent
+     */
+    public void saveQueryResult(ActionEvent actionEvent) {
+        if(queryResFile == null && queryRes == null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to save the query search result, Please run search again");
+            alert.setTitle("Could not save results");
+            alert.showAndWait();
+        }
+        else if(queryResFile != null || queryRes != null){
+            //file chooser
+            FileChooser fc = new FileChooser();
+            fc.setTitle("Save query to File");
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Text files", "*.txt");
+            fc.getExtensionFilters().add(extFilter);
+            Window primaryStage = null;
+            File f = fc.showSaveDialog(primaryStage);
+            if(f != null) {
+                if(queryResFile!= null) {
+                    try {
+
+                        BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
+                        for (String res : queryResFile.keySet()) {
+                            for (String doc : queryResFile.get(res)) {
+                                String toWrite = res + "," + "0," + doc + "," + "1,1.1,og";
+                                writeBuffer.append(toWrite);
+                                writeBuffer.newLine();
+                            }
+
+                        }
+                        writeBuffer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if(queryRes!=null){
+                    String id = queryRes.remove(queryRes.size()-1);
+                    try {
+                        BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
+
+                        for (String doc:queryRes) {
+                            String toWrite = id + "," + "0," + doc + "," + "1,1.1,og";
+                            writeBuffer.append(toWrite);
+                            writeBuffer.newLine();
+                        }
+
+                        writeBuffer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+        }
+    }
+
+    /**
      * Wrapper class that is used for entering the data of the dictionary to the tableview and
      * presents them
      */
@@ -228,4 +419,39 @@ public class Controller implements Observer {
             return amount;
         }
     }
+
+    public static class queryFile {
+        private SimpleStringProperty queryId;
+        private SimpleStringProperty document;
+
+        public queryFile(String queryId, String document) {
+            this.queryId = new SimpleStringProperty(queryId);
+            this.document = new SimpleStringProperty(document);
+        }
+
+        public String getQueryId() {
+            return queryId.get();
+        }
+
+        public SimpleStringProperty queryIdProperty() {
+            return queryId;
+        }
+
+        public String getDocument() {
+            return document.get();
+        }
+
+        public SimpleStringProperty documentProperty() {
+            return document;
+        }
+
+        public void setQueryId(String queryId) {
+            this.queryId.set(queryId);
+        }
+
+        public void setDocument(String document) {
+            this.document.set(document);
+        }
+    }
+
 }

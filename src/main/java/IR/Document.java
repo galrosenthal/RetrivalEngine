@@ -2,6 +2,7 @@ package IR;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.io.Serializable;
 import java.util.HashMap;

@@ -47,7 +47,8 @@ public abstract class AParser implements Runnable {
     public static ConcurrentHashMap<String, DocumentInfo> allDocs;
     public static String pathToCorpus;
 
-//    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
+
+    //    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
 
 
     protected AParser()
@@ -388,5 +389,9 @@ public abstract class AParser implements Runnable {
      */
     public void setStemm(boolean withStemm) {
         this.withStemm = withStemm;
+    }
+
+    public HashMap<String, String> getTermsInText() {
+        return termsInText;
     }
 }
