@@ -274,7 +274,7 @@ public class DocumentIndexer implements Runnable{
         try
         {
             String pathToTempFolder = "./docsTempDir/";
-            if(dicOfDocs != null)
+            if(dicOfDocs != null && dicOfDocs.keySet().size() != 0)
             {
                 return;
             }

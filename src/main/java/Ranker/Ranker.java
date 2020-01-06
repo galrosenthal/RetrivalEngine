@@ -1,5 +1,7 @@
 package Ranker;
 
+import Indexer.DocumentIndexer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,32 +25,32 @@ public class Ranker {
     }
 
 
-    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost)
+    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,String query)
     {
+        //TODO: Maybe rank using priorityQueue reversed order(Max) or regular(Min)
+        // for Max -> PriorityQueue<Integer> pQueue =  new PriorityQueue<Integer>(Collections.reverseOrder());
+        // for Min -> PriorityQueue<Integer> pQueue =  new PriorityQueue<Integer>();
+
         ArrayList<String> docListRanked = new ArrayList<>();
         ArrayList<String> queryDocList = new ArrayList<>();
+        double k = 1.5;
+        double b = 0.75;
+        double sumOfBM25 = 0;
+        DocumentIndexer docIndexer = DocumentIndexer.getInstance();
+        docIndexer.loadDictionaryFromDisk();
 
         for(String term: termsAndLinesFromPost.keySet())
         {
-            for(String docParams: termsAndLinesFromPost.get(term).split(";"))
-            {
-                queryDocList.add(docParams.split("#")[0]);
-            }
+            //queryDocList.addAll(Arrays.asList(termsAndLinesFromPost.get(term).split(";")));
+
+
         }
 
-        docListRanked = bm25(queryDocList);
+//        docListRanked = bm25(queryDocList);
 
 
         //TODO: return only first 50 of them
         return docListRanked;
     }
 
-    private ArrayList<String> bm25(ArrayList<String> queryDocList) {
-        //TODO: Maybe rank using priorityQueue reversed order
-        // PriorityQueue<Integer> pQueue =  new PriorityQueue<Integer>(Collections.reverseOrder());
-        ArrayList<String> rankedDocs = new ArrayList<>();
-
-
-        return null;
-    }
 }
