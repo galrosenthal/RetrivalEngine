@@ -60,6 +60,16 @@ public class DocumentIndexer implements Runnable{
         return mInstance;
     }
 
+    public int getAvgLengthOfDoc() throws Exception{
+        if(dicOfDocs == null || dicOfDocs.keySet().size() == 0)
+        {
+            throw new Exception("Could not find Docs Dictionary");
+        }
+
+        calculateAvgLengthOfDocument();
+        return avgLengthOfDoc;
+
+    }
 
     /**
      * Enqueues a new HashMap of docs to the Queue
@@ -117,8 +127,8 @@ public class DocumentIndexer implements Runnable{
             int mapSizeBeforeMerge = dicOfDocs.size();
 //            ConcurrentHashMap<String,String> replacedMap = replaceDocInfoToStringMap(dqdHshMap);
             docDequeuerSemaphore.acquireUninterruptibly();
-//            dicOfDocs.putAll(replacedMap);
-            calculateAvgLengthOfDocumentAndInsertToDicOfDocs(dqdHshMap);
+            dicOfDocs.putAll(dqdHshMap);
+//            calculateAvgLengthOfDocumentAndInsertToDicOfDocs(dqdHshMap);
             docDequeuerSemaphore.release();
             int mapSizeAfterMerge = dicOfDocs.size();
             countMergedDocument += (mapSizeAfterMerge - mapSizeBeforeMerge);
@@ -158,17 +168,30 @@ public class DocumentIndexer implements Runnable{
         return onlyStringDocData;
     }
 
+//    /**
+//     * Calculating the avg of doc length in all corpus docs
+//     * @param dqdMap
+//     */
+//    private void calculateAvgLengthOfDocumentAndInsertToDicOfDocs(ConcurrentHashMap<String, DocumentInfo> dqdMap)
+//    {
+//        for(String docId: dqdMap.keySet())
+//        {
+//            avgLengthOfDoc = (dqdMap.get(docId).getNumUniqueTerms() + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
+//            dicOfDocs.put(docId,dqdMap.get(docId));
+//        }
+//    }
     /**
      * Calculating the avg of doc length in all corpus docs
-     * @param dqdMap
      */
-    private void calculateAvgLengthOfDocumentAndInsertToDicOfDocs(ConcurrentHashMap<String, DocumentInfo> dqdMap)
+    private void calculateAvgLengthOfDocument()
     {
-        for(String docId: dqdMap.keySet())
+        int sumOfLengths = 0;
+        for(String docId: dicOfDocs.keySet())
         {
-            avgLengthOfDoc = (dqdMap.get(docId).getNumUniqueTerms() + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
-            dicOfDocs.put(docId,dqdMap.get(docId));
+//            avgLengthOfDoc = (dicOfDocs.get(docId).getNumUniqueTerms() + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
+            sumOfLengths += dicOfDocs.get(docId).getNumUniqueTerms();
         }
+        avgLengthOfDoc = sumOfLengths / dicOfDocs.keySet().size();
     }
 
 
@@ -219,6 +242,7 @@ public class DocumentIndexer implements Runnable{
     {
         try {
             String pathToTempFolder = "./docsTempDir/";
+            calculateAvgLengthOfDocument();
 
             if (!Paths.get(pathToTempFolder).toFile().exists()) {
                 Files.createDirectories(Paths.get(pathToTempFolder));
