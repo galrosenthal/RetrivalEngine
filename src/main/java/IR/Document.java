@@ -2,7 +2,6 @@ package IR;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -53,6 +52,16 @@ public class Document implements Serializable {
         maxTF = 0;
         firstInsert = true;
 
+    }
+
+    public Document(String query,String id){
+        this.termsDictonary = new HashMap<>();
+        docText = query;
+        docNo = id;
+        textArray = StringUtils.split(docText," =");
+        maxTFTerm = "";
+        maxTF = 0;
+        firstInsert = true;
     }
 
     public String getDocDate() {
