@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="467.0" prefWidth="573.0" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.View.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="467.0" prefWidth="573.0" xmlns="http://javafx.com/javafx/8.0.112-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.View.Controller">
    <center>
       <GridPane prefHeight="402.0" prefWidth="511.0" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -34,7 +34,7 @@
           <RowConstraints maxHeight="103.33331298828125" minHeight="10.0" prefHeight="99.99996948242188" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button onAction="#RunSearch" mnemonicParsing="false" prefHeight="33.0" prefWidth="122.0" text="Run" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+            <Button fx:id="srchRun" mnemonicParsing="false" onAction="#RunSearch" prefHeight="33.0" prefWidth="122.0" text="Run" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
             <TextField fx:id="txt_field_Corpus" prefHeight="0.0" prefWidth="131.0" promptText="Path to Corpus" GridPane.columnIndex="2" GridPane.rowIndex="4" />
             <Button fx:id="btn_strtPrs" mnemonicParsing="false" onAction="#startParse" prefHeight="25.0" prefWidth="109.0" text="Start Parsing" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
             <TextField fx:id="txt_field_Posting" prefHeight="0.0" prefWidth="131.0" promptText="Path to Postings files" GridPane.columnIndex="2" GridPane.rowIndex="5" />
@@ -50,8 +50,8 @@
             <Button mnemonicParsing="false" onAction="#choosePathForCorpus" text="Browse" GridPane.columnIndex="3" GridPane.rowIndex="4" />
             <Button mnemonicParsing="false" onAction="#choosePathToPosting" text="Browse" GridPane.columnIndex="3" GridPane.rowIndex="5" />
             <TextField fx:id="txt_search" prefHeight="0.0" prefWidth="131.0" promptText="Search" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Button fx:id="btn_browseQuery" onAction="#choosePathToQueries" mnemonicParsing="false" prefHeight="25.0" prefWidth="57.0" text="Browse" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <Button fx:id="btn_saveQueryResult" onAction="#saveQueryResult" mnemonicParsing="false" prefHeight="25.0" prefWidth="107.0" text="Save query result" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btn_browseQuery" mnemonicParsing="false" onAction="#choosePathToQueries" prefHeight="25.0" prefWidth="57.0" text="Browse" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Button fx:id="btn_saveQueryResult" mnemonicParsing="false" onAction="#saveQueryResult" prefHeight="25.0" prefWidth="107.0" text="Save query result" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
             <CheckBox fx:id="chk_searchEntities" mnemonicParsing="false" text="Search entities" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <CheckBox fx:id="chk_addSemantic" mnemonicParsing="false" prefHeight="17.0" prefWidth="103.0" text="Add semantic" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>

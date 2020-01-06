@@ -40,6 +40,7 @@ public class Controller implements Observer {
     public Button btn_loadDic;
     public Button btn_browseQuery;
     public Button btn_saveQueryResult;
+    public Button srchRun;
     public CheckBox chk_searchEntities;
     public TextField txt_search;
     public CheckBox chk_addSemantic;
@@ -50,6 +51,7 @@ public class Controller implements Observer {
         btn_reset.setDisable(true);
         btn_loadDic.setDisable(true);
         btn_showDic.setDisable(true);
+        srchRun.setDisable(true);
     }
 
     /**
@@ -140,6 +142,7 @@ public class Controller implements Observer {
                 alert.setTitle("Load Dictionary!");
                 alert.showAndWait();
                 btn_showDic.setDisable(false);
+                srchRun.setDisable(false);
 
             }
             else if(num == 4)
