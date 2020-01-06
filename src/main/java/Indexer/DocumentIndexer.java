@@ -337,4 +337,30 @@ public class DocumentIndexer implements Runnable{
         dicOfDocs = new ConcurrentHashMap<>();
         stopThreads = false;
     }
+
+    /**
+     * @return the size of the dictionary
+     * @throws Exception
+     */
+    public int getSizeOfDictionary() throws Exception{
+        if(dicOfDocs == null || dicOfDocs.size() == 0)
+        {
+            throw new Exception("Dictionary could not be found");
+        }
+
+        return dicOfDocs.size();
+    }
+
+    /**
+     * Gets the Length of the Document <u>docId</u>
+     * @param docId The id of the doc to get its length
+     * @return the length of the document
+     */
+    public int getLengthOfDoc(String docId)
+    {
+        if(dicOfDocs == null || dicOfDocs.size() == 0) {
+            return 0;
+        }
+        return dicOfDocs.get(docId).getNumUniqueTerms();
+    }
 }
