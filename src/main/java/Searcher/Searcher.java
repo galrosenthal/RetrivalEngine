@@ -57,7 +57,7 @@ public class Searcher {
                 System.out.println("with semantic");
             }
 
-            result =ranker.rankQueryDocs(termswithPosting,query.getDocText());
+            result =ranker.rankQueryDocs(termswithPosting,termInText);
         }
 
         //result= Arrays.asList("doc1","doc2","doc3");
