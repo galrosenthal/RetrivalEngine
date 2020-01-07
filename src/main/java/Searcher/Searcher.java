@@ -1,16 +1,18 @@
 package Searcher;
 
-import IR.Document;
+import datamuse.*;
 import Indexer.Indexer;
 import Parser.AParser;
 import Parser.MainParse;
 import Ranker.Ranker;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Searcher {
     String corpusPath;
@@ -54,7 +56,12 @@ public class Searcher {
             }
 
             if(withSemantic){
-                System.out.println("with semantic");
+                DatamuseQuery dQuery = new DatamuseQuery();
+
+                String s = dQuery.findSimilarEndsWith("personal", "g");
+
+                System.out.println(s+"\n\n");
+                System.out.println(dQuery.findSimilarStartsWith("personal", "t"));
             }
 
             result =ranker.rankQueryDocs(termswithPosting,termInText);

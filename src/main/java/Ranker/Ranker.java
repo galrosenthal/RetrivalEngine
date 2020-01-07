@@ -25,7 +25,7 @@ public class Ranker {
     }
 
 
-    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,String query)
+    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> query)
     {
         //TODO: Maybe rank using priorityQueue reversed order(Max) or regular(Min)
         // for Max -> PriorityQueue<Integer> pQueue =  new PriorityQueue<Integer>(Collections.reverseOrder());

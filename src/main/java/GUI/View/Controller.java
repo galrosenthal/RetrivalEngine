@@ -342,6 +342,9 @@ public class Controller implements Observer {
             fc.getExtensionFilters().add(extFilter);
             Window primaryStage = null;
             File f = fc.showSaveDialog(primaryStage);
+            if (f != null) {
+                f = new File(f.getAbsolutePath() + "queryResult.txt");}
+
             if(f != null) {
                 if(queryResFile!= null) {
                     try {
@@ -363,6 +366,7 @@ public class Controller implements Observer {
                 else if(queryRes!=null){
                     String id = queryRes.remove(queryRes.size()-1);
                     try {
+
                         BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
 
                         for (String doc:queryRes) {
