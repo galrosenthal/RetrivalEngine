@@ -64,4 +64,8 @@ public class ViewModel extends Observable implements Observer {
     public List<String> getqueryResUsingSearch() {
         return model.getQueryResUsingSearch();
     }
+
+    public void searchEntities(String docNo) {
+        model.searchEntities(docNo);
+    }
 }

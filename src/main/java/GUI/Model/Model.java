@@ -1,6 +1,7 @@
 package GUI.Model;
 
 import Indexer.Indexer;
+import Ranker.Ranker;
 import Searcher.Searcher;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -214,7 +215,11 @@ public class Model extends Observable implements IModel {
         notifyObservers(6);
     }
 
-
+    @Override
+    public void searchEntities(String docNo) {
+        Ranker ranker = Ranker.getInstance();
+        //List<String> entities =  ranker.
+    }
 
     @Override
     public void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic) {

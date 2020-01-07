@@ -22,6 +22,8 @@ import java.util.*;
  * Controller of the JavaFx, Runs all the logic for viewing
  */
 public class Controller implements Observer {
+
+
     File fileToRead;
     ViewModel viewModel;
     Stage primaryStage;
@@ -44,6 +46,8 @@ public class Controller implements Observer {
     public CheckBox chk_searchEntities;
     public TextField txt_search;
     public CheckBox chk_addSemantic;
+    public ComboBox choice_box;
+    public Button btn_searchEntities;
 
     public void initialize(ViewModel viewModel, Stage primaryStage){
         this.viewModel = viewModel;
@@ -53,7 +57,7 @@ public class Controller implements Observer {
         btn_showDic.setDisable(true);
         btn_srchRun.setDisable(true);
         btn_saveQueryResult.setDisable(true);
-
+        btn_searchEntities.setDisable(true);
     }
 
     /**
@@ -160,6 +164,8 @@ public class Controller implements Observer {
                 queryResFile = viewModel.getqueryResUsingFile();
                 showQueryResultUsingfFile();
                 btn_saveQueryResult.setDisable(false);
+                btn_searchEntities.setDisable(false);
+                updateChoiceBox();
             }
 
             //query result using search text
@@ -167,6 +173,24 @@ public class Controller implements Observer {
                 queryRes = viewModel.getqueryResUsingSearch();
                 showQueryUsingSearch();
                 btn_saveQueryResult.setDisable(false);
+                btn_searchEntities.setDisable(false);
+                updateChoiceBox();
+            }
+        }
+    }
+
+    private void updateChoiceBox() {
+        choice_box.setVisibleRowCount(10);
+        if(queryRes!= null){
+            for (String doc:queryRes) {
+                choice_box.getItems().add(doc);
+            }
+        }
+        else if(queryResFile != null){
+            for (String query: queryResFile.keySet()) {
+                for (String doc:queryResFile.get(query)) {
+                    choice_box.getItems().add(doc);
+                }
             }
         }
     }
@@ -310,6 +334,8 @@ public class Controller implements Observer {
      * @param actionEvent
      */
     public void RunSearch(ActionEvent actionEvent) {
+        queryResFile = null;
+        queryRes = null;
         if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
             viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chk_addSemantic.isSelected());
         }
@@ -391,6 +417,11 @@ public class Controller implements Observer {
 
             }
         }
+    }
+
+    public void searchEntities(ActionEvent actionEvent) {
+        String docNo = (String)choice_box.getValue();
+        viewModel.searchEntities(docNo);
     }
 
     /**
