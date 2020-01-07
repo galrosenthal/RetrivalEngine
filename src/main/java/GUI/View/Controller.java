@@ -343,14 +343,14 @@ public class Controller implements Observer {
         }
         else if(queryResFile != null || queryRes != null){
             //file chooser
-            FileChooser fc = new FileChooser();
-            fc.setTitle("Save query to File");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Text files", "*.txt");
-            fc.getExtensionFilters().add(extFilter);
-            Window primaryStage = null;
-            File f = fc.showSaveDialog(primaryStage);
+
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle("Choose save path");
+            File defaultDirectory = new File("c:/Users");
+            chooser.setInitialDirectory(defaultDirectory);
+            File f = chooser.showDialog(primaryStage);
             if (f != null) {
-                f = new File(f.getAbsolutePath() + "queryResult.txt");}
+                f = new File(f.getAbsolutePath() + "\\queryResult.txt");}
 
             if(f != null) {
                 if(queryResFile!= null) {
