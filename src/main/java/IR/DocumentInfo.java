@@ -22,6 +22,7 @@ public class DocumentInfo implements Serializable
     private int maxTfOfTerm;
     private String docNo;
     private HashMap<String,Integer> allEntitysInDoc;
+    private int docLength;
 
     public DocumentInfo(Document doc) {
         this.docNo = doc.getDocNo();
@@ -30,6 +31,7 @@ public class DocumentInfo implements Serializable
         this.docDate = doc.getDocDate();
         this.maxTfOfTerm = doc.getMaxTF();
         allEntitysInDoc = new HashMap<>();
+        docLength = doc.getTextArray().length;
     }
 
     public int getMaxTfOfTerm() {
@@ -42,6 +44,10 @@ public class DocumentInfo implements Serializable
 
     public int getNumUniqueTerms() {
         return numUniqueTerms;
+    }
+
+    public int getDocLength(){
+        return docLength;
     }
 
     public String getMaxTfTerm() {

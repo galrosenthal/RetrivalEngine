@@ -38,7 +38,7 @@ public class DocumentIndexer implements Runnable{
     private final String docDelim = "#";
     //TODO: save this parameter with the Dictionary somehow
     // also save the num of docs in the dictionary
-    private int avgLengthOfDoc = 0;
+    private double avgLengthOfDoc = 0;
 
     public DocumentInfo getDocumentInfoOfDoc(String docID)
     {
@@ -68,7 +68,7 @@ public class DocumentIndexer implements Runnable{
         return mInstance;
     }
 
-    public int getAvgLengthOfDoc() throws Exception{
+    public double getAvgLengthOfDoc() throws Exception{
         if(dicOfDocs == null || dicOfDocs.keySet().size() == 0)
         {
             throw new Exception("Could not find Docs Dictionary");
@@ -201,7 +201,8 @@ public class DocumentIndexer implements Runnable{
         for(String docId: dicOfDocs.keySet())
         {
 //            avgLengthOfDoc = (dicOfDocs.get(docId).getNumUniqueTerms() + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
-            sumOfLengths += dicOfDocs.get(docId).getNumUniqueTerms();
+//            sumOfLengths += dicOfDocs.get(docId).getNumUniqueTerms();
+            sumOfLengths += dicOfDocs.get(docId).getDocLength();
         }
         avgLengthOfDoc = sumOfLengths / dicOfDocs.keySet().size();
     }
