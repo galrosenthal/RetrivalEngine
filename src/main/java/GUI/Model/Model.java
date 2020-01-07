@@ -24,7 +24,7 @@ import java.util.Observable;
 public class Model extends Observable implements IModel {
     private static final int MAX_NUMBER_OF_THREADS = 2;
     String alertToShow;
-    int id =0;
+    int id =100;
     HashMap<String,List<String>> queryResFile;
     List<String> queryRes;
 

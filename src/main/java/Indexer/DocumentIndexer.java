@@ -106,8 +106,8 @@ public class DocumentIndexer implements Runnable{
         }
         // if the were still documents that were not index after the Q is empty and the thread is stopped
         // write them to the disk
-        writeDocsToDisk();
         saveDocParamsToDisk();
+        writeDocsToDisk();
     }
 
 
@@ -185,6 +185,10 @@ public class DocumentIndexer implements Runnable{
      */
     private void calculateAvgLengthOfDocument()
     {
+        if(dicOfDocs == null || dicOfDocs.size() == 0)
+        {
+            return;
+        }
         int sumOfLengths = 0;
         for(String docId: dicOfDocs.keySet())
         {
@@ -291,7 +295,7 @@ public class DocumentIndexer implements Runnable{
             numOfFilesInFolder = folderOfDocs.listFiles().length;
             numOfFile.set(0);
             dicOfDocs = new ConcurrentHashMap<>();
-            while(numOfFile.get()<numOfFilesInFolder)
+            while(numOfFile.get()<numOfFilesInFolder-1)
             {
                 ObjectInputStream getDicFromDisk = new ObjectInputStream(new FileInputStream(pathToTempFolder + numOfFile.getAndIncrement()));
                 Object dic = getDicFromDisk.readObject();
@@ -336,5 +340,31 @@ public class DocumentIndexer implements Runnable{
         docDequeuerSemaphore = new Semaphore(1);
         dicOfDocs = new ConcurrentHashMap<>();
         stopThreads = false;
+    }
+
+    /**
+     * @return the size of the dictionary
+     * @throws Exception
+     */
+    public int getSizeOfDictionary() throws Exception{
+        if(dicOfDocs == null || dicOfDocs.size() == 0)
+        {
+            throw new Exception("Dictionary could not be found");
+        }
+
+        return dicOfDocs.size();
+    }
+
+    /**
+     * Gets the Length of the Document <u>docId</u>
+     * @param docId The id of the doc to get its length
+     * @return the length of the document
+     */
+    public int getLengthOfDoc(String docId)
+    {
+        if(dicOfDocs == null || dicOfDocs.size() == 0) {
+            return 0;
+        }
+        return dicOfDocs.get(docId).getNumUniqueTerms();
     }
 }

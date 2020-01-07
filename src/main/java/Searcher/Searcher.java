@@ -9,10 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Searcher {
     String corpusPath;
@@ -30,6 +27,7 @@ public class Searcher {
 
         HashMap<String,String> corpusDictionary = myIndexer.getCorpusDictionary();
         if(corpusDictionary!=null){
+
             AParser parser = new MainParse();
             parser.setPathToCorpus(corpusPath);
             ((MainParse) parser).parse(query);
@@ -37,9 +35,20 @@ public class Searcher {
             HashMap<String,String> termInText = parser.getTermsInText();
             HashMap<String,String> termswithPosting = new HashMap<>();
 
-            for (Map.Entry<String,String> term: termInText.entrySet()) {
+            if(withSemantic){
+                DatamuseQuery dQuery = new DatamuseQuery();
+
+                for (String term: termInText.keySet()) {
+                    String s = dQuery.findSimilar(term);
+                    System.out.println(s);
+                }
+
+
+            }
+
+            for (String term: termInText.keySet()) {
                 ArrayList<String> allTermsOfLetter = new ArrayList<>();
-                String specificTermKey = term.getKey();
+                String specificTermKey = term;
                 String valueFromCorpus = corpusDictionary.get(specificTermKey);
                 if (valueFromCorpus != null) {
                     String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
@@ -55,19 +64,12 @@ public class Searcher {
                 }
             }
 
-            if(withSemantic){
-                DatamuseQuery dQuery = new DatamuseQuery();
 
-                String s = dQuery.findSimilarEndsWith("personal", "g");
 
-                System.out.println(s+"\n\n");
-                System.out.println(dQuery.findSimilarStartsWith("personal", "t"));
-            }
-
-            result =ranker.rankQueryDocs(termswithPosting,termInText);
+            //result =ranker.rankQueryDocs(termswithPosting,termInText);
         }
 
-        //result= Arrays.asList("doc1","doc2","doc3");
+        result= Arrays.asList("doc1","doc2","doc3");
 
         return result;
     }

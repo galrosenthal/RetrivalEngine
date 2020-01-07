@@ -12,3 +12,4 @@ misc.xml
 /docsTempDir
 
 .idea/misc.xml
+/src/main/java/META-INF/MANIFEST.MF

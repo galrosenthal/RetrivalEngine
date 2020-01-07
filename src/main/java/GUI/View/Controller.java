@@ -40,6 +40,7 @@ public class Controller implements Observer {
     public Button btn_loadDic;
     public Button btn_browseQuery;
     public Button btn_saveQueryResult;
+    public Button btn_srchRun;
     public CheckBox chk_searchEntities;
     public TextField txt_search;
     public CheckBox chk_addSemantic;
@@ -50,6 +51,9 @@ public class Controller implements Observer {
         btn_reset.setDisable(true);
         btn_loadDic.setDisable(true);
         btn_showDic.setDisable(true);
+        btn_srchRun.setDisable(true);
+        btn_saveQueryResult.setDisable(true);
+
     }
 
     /**
@@ -140,6 +144,7 @@ public class Controller implements Observer {
                 alert.setTitle("Load Dictionary!");
                 alert.showAndWait();
                 btn_showDic.setDisable(false);
+                btn_srchRun.setDisable(false);
 
             }
             else if(num == 4)
@@ -154,12 +159,14 @@ public class Controller implements Observer {
             else if(num == 5){
                 queryResFile = viewModel.getqueryResUsingFile();
                 showQueryResultUsingfFile();
+                btn_saveQueryResult.setDisable(false);
             }
 
             //query result using search text
             else if(num == 6){
                 queryRes = viewModel.getqueryResUsingSearch();
                 showQueryUsingSearch();
+                btn_saveQueryResult.setDisable(false);
             }
         }
     }
