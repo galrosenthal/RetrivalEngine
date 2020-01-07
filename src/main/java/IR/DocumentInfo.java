@@ -68,4 +68,9 @@ public class DocumentInfo implements Serializable
             }
         }
     }
+
+
+    public HashMap<String, Integer> getAllEntitysInDoc() {
+        return allEntitysInDoc;
+    }
 }

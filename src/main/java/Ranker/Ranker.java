@@ -1,5 +1,6 @@
 package Ranker;
 
+import IR.DocumentInfo;
 import Indexer.DocumentIndexer;
 import javafx.util.Pair;
 
@@ -154,6 +155,27 @@ public class Ranker {
             }
         }
         return docToTerm;
+    }
+
+
+
+    public ArrayList<String> rankEntitysOfDoc(String docID)
+    {
+        DocumentIndexer docIndexer = DocumentIndexer.getInstance();
+        docIndexer.loadDictionaryFromDisk();
+
+        DocumentInfo docInfo = docIndexer.getDocumentInfoOfDoc(docID);
+        if(docInfo == null)
+        {
+            return null;
+        }
+
+        ArrayList<String> rankedEntitysInDoc = new ArrayList<>(docInfo.getAllEntitysInDoc().keySet());
+
+        rankEntity(rankedEntitysInDoc);
+
+
+
     }
 
 }

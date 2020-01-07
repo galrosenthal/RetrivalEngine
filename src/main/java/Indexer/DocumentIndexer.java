@@ -40,6 +40,14 @@ public class DocumentIndexer implements Runnable{
     // also save the num of docs in the dictionary
     private int avgLengthOfDoc = 0;
 
+    public DocumentInfo getDocumentInfoOfDoc(String docID)
+    {
+        if(dicOfDocs.containsKey(docID))
+        {
+            return dicOfDocs.get(docID);
+        }
+        return null;
+    }
 
     private DocumentIndexer() {
         docsHashMapsQ = new ConcurrentLinkedQueue<>();
