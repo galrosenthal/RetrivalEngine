@@ -6,6 +6,7 @@ import Parser.AParser;
 import Parser.MainParse;
 import Ranker.Ranker;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,10 +41,11 @@ public class Searcher {
 
                 for (String term: termInText.keySet()) {
                     String s = dQuery.findSimilar(term);
-                    System.out.println(s);
+                    String[] res = JSONParse.parseWords(s);
+                    for (String word:res) {
+                        termInText.put(word,"1");
+                    }
                 }
-
-
             }
 
             for (String term: termInText.keySet()) {
@@ -63,13 +65,10 @@ public class Searcher {
                     //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
                 }
             }
-
-
-
-            //result =ranker.rankQueryDocs(termswithPosting,termInText);
+            result =ranker.rankQueryDocs(termswithPosting,termInText);
         }
 
-        result= Arrays.asList("doc1","doc2","doc3");
+       // result= Arrays.asList("doc1","doc2","doc3");
 
         return result;
     }

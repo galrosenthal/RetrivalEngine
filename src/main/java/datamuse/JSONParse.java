@@ -23,7 +23,7 @@ public class JSONParse {
      * @param in JSON data returned from the DatamuseQuery class.
      * @return An array of the words.
      */
-    public String[] parseWords(String in) {
+    public static String[] parseWords(String in) {
         JsonParserFactory factory=JsonParserFactory.getInstance();
         JSONParser parser=factory.newJsonParser();
         Map jsonData=parser.parseJson(in);
