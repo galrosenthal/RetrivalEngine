@@ -157,6 +157,26 @@ public class Indexer implements Runnable {
     }
 
     /**
+     * Write EntityHashMap to Disk
+     */
+    public void writeEntityHashMapToDisk(HashMap<String,Integer> entitysToSave) {
+        try {
+            if(!Paths.get(pathToPostFolder).toFile().exists())
+            {
+                Files.createDirectories(Paths.get(pathToPostFolder));
+            }
+            FileOutputStream fileOut = new FileOutputStream(pathToPostFolder + "allEntitys", true);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(entitysToSave);
+            objectOut.flush();
+            objectOut.close();
+            fileOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * @return the HashMap of the Inverted Index Dictionary
      */
     public HashMap<String, String> getCorpusDictionary() {
@@ -744,9 +764,17 @@ public class Indexer implements Runnable {
 
 
             FileInputStream fileIn = new FileInputStream(hashMapFile);
-            ObjectInputStream objectOut = new ObjectInputStream(fileIn);
-            corpusDictionary = (HashMap<String, String>) objectOut.readObject();
-            objectOut.close();
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+            corpusDictionary = (HashMap<String, String>) objectIn.readObject();
+            objectIn.close();
+            fileIn.close();
+
+            //Load Entitys
+            hashMapFile = Paths.get(pathToPostFolder+"allEntitys").toFile();
+            fileIn = new FileInputStream(hashMapFile);
+            objectIn = new ObjectInputStream(fileIn);
+            entityToDrop = (HashMap<String, Integer>) objectIn.readObject();
+            objectIn.close();
             fileIn.close();
             return true;
 
@@ -761,8 +789,11 @@ public class Indexer implements Runnable {
 
     /**
      * Deletes all Entitys in the Corpus which were found only 1 time in all the corpus
+     * and save it to disk
      */
-    public void removeEntitys() {
+    public void removeEntitys()
+    {
+        HashMap<String,Integer> onlyEntitysToSave = new HashMap<>();
         for (String term :
                 entityToDrop.keySet()) {
 
@@ -770,7 +801,14 @@ public class Indexer implements Runnable {
             {
                 corpusDictionary.remove(term);
             }
+            else
+            {
+                onlyEntitysToSave.put(term,entityToDrop.get(term));
+            }
         }
+
+        writeEntityHashMapToDisk(onlyEntitysToSave);
+        entityToDrop = onlyEntitysToSave;
     }
 
 
