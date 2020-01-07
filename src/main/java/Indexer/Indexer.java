@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Indexer.Indexer is a Singleton Class thats Indexing all the Terms in the Corpus
  */
 public class Indexer implements Runnable {
-    private static final double MAX_POSTING_FILE_SIZE = 1;
+    private static final double MAX_POSTING_FILE_SIZE = Double.MAX_VALUE;
     private static final int MAX_TERMS_TO_INDEX = 500000;
     private int countMergedTerms = 0;
     private static volatile Indexer mInstance;
@@ -41,6 +41,9 @@ public class Indexer implements Runnable {
 
     }
 
+    public static HashMap<String, Integer> getEntityToDrop() {
+        return entityToDrop;
+    }
 
     /**
      * @return true if the Q is empty
@@ -710,7 +713,7 @@ public class Indexer implements Runnable {
      * @return the size of the File in MB
      */
     private double getFileSizeMegaBytes(File file) {
-        double a = (double) file.length() / KB_SIZE;
+        double a = (double) file.length() / (KB_SIZE*KB_SIZE);
         return a;
     }
 
@@ -853,4 +856,7 @@ public class Indexer implements Runnable {
     }
 
 
+    public int getTotalTF(String term) {
+        return Integer.parseInt(corpusDictionary.get(term).split("#")[2]);
+    }
 }

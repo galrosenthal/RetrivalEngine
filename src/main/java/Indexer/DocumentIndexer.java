@@ -281,14 +281,14 @@ public class DocumentIndexer implements Runnable{
      *    num of all doc in the corpus
      *    avg length of a doc in the corpus
      */
-    public void loadDictionaryFromDisk()
+    public boolean loadDictionaryFromDisk()
     {
         try
         {
             String pathToTempFolder = "./docsTempDir/";
             if(dicOfDocs != null && dicOfDocs.keySet().size() != 0)
             {
-                return;
+                return false;
             }
             if (!Paths.get(pathToTempFolder).toFile().exists()) {
                 throw new Exception("Could not find the Directory");
@@ -328,14 +328,16 @@ public class DocumentIndexer implements Runnable{
             {
                 throw new Exception("Something went wrong reading the Document dictionary, not as same size as saved");
             }
-
-            paramsReader.delete();
+            return true;
+//            paramsReader.delete();
 
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            return false;
         }
+
 
     }
 
