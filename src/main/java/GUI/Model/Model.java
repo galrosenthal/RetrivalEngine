@@ -231,6 +231,7 @@ public class Model extends Observable implements IModel {
     public void searchEntities(String docNo) {
         Ranker ranker = Ranker.getInstance();
         //ranker.setStemming();
+        ranker.resetQuery();
         entities =  ranker.rankEntitysOfDoc(docNo);
         setChanged();
         notifyObservers(7);
