@@ -14,7 +14,6 @@ public class Ranker {
 
     private static volatile Ranker mInstance;
     private HashMap<String,String> query;
-    private boolean stemming = false;
 
     private Ranker() {
         query = new HashMap<>();
@@ -32,9 +31,7 @@ public class Ranker {
     }
 
 
-    public void setStemming(boolean stemming) {
-        this.stemming = stemming;
-    }
+
 
     /**
      * This Function is ranking the docs that are related to the term found in the query
@@ -186,7 +183,6 @@ public class Ranker {
         DocumentIndexer docIndexer = DocumentIndexer.getInstance();
         docIndexer.loadDictionaryFromDisk();
         Indexer myIndexer = Indexer.getInstance();
-        myIndexer.loadDictionary(stemming);
 
         HashMap<String,Double> rankedEntitys = new HashMap<>();
 
