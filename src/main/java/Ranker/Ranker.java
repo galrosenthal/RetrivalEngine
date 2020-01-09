@@ -186,7 +186,7 @@ public class Ranker {
 
         HashMap<String,Double> rankedEntitys = new HashMap<>();
 
-        PriorityQueue<RankedEntity> entitiesPriorirtyQ = new PriorityQueue<RankedEntity>(Comparator.naturalOrder());
+        PriorityQueue<RankedEntity> entitiesPriorirtyQ = new PriorityQueue<RankedEntity>(Comparator.reverseOrder());
 
         DocumentInfo docInfo = docIndexer.getDocumentInfoOfDoc(docID);
         if(docInfo == null)

@@ -13,9 +13,11 @@ import javafx.scene.layout.TilePane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -194,10 +196,8 @@ public class Controller implements Observer {
 
         TableView tableView = getTableView(column1Value, column2Value);
 
-        for (String query :sortedKeys) {
-            for (String doc:entityResult.keySet()) {
-                tableView.getItems().add(new queryFile(doc,entityResult.get(doc).toString()));
-            }
+        for (String entity:entityResult.keySet()) {
+            tableView.getItems().add(new queryFile(entity,entityResult.get(entity).toString()));
         }
         insertStackPaneAndShow(tableView, "Show entities result");
 
@@ -234,7 +234,7 @@ public class Controller implements Observer {
             TableView tableView = getTableView("QueryId", "Document");
 
             for (String doc :sortedKeys) {
-                    tableView.getItems().add(new queryFile(query,doc));
+                tableView.getItems().add(new queryFile(query,doc));
             }
             //queryRes.add(query);
             insertStackPaneAndShow(tableView, "Show query result");
@@ -352,13 +352,13 @@ public class Controller implements Observer {
             viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chk_addSemantic.isSelected());
         }
         else if(txt_field_Corpus.getText().length() == 0){
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setContentText("Error While Trying to run the query search, Please choose corpus path");
-                alert.setTitle("Could not run query");
-                alert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to run the query search, Please choose corpus path");
+            alert.setTitle("Could not run query");
+            alert.showAndWait();
         }
         else if(fileToRead != null){
-                viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chk_addSemantic.isSelected());
+            viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chk_addSemantic.isSelected());
         }
         else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
