@@ -68,4 +68,8 @@ public class ViewModel extends Observable implements Observer {
     public void searchEntities(String docNo) {
         model.searchEntities(docNo);
     }
+
+    public HashMap<String, Double> getEntityResult() {
+        return model.getEntityResult();
+    }
 }

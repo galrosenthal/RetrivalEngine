@@ -28,6 +28,7 @@ public class Model extends Observable implements IModel {
     int id =100;
     HashMap<String,List<String>> queryResFile;
     List<String> queryRes;
+    HashMap<String,Double> entities;
 
     @Override
     public void loadDictionary(boolean withStemm,String postingPath) {
@@ -229,7 +230,15 @@ public class Model extends Observable implements IModel {
     @Override
     public void searchEntities(String docNo) {
         Ranker ranker = Ranker.getInstance();
-        //List<String> entities =  ranker.
+        //ranker.setStemming();
+        entities =  ranker.rankEntitysOfDoc(docNo);
+        setChanged();
+        notifyObservers(7);
+    }
+
+    @Override
+    public HashMap<String, Double> getEntityResult() {
+        return entities;
     }
 
     @Override

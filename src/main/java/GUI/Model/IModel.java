@@ -27,4 +27,6 @@ public interface IModel {
     List<String> getQueryResUsingSearch();
 
     void searchEntities(String docNo);
+
+    HashMap<String, Double> getEntityResult();
 }
