@@ -50,6 +50,10 @@ public class DocumentIndexer implements Runnable{
         return null;
     }
 
+    public void setPathToPostFolder(String pathToPostFolder) {
+        this.pathToPostFolder = pathToPostFolder + "/docTempDir/";
+    }
+
     private DocumentIndexer() {
         docsHashMapsQ = new ConcurrentLinkedQueue<>();
 //        docsHashMapsQ = new LinkedBlockingDeque<>();
@@ -324,7 +328,7 @@ public class DocumentIndexer implements Runnable{
             }
 
             int dicOfDocSize = Integer.parseInt(allLinesInFile.get(0));
-            avgLengthOfDoc = Integer.parseInt(allLinesInFile.get(1));
+            avgLengthOfDoc = Double.parseDouble(allLinesInFile.get(1));
 
             if(dicOfDocSize != dicOfDocs.size())
             {

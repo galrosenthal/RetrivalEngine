@@ -17,6 +17,7 @@ public class Ranker {
     private boolean stemming = false;
 
     private Ranker() {
+        query = new HashMap<>();
     }
 
     public static Ranker getInstance() {
