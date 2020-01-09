@@ -177,7 +177,7 @@ public class Indexer implements Runnable {
             {
                 Files.createDirectories(Paths.get(pathToPostFolder));
             }
-            FileOutputStream fileOut = new FileOutputStream(pathToPostFolder + "allEntitys", true);
+            FileOutputStream fileOut = new FileOutputStream(pathToPostFolder + "/allEntitys", true);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(entitysToSave);
             objectOut.flush();
@@ -782,7 +782,7 @@ public class Indexer implements Runnable {
             fileIn.close();
 
             //Load Entitys
-            hashMapFile = Paths.get(pathToPostFolder+"allEntitys").toFile();
+            hashMapFile = Paths.get(pathToPostFolder+"/allEntitys").toFile();
             fileIn = new FileInputStream(hashMapFile);
             objectIn = new ObjectInputStream(fileIn);
             entityToDrop = (HashMap<String, Integer>) objectIn.readObject();
