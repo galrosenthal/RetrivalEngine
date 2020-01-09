@@ -48,7 +48,7 @@ public class Ranker {
             docIndexer.loadDictionaryFromDisk();
             int M = docIndexer.getSizeOfDictionary();
             double docAvgLength = docIndexer.getAvgLengthOfDoc();
-            PriorityQueue<RankedDocument> rankingQueue = new PriorityQueue<>(Comparator.naturalOrder());
+            PriorityQueue<RankedDocument> rankingQueue = new PriorityQueue<>(Comparator.reverseOrder());
 
 
             //Ranking All of the Docs using BM25
