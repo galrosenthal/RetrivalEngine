@@ -25,4 +25,8 @@ public interface IModel {
     HashMap<String, List<String>> getqueryResUsingFile();
 
     List<String> getQueryResUsingSearch();
+
+    void searchEntities(String docNo);
+
+    HashMap<String, Double> getEntityResult();
 }

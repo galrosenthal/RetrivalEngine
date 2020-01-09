@@ -850,7 +850,7 @@ public class MainParse extends AParser {
 
             if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar > 'Z')){
                 sentence.append(chopDownLastCharPunc(wordB.toString()));
-
+                numOfWords++;
                 if(numOfWords > 1 && numOfWords < 5){
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
                     isParse = true;

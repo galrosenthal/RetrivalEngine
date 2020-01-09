@@ -22,11 +22,14 @@ import java.util.*;
  * Controller of the JavaFx, Runs all the logic for viewing
  */
 public class Controller implements Observer {
+
+
     File fileToRead;
     ViewModel viewModel;
     Stage primaryStage;
     HashMap<String,List<String>> queryResFile;
     List<String> queryRes;
+    HashMap<String,Double> entityResult;
 
     @FXML
     public javafx.scene.control.Button btn_strtPrs;
@@ -40,10 +43,12 @@ public class Controller implements Observer {
     public Button btn_loadDic;
     public Button btn_browseQuery;
     public Button btn_saveQueryResult;
-    public Button srchRun;
+    public Button btn_srchRun;
     public CheckBox chk_searchEntities;
     public TextField txt_search;
     public CheckBox chk_addSemantic;
+    public ComboBox choice_box;
+    public Button btn_searchEntities;
 
     public void initialize(ViewModel viewModel, Stage primaryStage){
         this.viewModel = viewModel;
@@ -51,7 +56,9 @@ public class Controller implements Observer {
         btn_reset.setDisable(true);
         btn_loadDic.setDisable(true);
         btn_showDic.setDisable(true);
-        srchRun.setDisable(true);
+        btn_srchRun.setDisable(true);
+        btn_saveQueryResult.setDisable(true);
+        btn_searchEntities.setDisable(true);
     }
 
     /**
@@ -127,6 +134,7 @@ public class Controller implements Observer {
             if(num == 1){
                 btn_loadDic.setDisable(false);
                 btn_showDic.setDisable(false);
+                btn_srchRun.setDisable(false);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setContentText(viewModel.getAlertToShowFinish());
                 alert.setTitle("Finish!");
@@ -142,7 +150,7 @@ public class Controller implements Observer {
                 alert.setTitle("Load Dictionary!");
                 alert.showAndWait();
                 btn_showDic.setDisable(false);
-                srchRun.setDisable(false);
+                btn_srchRun.setDisable(false);
 
             }
             else if(num == 4)
@@ -157,12 +165,61 @@ public class Controller implements Observer {
             else if(num == 5){
                 queryResFile = viewModel.getqueryResUsingFile();
                 showQueryResultUsingfFile();
+                btn_saveQueryResult.setDisable(false);
+                btn_searchEntities.setDisable(false);
+                updateChoiceBox();
             }
 
             //query result using search text
             else if(num == 6){
                 queryRes = viewModel.getqueryResUsingSearch();
                 showQueryUsingSearch();
+                btn_saveQueryResult.setDisable(false);
+                btn_searchEntities.setDisable(false);
+                updateChoiceBox();
+            }
+
+            //rank entities
+            else if(num == 7){
+                getEntityResult();
+                showEntitiesResult();
+            }
+        }
+    }
+
+    private void showEntitiesResult() {
+        ArrayList<String> sortedKeys = new ArrayList<String>(entityResult.keySet());
+        String column1Value = "Document";
+        String column2Value = "Rank";
+
+        TableView tableView = getTableView(column1Value, column2Value);
+
+        for (String query :sortedKeys) {
+            for (String doc:entityResult.keySet()) {
+                tableView.getItems().add(new queryFile(doc,entityResult.get(doc).toString()));
+            }
+        }
+        insertStackPaneAndShow(tableView, "Show entities result");
+
+    }
+
+    private void getEntityResult() {
+        entityResult = viewModel.getEntityResult();
+    }
+
+    private void updateChoiceBox() {
+        choice_box.setVisibleRowCount(10);
+        if(queryRes!= null){
+            queryRes.remove(queryRes.size()-1);
+            for (String doc:queryRes) {
+                choice_box.getItems().add(doc);
+            }
+        }
+        else if(queryResFile != null){
+            for (String query: queryResFile.keySet()) {
+                for (String doc:queryResFile.get(query)) {
+                    choice_box.getItems().add(doc);
+                }
             }
         }
     }
@@ -174,27 +231,13 @@ public class Controller implements Observer {
         try{
             ArrayList<String> sortedKeys = new ArrayList<String>(queryRes);
             String query = sortedKeys.remove(sortedKeys.size()-1);
-            TableView tableView = new TableView<>();
-            TableColumn<String, Map> column1 = new TableColumn("QueryId");
-            column1.setCellValueFactory(new PropertyValueFactory<>("QueryId"));
-
-            TableColumn<String, Map> column2 = new TableColumn("Document");
-            column2.setCellValueFactory(new PropertyValueFactory<>("Document"));
-
-            tableView.getColumns().add(column1);
-            tableView.getColumns().add(column2);
+            TableView tableView = getTableView("QueryId", "Document");
 
             for (String doc :sortedKeys) {
                     tableView.getItems().add(new queryFile(query,doc));
             }
-            queryRes.add(query);
-            StackPane stkPane = new StackPane();
-            stkPane.getChildren().add(tableView);
-            Scene scene = new Scene(stkPane);
-            Stage stage = new Stage();
-            stage.setTitle("Show query result");
-            stage.setScene(scene);
-            stage.show();
+            //queryRes.add(query);
+            insertStackPaneAndShow(tableView, "Show query result");
         } catch (Exception e) {
 
         }
@@ -207,16 +250,10 @@ public class Controller implements Observer {
         try {
 
             ArrayList<String> sortedKeys = new ArrayList<String>(queryResFile.keySet());
+            String column1Value = "QueryId";
+            String column2Value = "Document";
 
-            TableView tableView = new TableView<>();
-            TableColumn<String, Map> column1 = new TableColumn("QueryId");
-            column1.setCellValueFactory(new PropertyValueFactory<>("QueryId"));
-
-            TableColumn<String, Map> column2 = new TableColumn("Document");
-            column2.setCellValueFactory(new PropertyValueFactory<>("Document"));
-
-            tableView.getColumns().add(column1);
-            tableView.getColumns().add(column2);
+            TableView tableView = getTableView(column1Value, column2Value);
 
             for (String query :sortedKeys) {
                 for (String doc:queryResFile.get(query)) {
@@ -224,16 +261,33 @@ public class Controller implements Observer {
                 }
             }
 
-            StackPane stkPane = new StackPane();
-            stkPane.getChildren().add(tableView);
-            Scene scene = new Scene(stkPane);
-            Stage stage = new Stage();
-            stage.setTitle("Show query result");
-            stage.setScene(scene);
-            stage.show();
+            insertStackPaneAndShow(tableView, "Show query result");
         } catch (Exception e) {
 
         }
+    }
+
+    private void insertStackPaneAndShow(TableView tableView, String s) {
+        StackPane stkPane = new StackPane();
+        stkPane.getChildren().add(tableView);
+        Scene scene = new Scene(stkPane);
+        Stage stage = new Stage();
+        stage.setTitle(s);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private TableView getTableView(String column1Value, String column2Value) {
+        TableView tableView = new TableView<>();
+        TableColumn<String, Map> column1 = new TableColumn(column1Value);
+        column1.setCellValueFactory(new PropertyValueFactory<>(column1Value));
+
+        TableColumn<String, Map> column2 = new TableColumn(column2Value);
+        column2.setCellValueFactory(new PropertyValueFactory<>(column2Value));
+
+        tableView.getColumns().add(column1);
+        tableView.getColumns().add(column2);
+        return tableView;
     }
 
     /**
@@ -259,27 +313,13 @@ public class Controller implements Observer {
             ArrayList<String> sortedKeys = new ArrayList<String>(dic.keySet());
             Collections.sort(sortedKeys);
 
-            TableView tableView = new TableView<>();
-            TableColumn<String, Map> column1 = new TableColumn("Term");
-            column1.setCellValueFactory(new PropertyValueFactory<>("term"));
-
-            TableColumn<String, Map> column2 = new TableColumn("Amount");
-            column2.setCellValueFactory(new PropertyValueFactory<>("amount"));
-
-            tableView.getColumns().add(column1);
-            tableView.getColumns().add(column2);
+            TableView tableView = getTableView("Term", "Amount");
 
             for (String term:sortedKeys) {
                 tableView.getItems().add(new Map(term,dic.get(term).split("#")[2]));
             }
 
-            StackPane stkPane = new StackPane();
-            stkPane.getChildren().add(tableView);
-            Scene scene = new Scene(stkPane);
-            Stage stage = new Stage();
-            stage.setTitle("Show Dictionary");
-            stage.setScene(scene);
-            stage.show();
+            insertStackPaneAndShow(tableView, "Show Dictionary");
         } catch (Exception e) {
 
         }
@@ -306,6 +346,8 @@ public class Controller implements Observer {
      * @param actionEvent
      */
     public void RunSearch(ActionEvent actionEvent) {
+        queryResFile = null;
+        queryRes = null;
         if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
             viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chk_addSemantic.isSelected());
         }
@@ -339,12 +381,15 @@ public class Controller implements Observer {
         }
         else if(queryResFile != null || queryRes != null){
             //file chooser
-            FileChooser fc = new FileChooser();
-            fc.setTitle("Save query to File");
-            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Text files", "*.txt");
-            fc.getExtensionFilters().add(extFilter);
-            Window primaryStage = null;
-            File f = fc.showSaveDialog(primaryStage);
+
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle("Choose save path");
+            File defaultDirectory = new File("c:/Users");
+            chooser.setInitialDirectory(defaultDirectory);
+            File f = chooser.showDialog(primaryStage);
+            if (f != null) {
+                f = new File(f.getAbsolutePath() + "\\queryResult.txt");}
+
             if(f != null) {
                 if(queryResFile!= null) {
                     try {
@@ -366,6 +411,7 @@ public class Controller implements Observer {
                 else if(queryRes!=null){
                     String id = queryRes.remove(queryRes.size()-1);
                     try {
+
                         BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
 
                         for (String doc:queryRes) {
@@ -383,6 +429,11 @@ public class Controller implements Observer {
 
             }
         }
+    }
+
+    public void searchEntities(ActionEvent actionEvent) {
+        String docNo = (String)choice_box.getValue();
+        viewModel.searchEntities(docNo);
     }
 
     /**

@@ -1,6 +1,7 @@
 package GUI.Model;
 
 import Indexer.Indexer;
+import Ranker.Ranker;
 import Searcher.Searcher;
 import org.apache.commons.io.FileUtils;
 import org.jsoup.Jsoup;
@@ -24,9 +25,10 @@ import java.util.Observable;
 public class Model extends Observable implements IModel {
     private static final int MAX_NUMBER_OF_THREADS = 2;
     String alertToShow;
-    int id =0;
+    int id =100;
     HashMap<String,List<String>> queryResFile;
     List<String> queryRes;
+    HashMap<String,Double> entities;
 
     @Override
     public void loadDictionary(boolean withStemm,String postingPath) {
@@ -225,7 +227,19 @@ public class Model extends Observable implements IModel {
         notifyObservers(6);
     }
 
+    @Override
+    public void searchEntities(String docNo) {
+        Ranker ranker = Ranker.getInstance();
+        //ranker.setStemming();
+        entities =  ranker.rankEntitysOfDoc(docNo);
+        setChanged();
+        notifyObservers(7);
+    }
 
+    @Override
+    public HashMap<String, Double> getEntityResult() {
+        return entities;
+    }
 
     @Override
     public void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic) {
