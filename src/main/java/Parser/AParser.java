@@ -2,11 +2,13 @@ package Parser;
 
 import IR.Document;
 import IR.DocumentInfo;
-import Indexer.*;
+import Indexer.DocumentIndexer;
+import Indexer.Indexer;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.io.*;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +48,7 @@ public abstract class AParser implements Runnable {
     protected boolean isParsing = false;
     public static ConcurrentHashMap<String, DocumentInfo> allDocs;
     public static String pathToCorpus;
+    protected HashSet<String> parsedEntitys;
 
 
     //    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
@@ -62,6 +65,7 @@ public abstract class AParser implements Runnable {
         doneReadingDocs = false;
         stopThread = false;
         allDocs = new ConcurrentHashMap<>();
+        parsedEntitys = new HashSet<>();
 
 
 
@@ -88,6 +92,8 @@ public abstract class AParser implements Runnable {
     {
         allDocsSemaphore.acquireUninterruptibly();
         allDocs.put(doc.getDocNo(),new DocumentInfo(doc));
+        allDocs.get(doc.getDocNo()).addEntitysToDoc(parsedEntitys);
+        parsedEntitys = new HashSet<>();
         allDocsSemaphore.release();
     }
 
@@ -347,6 +353,10 @@ public abstract class AParser implements Runnable {
             return;
 
         String currentDocNo = doc.getDocNo();
+        if(parserName.toLowerCase().contains("phrases"))
+        {
+            parsedEntitys.add(term);
+        }
         if (termsInText.containsKey(term)) {
 
              String docList = termsInText.get(term);

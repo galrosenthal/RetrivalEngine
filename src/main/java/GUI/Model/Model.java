@@ -34,7 +34,9 @@ public class Model extends Observable implements IModel {
         setPathToIndexer(postingPath, withStemm);
         Indexer myIndexer = Indexer.getInstance();
         boolean loadSucc = myIndexer.loadDictionary(withStemm);
-        if(loadSucc){
+        DocumentIndexer docIndex = DocumentIndexer.getInstance();
+        boolean loadDocSucc = docIndex.loadDictionaryFromDisk();;
+        if(loadSucc && loadDocSucc){
             setChanged();
             notifyObservers(3);
         }

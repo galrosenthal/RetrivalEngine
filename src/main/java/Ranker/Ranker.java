@@ -1,12 +1,10 @@
 package Ranker;
 
-import Indexer.DocumentIndexer;
+import IR.DocumentInfo;
+import Indexer.*;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.*;
 
 /**
  * This Class is a Singleton class that is capable of ranking Corpus Documents against a given Query
@@ -15,6 +13,8 @@ public class Ranker {
 
 
     private static volatile Ranker mInstance;
+    private HashMap<String,String> query;
+    private boolean stemming = false;
 
     private Ranker() {
     }
@@ -31,20 +31,25 @@ public class Ranker {
     }
 
 
+    public void setStemming(boolean stemming) {
+        this.stemming = stemming;
+    }
+
     /**
      * This Function is ranking the docs that are related to the term found in the query
      * @param termsAndLinesFromPost HashMap that contains all the terms and the posting file lines related to them
-     * @param query HashMap that contains all the term and the line with the tf in the query
+     * @param searchedQuery HashMap that contains all the term and the line with the tf in the query
      * @return ArrayList<docId> which contains the 50 Most Ranked docs by BM25 formula
      */
-    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> query) {
+    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery) {
         try {
             ArrayList<String> docListRanked = new ArrayList<>();
+            query.putAll(searchedQuery);
             HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInQry = getDocToTerm(termsAndLinesFromPost);
             DocumentIndexer docIndexer = DocumentIndexer.getInstance();
             docIndexer.loadDictionaryFromDisk();
             int M = docIndexer.getSizeOfDictionary();
-            int docAvgLength = docIndexer.getAvgLengthOfDoc();
+            double docAvgLength = docIndexer.getAvgLengthOfDoc();
             PriorityQueue<RankedDocument> rankingQueue = new PriorityQueue<>(Comparator.naturalOrder());
 
 
@@ -114,7 +119,7 @@ public class Ranker {
      * @param cwq - The Specific Term Frequency in the Query
      * @return value of the BM25 summation
      */
-    private double calcBM25(int corpusSize, int docAvgLength, int docLength, int tfInDoc, int termDf,double cwq) {
+    private double calcBM25(int corpusSize, double docAvgLength, int docLength, int tfInDoc, int termDf,double cwq) {
         double k = 1.5;
         double b = 0.75;
         double sum = 0;
@@ -155,5 +160,73 @@ public class Ranker {
         }
         return docToTerm;
     }
+
+    public void resetQuery()
+    {
+        query = new HashMap<>();
+    }
+
+
+    /**
+     * foreach entity in the doc, if it is in the query retrieve it
+     * if found 5 entitys done
+     * if there are no entity in the query, retrieve 5 entitys by the TF in the doc
+     * if there a less than 5 entitys in the Query retrive all of them and add the remaining entity by the TF in the doc
+     *
+     * TF/NUM_OF_ENTITY
+     * TF/DOC_LENGTH
+     * TF/TOTAL_TF
+     *
+     * @param docID
+     * @return
+     */
+    public HashMap<String,Integer> rankEntitysOfDoc(String docID)
+    {
+        DocumentIndexer docIndexer = DocumentIndexer.getInstance();
+        docIndexer.loadDictionaryFromDisk();
+        Indexer myIndexer = Indexer.getInstance();
+        myIndexer.loadDictionary(stemming);
+
+        HashMap<String,Integer> rankedEntitys = new HashMap<>();
+
+        PriorityQueue<RankedEntity> entitiesPriorirtyQ = new PriorityQueue<RankedEntity>(Comparator.naturalOrder());
+
+        DocumentInfo docInfo = docIndexer.getDocumentInfoOfDoc(docID);
+        if(docInfo == null)
+        {
+            return null;
+        }
+        //TODO: Add intersection of entity in the doc with the whole corpus entities
+
+        //All Entitys in the Doc
+        Set<String> docEntitys = docInfo.getAllEntitysInDoc().keySet();
+
+        double docLength = docInfo.getDocLength();
+
+        for (String entity :
+                docEntitys) {
+            int tf = docInfo.getAllEntitysInDoc().get(entity);
+            int totalTf =  myIndexer.getTotalTF(entity);
+
+            double rankOfEntity = (double)(tf)/(totalTf) + (tf)/(docLength) + (double) (tf)/(docEntitys.size());
+            RankedEntity entty = new RankedEntity(entity,rankOfEntity,totalTf);
+
+            entitiesPriorirtyQ.add(entty);
+        }
+
+
+        //TODO: get the top 5 entities;
+
+
+
+
+
+
+        return null;
+
+
+    }
+
+
 
 }
