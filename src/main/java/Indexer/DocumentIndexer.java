@@ -39,6 +39,7 @@ public class DocumentIndexer implements Runnable{
     //TODO: save this parameter with the Dictionary somehow
     // also save the num of docs in the dictionary
     private int avgLengthOfDoc = 0;
+    private String pathToPostFolder = "./postingFiles/docTempDir/";
 
 
     private DocumentIndexer() {
@@ -58,6 +59,10 @@ public class DocumentIndexer implements Runnable{
             }
         }
         return mInstance;
+    }
+
+    public void setPathToPostFolder(String pathToPostFolder) {
+        this.pathToPostFolder = pathToPostFolder+"/docTempDir/";
     }
 
     public int getAvgLengthOfDoc() throws Exception{
@@ -216,7 +221,7 @@ public class DocumentIndexer implements Runnable{
     private void writeDocsToDisk()
     {
         try {
-            String pathToTempFolder = "./docsTempDir/";
+            String pathToTempFolder = pathToPostFolder;
 
             if(!Paths.get(pathToTempFolder).toFile().exists())
             {
@@ -245,7 +250,7 @@ public class DocumentIndexer implements Runnable{
     private void saveDocParamsToDisk()
     {
         try {
-            String pathToTempFolder = "./docsTempDir/";
+            String pathToTempFolder = pathToPostFolder + "/";
             calculateAvgLengthOfDocument();
 
             if (!Paths.get(pathToTempFolder).toFile().exists()) {
@@ -277,7 +282,7 @@ public class DocumentIndexer implements Runnable{
     {
         try
         {
-            String pathToTempFolder = "./docsTempDir/";
+            String pathToTempFolder = pathToPostFolder+"/";
             if(dicOfDocs != null && dicOfDocs.keySet().size() != 0)
             {
                 return;

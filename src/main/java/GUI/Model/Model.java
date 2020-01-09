@@ -56,7 +56,7 @@ public class Model extends Observable implements IModel {
         {
             //FileUtils.cleanDirectory(new File(postingPath));
             FileUtils.cleanDirectory(new File("./dicTemp/"));
-            FileUtils.cleanDirectory(new File("./docsTempDir/"));
+//            FileUtils.cleanDirectory(new File("./docsTempDir/"));
             if(withStemm)
             {
                 FileUtils.cleanDirectory(new File(postingPath + "/postingWithStemm"));
@@ -141,13 +141,22 @@ public class Model extends Observable implements IModel {
      * @param postingPath
      * @param withStemm
      */
-    private void setPathToIndexer(String postingPath, boolean withStemm) {
-        if(withStemm){
-            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingWithStemm");
+    private void setPathToIndexer(String postingPath, boolean withStemm)
+    {
+        try {
+            if (withStemm) {
+                Indexer.getInstance().setPathToPostFiles(postingPath + "/postingWithStemm");
+                DocumentIndexer.getInstance().setPathToPostFolder(postingPath + "/postingWithStemm");
+            } else {
+                Indexer.getInstance().setPathToPostFiles(postingPath + "/postingNoStemm");
+                DocumentIndexer.getInstance().setPathToPostFolder(postingPath + "/postingNoStemm");
+            }
         }
-        else{
-            Indexer.getInstance().setPathToPostFiles(postingPath + "/postingNoStemm");
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
+
     }
 
     /**
