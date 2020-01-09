@@ -188,17 +188,17 @@ public class Controller implements Observer {
     }
 
     private void showEntitiesResult() {
-        ArrayList<String> sortedKeys = new ArrayList<String>(entityResult.keySet());
+        //ArrayList<String> sortedKeys = new ArrayList<String>(entityResult.keySet());
         String column1Value = "Document";
         String column2Value = "Rank";
 
         TableView tableView = getTableView(column1Value, column2Value);
 
-        for (String query :sortedKeys) {
+
             for (String doc:entityResult.keySet()) {
                 tableView.getItems().add(new queryFile(doc,entityResult.get(doc).toString()));
             }
-        }
+
         insertStackPaneAndShow(tableView, "Show entities result");
 
     }
@@ -208,6 +208,7 @@ public class Controller implements Observer {
     }
 
     private void updateChoiceBox() {
+        choice_box.getItems().clear();
         choice_box.setVisibleRowCount(10);
         if(queryRes!= null){
             queryRes.remove(queryRes.size()-1);
@@ -230,13 +231,14 @@ public class Controller implements Observer {
     private void showQueryUsingSearch() {
         try{
             ArrayList<String> sortedKeys = new ArrayList<String>(queryRes);
-            String query = sortedKeys.remove(sortedKeys.size()-1);
+            String query = sortedKeys.remove(sortedKeys.size());
+            sortedKeys.add(0,"Size: " +Integer.toString(sortedKeys.size()-1));
             TableView tableView = getTableView("QueryId", "Document");
 
             for (String doc :sortedKeys) {
                     tableView.getItems().add(new queryFile(query,doc));
             }
-            //queryRes.add(query);
+            sortedKeys.remove(0);
             insertStackPaneAndShow(tableView, "Show query result");
         } catch (Exception e) {
 
@@ -256,9 +258,11 @@ public class Controller implements Observer {
             TableView tableView = getTableView(column1Value, column2Value);
 
             for (String query :sortedKeys) {
+                queryResFile.get(query).add(0,"Size: " +Integer.toString(  queryResFile.get(query).size()));
                 for (String doc:queryResFile.get(query)) {
                     tableView.getItems().add(new queryFile(query,doc));
                 }
+                queryResFile.get(query).remove(0);
             }
 
             insertStackPaneAndShow(tableView, "Show query result");
@@ -348,6 +352,7 @@ public class Controller implements Observer {
     public void RunSearch(ActionEvent actionEvent) {
         queryResFile = null;
         queryRes = null;
+        //choice_box = new ComboBox();
         if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
             viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chk_addSemantic.isSelected());
         }
@@ -395,8 +400,11 @@ public class Controller implements Observer {
                     try {
 
                         BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
+
                         for (String res : queryResFile.keySet()) {
+                            //queryResFile.get(res).remove(0);
                             for (String doc : queryResFile.get(res)) {
+
                                 String toWrite = res + "," + "0," + doc + "," + "1,1.1,og";
                                 writeBuffer.append(toWrite);
                                 writeBuffer.newLine();

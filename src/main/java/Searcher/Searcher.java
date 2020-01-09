@@ -48,9 +48,10 @@ public class Searcher {
                 }
             }
 
-            for (String term: termInText.keySet()) {
+
+            for (String specificTermKey: termInText.keySet()) {
                 ArrayList<String> allTermsOfLetter = new ArrayList<>();
-                String specificTermKey = term;
+
                 String valueFromCorpus = corpusDictionary.get(specificTermKey);
                 if (valueFromCorpus != null) {
                     String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);

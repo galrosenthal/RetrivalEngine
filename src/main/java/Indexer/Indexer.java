@@ -782,6 +782,7 @@ public class Indexer implements Runnable {
             fileIn.close();
 
             //Load Entitys
+            //TODO: check line 786 if the path isnt correct
             hashMapFile = Paths.get(pathToPostFolder+"/allEntitys").toFile();
             fileIn = new FileInputStream(hashMapFile);
             objectIn = new ObjectInputStream(fileIn);
