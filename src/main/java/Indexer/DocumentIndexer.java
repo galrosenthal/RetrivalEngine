@@ -39,7 +39,6 @@ public class DocumentIndexer implements Runnable{
     //TODO: save this parameter with the Dictionary somehow
     // also save the num of docs in the dictionary
     private double avgLengthOfDoc = 0;
-    private int avgLengthOfDoc = 0;
     private String pathToPostFolder = "./postingFiles/docTempDir/";
 
     public DocumentInfo getDocumentInfoOfDoc(String docID)
@@ -70,11 +69,6 @@ public class DocumentIndexer implements Runnable{
         return mInstance;
     }
 
-    public void setPathToPostFolder(String pathToPostFolder) {
-        this.pathToPostFolder = pathToPostFolder+"/docTempDir/";
-    }
-
-    public int getAvgLengthOfDoc() throws Exception{
     public double getAvgLengthOfDoc() throws Exception{
         if(dicOfDocs == null || dicOfDocs.keySet().size() == 0)
         {

@@ -177,17 +177,17 @@ public class Ranker {
      * TF/DOC_LENGTH
      * TF/TOTAL_TF
      *
-     * @param docID
+     * @param docID docID of the document to search for
      * @return
      */
-    public HashMap<String,Integer> rankEntitysOfDoc(String docID)
+    public HashMap<String,Double> rankEntitysOfDoc(String docID)
     {
         DocumentIndexer docIndexer = DocumentIndexer.getInstance();
         docIndexer.loadDictionaryFromDisk();
         Indexer myIndexer = Indexer.getInstance();
         myIndexer.loadDictionary(stemming);
 
-        HashMap<String,Integer> rankedEntitys = new HashMap<>();
+        HashMap<String,Double> rankedEntitys = new HashMap<>();
 
         PriorityQueue<RankedEntity> entitiesPriorirtyQ = new PriorityQueue<RankedEntity>(Comparator.naturalOrder());
 
@@ -196,10 +196,13 @@ public class Ranker {
         {
             return null;
         }
-        //TODO: Add intersection of entity in the doc with the whole corpus entities
 
         //All Entitys in the Doc
         Set<String> docEntitys = docInfo.getAllEntitysInDoc().keySet();
+        Set<String> allEntitysInCorpus = myIndexer.getEntitiesInCorpus();
+
+        //Get only the intersection of entities in the corpus
+        docEntitys.retainAll(allEntitysInCorpus);
 
         double docLength = docInfo.getDocLength();
 
@@ -215,16 +218,15 @@ public class Ranker {
         }
 
 
-        //TODO: get the top 5 entities;
+        int countEntities = 0;
+        while(countEntities < 5 && !entitiesPriorirtyQ.isEmpty())
+        {
+            RankedEntity re = entitiesPriorirtyQ.poll();
+            rankedEntitys.put(re.getEntityTerm(),re.getEntityRank());
+            countEntities++;
+        }
 
-
-
-
-
-
-        return null;
-
-
+        return rankedEntitys;
     }
 
 

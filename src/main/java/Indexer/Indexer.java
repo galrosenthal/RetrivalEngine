@@ -160,6 +160,15 @@ public class Indexer implements Runnable {
     }
 
     /**
+     * Return Set of all entities in the corpus
+     * @return
+     */
+    public Set<String> getEntitiesInCorpus()
+    {
+        return entityToDrop.keySet();
+    }
+
+    /**
      * Write EntityHashMap to Disk
      */
     public void writeEntityHashMapToDisk(HashMap<String,Integer> entitysToSave) {
