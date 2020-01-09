@@ -1,6 +1,7 @@
 package GUI.View;
 
 import GUI.ViewModel.ViewModel;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
@@ -191,13 +192,15 @@ public class Controller implements Observer {
 
     private void showEntitiesResult() {
         ArrayList<String> sortedKeys = new ArrayList<String>(entityResult.keySet());
-        String column1Value = "Document";
+        String column1Value = "Entity";
         String column2Value = "Rank";
 
         TableView tableView = getTableView(column1Value, column2Value);
 
         for (String entity:entityResult.keySet()) {
-            tableView.getItems().add(new queryFile(entity,entityResult.get(entity).toString()));
+            String result = entityResult.get(entity).toString();
+            System.out.println(entity + " " + result);
+            tableView.getItems().add(new EntityMap(entity,entityResult.get(entity)));
         }
         insertStackPaneAndShow(tableView, "Show entities result");
 
@@ -231,8 +234,8 @@ public class Controller implements Observer {
     private void showQueryUsingSearch() {
         try{
             ArrayList<String> sortedKeys = new ArrayList<String>(queryRes);
-            String query = sortedKeys.remove(sortedKeys.size());
-            sortedKeys.add(0,"Size: " +Integer.toString(sortedKeys.size()-1));
+            String query = sortedKeys.remove(sortedKeys.size()-1);
+            sortedKeys.add(0,"Size: " +Integer.toString(sortedKeys.size()));
             TableView tableView = getTableView("QueryId", "Document");
 
             for (String doc :sortedKeys) {
@@ -250,7 +253,7 @@ public class Controller implements Observer {
      */
     private void showQueryResultUsingfFile() {
         try {
-
+            fileToRead = null;//Means that we finish taking care of query using file and ready to enter new search using one of the options
             ArrayList<String> sortedKeys = new ArrayList<String>(queryResFile.keySet());
             String column1Value = "QueryId";
             String column2Value = "Document";
@@ -513,6 +516,40 @@ public class Controller implements Observer {
 
         public void setDocument(String document) {
             this.document.set(document);
+        }
+    }
+
+    public static class EntityMap{
+        private SimpleStringProperty entity;
+        private SimpleDoubleProperty rank;
+
+        public EntityMap(String entity, Double rank) {
+            this.entity = new SimpleStringProperty(entity);
+            this.rank = new SimpleDoubleProperty(rank);
+        }
+
+        public String getEntity() {
+            return entity.get();
+        }
+
+        public SimpleStringProperty entityProperty() {
+            return entity;
+        }
+
+        public void setEntity(String entity) {
+            this.entity.set(entity);
+        }
+
+        public double getRank() {
+            return rank.get();
+        }
+
+        public SimpleDoubleProperty rankProperty() {
+            return rank;
+        }
+
+        public void setRank(double rank) {
+            this.rank.set(rank);
         }
     }
 

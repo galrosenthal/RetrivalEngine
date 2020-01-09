@@ -138,7 +138,11 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.medallia.word2vec</groupId>
+            <artifactId>Word2VecJava</artifactId>
+            <version>0.10.3</version>
+        </dependency>
 
     </dependencies>
 

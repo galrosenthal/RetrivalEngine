@@ -1,10 +1,14 @@
 package Searcher;
 
+import com.medallia.word2vec.Word2VecModel;
+import com.medallia.word2vec.util.Common;
 import datamuse.*;
 import Indexer.Indexer;
 import Parser.AParser;
 import Parser.MainParse;
 import Ranker.Ranker;
+
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -32,19 +36,43 @@ public class Searcher {
             AParser parser = new MainParse();
             parser.setPathToCorpus(corpusPath);
             ((MainParse) parser).parse(query);
+            System.out.println("Finishing parsing query: " +query.getDocNo());
             
             HashMap<String,String> termInText = parser.getTermsInText();
             HashMap<String,String> termswithPosting = new HashMap<>();
 
             if(withSemantic){
+                /**
+                 * Datamuse API
+                 */
                 DatamuseQuery dQuery = new DatamuseQuery();
 
-                for (String term: termInText.keySet()) {
-                    String s = dQuery.findSimilar(term);
-                    String[] res = JSONParse.parseWords(s);
-                    for (String word:res) {
-                        termInText.put(word,"1");
+                //for (String term: termInText.keySet()) {
+                //    String s = dQuery.findSimilar(term);
+               //     String[] res = JSONParse.parseWords(s);
+              //      for (String word:res) {
+              //          termInText.put(word,"1");
+              //      }
+             //   }
+
+                /**
+                 * Word2Vec model
+                 */
+                final String filename = "word2vec.c.output.model.txt";
+                try {
+                    Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
+                    for (String term: termInText.keySet()){
+                        List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 4);
+                        for (com.medallia.word2vec.Searcher.Match match:matches) {
+                            for (int i=1;i<matches.size();i++){
+                                termInText.put(matches.get(i).match(),"1");
+                            }
+                        }
                     }
+
+
+                } catch (IOException | com.medallia.word2vec.Searcher.UnknownWordException e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -63,10 +91,13 @@ public class Searcher {
                     }
                     int lineNumberInFile = Integer.parseInt(corpusDictionary.get(specificTermKey).split(corpusPathAndLineDelim)[1]);
                     termswithPosting.put(specificTermKey, allTermsOfLetter.get(lineNumberInFile-1));
+
                     //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
                 }
             }
+            System.out.println("Finishing posting query: " +query.getDocNo());
             result =ranker.rankQueryDocs(termswithPosting,termInText);
+            System.out.println("Finishing ranking query: " +query.getDocNo());
         }
 
        // result= Arrays.asList("doc1","doc2","doc3");
