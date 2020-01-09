@@ -318,7 +318,7 @@ public class Controller implements Observer {
             for (String term:sortedKeys) {
                 tableView.getItems().add(new Map(term,dic.get(term).split("#")[2]));
             }
- 
+
             insertStackPaneAndShow(tableView, "Show Dictionary");
         } catch (Exception e) {
 
