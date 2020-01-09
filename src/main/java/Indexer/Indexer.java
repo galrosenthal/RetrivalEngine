@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Indexer.Indexer is a Singleton Class thats Indexing all the Terms in the Corpus
  */
 public class Indexer implements Runnable {
-    private static final double MAX_POSTING_FILE_SIZE = 1;
+    private static final double MAX_POSTING_FILE_SIZE = Double.MAX_VALUE;
     private static final int MAX_TERMS_TO_INDEX = 500000;
     private int countMergedTerms = 0;
     private static volatile Indexer mInstance;
@@ -41,6 +41,9 @@ public class Indexer implements Runnable {
 
     }
 
+    public static HashMap<String, Integer> getEntityToDrop() {
+        return entityToDrop;
+    }
 
     /**
      * @return true if the Q is empty
@@ -148,6 +151,35 @@ public class Indexer implements Runnable {
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(hundredKtermsMap);
             hundredKtermsMap = new HashMap<>();
+            objectOut.flush();
+            objectOut.close();
+            fileOut.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Return Set of all entities in the corpus
+     * @return
+     */
+    public Set<String> getEntitiesInCorpus()
+    {
+        return entityToDrop.keySet();
+    }
+
+    /**
+     * Write EntityHashMap to Disk
+     */
+    public void writeEntityHashMapToDisk(HashMap<String,Integer> entitysToSave) {
+        try {
+            if(!Paths.get(pathToPostFolder).toFile().exists())
+            {
+                Files.createDirectories(Paths.get(pathToPostFolder));
+            }
+            FileOutputStream fileOut = new FileOutputStream(pathToPostFolder + "allEntitys", true);
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(entitysToSave);
             objectOut.flush();
             objectOut.close();
             fileOut.close();
@@ -690,7 +722,7 @@ public class Indexer implements Runnable {
      * @return the size of the File in MB
      */
     private double getFileSizeMegaBytes(File file) {
-        double a = (double) file.length() / KB_SIZE;
+        double a = (double) file.length() / (KB_SIZE*KB_SIZE);
         return a;
     }
 
@@ -744,9 +776,17 @@ public class Indexer implements Runnable {
 
 
             FileInputStream fileIn = new FileInputStream(hashMapFile);
-            ObjectInputStream objectOut = new ObjectInputStream(fileIn);
-            corpusDictionary = (HashMap<String, String>) objectOut.readObject();
-            objectOut.close();
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+            corpusDictionary = (HashMap<String, String>) objectIn.readObject();
+            objectIn.close();
+            fileIn.close();
+
+            //Load Entitys
+            hashMapFile = Paths.get(pathToPostFolder+"allEntitys").toFile();
+            fileIn = new FileInputStream(hashMapFile);
+            objectIn = new ObjectInputStream(fileIn);
+            entityToDrop = (HashMap<String, Integer>) objectIn.readObject();
+            objectIn.close();
             fileIn.close();
             return true;
 
@@ -761,8 +801,11 @@ public class Indexer implements Runnable {
 
     /**
      * Deletes all Entitys in the Corpus which were found only 1 time in all the corpus
+     * and save it to disk
      */
-    public void removeEntitys() {
+    public void removeEntitys()
+    {
+        HashMap<String,Integer> onlyEntitysToSave = new HashMap<>();
         for (String term :
                 entityToDrop.keySet()) {
 
@@ -770,7 +813,14 @@ public class Indexer implements Runnable {
             {
                 corpusDictionary.remove(term);
             }
+            else
+            {
+                onlyEntitysToSave.put(term,entityToDrop.get(term));
+            }
         }
+
+        writeEntityHashMapToDisk(onlyEntitysToSave);
+        entityToDrop = onlyEntitysToSave;
     }
 
 
@@ -815,4 +865,7 @@ public class Indexer implements Runnable {
     }
 
 
+    public int getTotalTF(String term) {
+        return Integer.parseInt(corpusDictionary.get(term).split("#")[2]);
+    }
 }

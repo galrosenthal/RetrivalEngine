@@ -1,6 +1,8 @@
 package IR;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * IR.DocumentInfo Class is representing the Info of a document in the corpus
@@ -19,6 +21,8 @@ public class DocumentInfo implements Serializable
     private String maxTfTerm;
     private int maxTfOfTerm;
     private String docNo;
+    private HashMap<String,Integer> allEntitysInDoc;
+    private int docLength;
 
     public DocumentInfo(Document doc) {
         this.docNo = doc.getDocNo();
@@ -26,6 +30,8 @@ public class DocumentInfo implements Serializable
         this.numUniqueTerms = doc.getNumUniqeTerm();
         this.docDate = doc.getDocDate();
         this.maxTfOfTerm = doc.getMaxTF();
+        allEntitysInDoc = new HashMap<>();
+        docLength = doc.getTextArray().length;
     }
 
     public int getMaxTfOfTerm() {
@@ -40,6 +46,10 @@ public class DocumentInfo implements Serializable
         return numUniqueTerms;
     }
 
+    public int getDocLength(){
+        return docLength;
+    }
+
     public String getMaxTfTerm() {
         return maxTfTerm;
     }
@@ -47,5 +57,26 @@ public class DocumentInfo implements Serializable
 
     public String getDocNo() {
         return docNo;
+    }
+
+    public void addEntitysToDoc(HashSet<String> entitysToAdd)
+    {
+        for(String term: entitysToAdd)
+        {
+            if(allEntitysInDoc.containsKey(term))
+            {
+                int entityTF = allEntitysInDoc.get(term);
+                allEntitysInDoc.replace(term,entityTF,entityTF+1);
+            }
+            else
+            {
+                allEntitysInDoc.put(term,1);
+            }
+        }
+    }
+
+
+    public HashMap<String, Integer> getAllEntitysInDoc() {
+        return allEntitysInDoc;
     }
 }

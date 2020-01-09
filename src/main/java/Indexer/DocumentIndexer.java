@@ -38,9 +38,17 @@ public class DocumentIndexer implements Runnable{
     private final String docDelim = "#";
     //TODO: save this parameter with the Dictionary somehow
     // also save the num of docs in the dictionary
-    private int avgLengthOfDoc = 0;
+    private double avgLengthOfDoc = 0;
     private String pathToPostFolder = "./postingFiles/docTempDir/";
 
+    public DocumentInfo getDocumentInfoOfDoc(String docID)
+    {
+        if(dicOfDocs.containsKey(docID))
+        {
+            return dicOfDocs.get(docID);
+        }
+        return null;
+    }
 
     private DocumentIndexer() {
         docsHashMapsQ = new ConcurrentLinkedQueue<>();
@@ -61,11 +69,7 @@ public class DocumentIndexer implements Runnable{
         return mInstance;
     }
 
-    public void setPathToPostFolder(String pathToPostFolder) {
-        this.pathToPostFolder = pathToPostFolder+"/docTempDir/";
-    }
-
-    public int getAvgLengthOfDoc() throws Exception{
+    public double getAvgLengthOfDoc() throws Exception{
         if(dicOfDocs == null || dicOfDocs.keySet().size() == 0)
         {
             throw new Exception("Could not find Docs Dictionary");
@@ -198,7 +202,8 @@ public class DocumentIndexer implements Runnable{
         for(String docId: dicOfDocs.keySet())
         {
 //            avgLengthOfDoc = (dicOfDocs.get(docId).getNumUniqueTerms() + dicOfDocs.keySet().size()*avgLengthOfDoc) / (dicOfDocs.keySet().size()+1);
-            sumOfLengths += dicOfDocs.get(docId).getNumUniqueTerms();
+//            sumOfLengths += dicOfDocs.get(docId).getNumUniqueTerms();
+            sumOfLengths += dicOfDocs.get(docId).getDocLength();
         }
         avgLengthOfDoc = sumOfLengths / dicOfDocs.keySet().size();
     }
@@ -278,14 +283,14 @@ public class DocumentIndexer implements Runnable{
      *    num of all doc in the corpus
      *    avg length of a doc in the corpus
      */
-    public void loadDictionaryFromDisk()
+    public boolean loadDictionaryFromDisk()
     {
         try
         {
             String pathToTempFolder = pathToPostFolder+"/";
             if(dicOfDocs != null && dicOfDocs.keySet().size() != 0)
             {
-                return;
+                return false;
             }
             if (!Paths.get(pathToTempFolder).toFile().exists()) {
                 throw new Exception("Could not find the Directory");
@@ -325,14 +330,16 @@ public class DocumentIndexer implements Runnable{
             {
                 throw new Exception("Something went wrong reading the Document dictionary, not as same size as saved");
             }
-
-            paramsReader.delete();
+            return true;
+//            paramsReader.delete();
 
         }
         catch (Exception e)
         {
             e.printStackTrace();
+            return false;
         }
+
 
     }
 
