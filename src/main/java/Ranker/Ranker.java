@@ -92,15 +92,15 @@ public class Ranker {
         ArrayList<String> listOfRankedDocs = new ArrayList<>();
         while(!rankingQueue.isEmpty())
         {
+            if(count50Docs > 50)
+            {
+                break;
+            }
             RankedDocument rd = rankingQueue.poll();
 
             listOfRankedDocs.add(rd.getDocId());
             count50Docs++;
 
-            if(count50Docs > 50)
-            {
-                break;
-            }
         }
 
         return listOfRankedDocs;
@@ -186,7 +186,7 @@ public class Ranker {
 
         HashMap<String,Double> rankedEntitys = new HashMap<>();
 
-        PriorityQueue<RankedEntity> entitiesPriorirtyQ = new PriorityQueue<RankedEntity>(Comparator.naturalOrder());
+        PriorityQueue<RankedEntity> entitiesPriorirtyQ = new PriorityQueue<RankedEntity>(Comparator.reverseOrder());
 
         DocumentInfo docInfo = docIndexer.getDocumentInfoOfDoc(docID);
         if(docInfo == null)

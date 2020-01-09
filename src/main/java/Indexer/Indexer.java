@@ -177,7 +177,7 @@ public class Indexer implements Runnable {
             {
                 Files.createDirectories(Paths.get(pathToPostFolder));
             }
-            FileOutputStream fileOut = new FileOutputStream(pathToPostFolder + "/allEntitys", true);
+            FileOutputStream fileOut = new FileOutputStream(pathToPostFolder + "/allEntitys");
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
             objectOut.writeObject(entitysToSave);
             objectOut.flush();
