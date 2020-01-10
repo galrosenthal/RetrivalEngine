@@ -27,9 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * docDelim - The Delimiter that separates the data inside the document info
  */
 public class DocumentIndexer implements Runnable{
-    private static final int MAX_DOCS_TO_INDEX = Integer.MAX_VALUE;
+    private final int MAX_DOCS_TO_INDEX = Integer.MAX_VALUE;
     private static volatile DocumentIndexer mInstance;
-    private static ConcurrentLinkedQueue<ConcurrentHashMap> docsHashMapsQ;
+    private ConcurrentLinkedQueue<ConcurrentHashMap> docsHashMapsQ;
     public static volatile boolean stopThreads = false;
     public static AtomicInteger numOfFile;
     public static Semaphore docDequeuerSemaphore;
@@ -89,7 +89,7 @@ public class DocumentIndexer implements Runnable{
      * @param newDocHashMap - the hashmap to enqueue
      * @return true if enqueue succeed
      */
-    public static boolean enQnewDocs(ConcurrentHashMap<String, DocumentInfo> newDocHashMap)
+    public boolean enQnewDocs(ConcurrentHashMap<String, DocumentInfo> newDocHashMap)
     {
         docDequeuerSemaphore.acquireUninterruptibly();
         boolean isAdded = docsHashMapsQ.add(newDocHashMap);

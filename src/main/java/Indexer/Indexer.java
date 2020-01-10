@@ -24,7 +24,7 @@ public class Indexer implements Runnable {
     private BufferedWriter fileWriter;
     public static volatile boolean stopThreads = false;
     //    public ConcurrentHashMap<String,String> corpusDictionary;
-    public static HashMap<String,Integer> entityToDrop;
+    public HashMap<String,Integer> entityToDrop;
     public HashMap<String, String> corpusDictionary;
     private String indexerName = "Indexer ";
     private static AtomicInteger indexerNum;
@@ -41,7 +41,7 @@ public class Indexer implements Runnable {
 
     }
 
-    public static HashMap<String, Integer> getEntityToDrop() {
+    public HashMap<String, Integer> getEntityToDrop() {
         return entityToDrop;
     }
 

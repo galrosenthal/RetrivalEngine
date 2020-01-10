@@ -10,8 +10,6 @@ import java.text.DecimalFormat;
 import java.time.Month;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Parser.MainParse extends AParser and parse the following type of terms:
@@ -850,7 +848,7 @@ public class MainParse extends AParser {
 
             if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar > 'Z')){
                 sentence.append(chopDownLastCharPunc(wordB.toString()));
-                numOfWords++;
+//                numOfWords++;
                 if(numOfWords > 1 && numOfWords < 5){
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
                     isParse = true;

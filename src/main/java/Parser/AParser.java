@@ -49,6 +49,7 @@ public abstract class AParser implements Runnable {
     public static ConcurrentHashMap<String, DocumentInfo> allDocs;
     public static String pathToCorpus;
     protected HashSet<String> parsedEntitys;
+    private DocumentIndexer docIndexer = DocumentIndexer.getInstance();
 
 
     //    public static ReadWriteLock termsInTextLock = new ReentrantReadWriteLock();
@@ -159,7 +160,7 @@ public abstract class AParser implements Runnable {
 //        if(numOfParsedDocInIterative >= numOfDocsToSave || doneReadingDocs) {
             allDocsSemaphore.acquireUninterruptibly();
 //            System.out.println("releasing " + allDocs.size() + " doc map");
-            if (!DocumentIndexer.enQnewDocs(allDocs)) {
+            if (!docIndexer.enQnewDocs(allDocs)) {
             }
             allDocs = new ConcurrentHashMap<>();
             allDocsSemaphore.release();
