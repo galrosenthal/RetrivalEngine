@@ -61,15 +61,10 @@ public class Searcher {
                 final String filename = "word2vec.c.output.model.txt";
                 try {
                     Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
-                    for (String term: termInText.keySet()){
-                        List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 4);
-                        for (com.medallia.word2vec.Searcher.Match match:matches) {
-                            for (int i=1;i<matches.size();i++){
-                                termInText.put(matches.get(i).match(),"1");
-                            }
-                        }
+                    List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches("internal", 5);
+                    for (com.medallia.word2vec.Searcher.Match match:matches) {
+                        System.out.println(match.match());
                     }
-
 
                 } catch (IOException | com.medallia.word2vec.Searcher.UnknownWordException e) {
                     e.printStackTrace();
