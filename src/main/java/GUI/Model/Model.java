@@ -215,7 +215,7 @@ public class Model extends Observable implements IModel {
     public void runSearchQuery(String query,String corpusPath,boolean withSemantic) {
         List<String> result;
         ArrayList<String> resultAndId = new ArrayList<>();
-        IR.Document queryDoc = new IR.Document(query,Integer.toString(id));
+        IR.Document queryDoc = new IR.Document(query,Integer.toString(id),"");
         id++;
         result = runSearch(queryDoc,corpusPath,withSemantic);
         //((ArrayList)result).add(Integer.toString(id));
@@ -259,7 +259,12 @@ public class Model extends Observable implements IModel {
             String number= fileDoc.childNode(1).childNode(0).toString();
             id = number.substring(number.length()-4,number.length()-1);
             String query = fileDoc.getElementsByTag("title").text();
-            IR.Document queryDoc = new IR.Document(query,id);
+            String description = fileDoc.getElementsByTag("desc").text();
+            Element temp1 = fileDoc.child(0).children().first();
+            Element temp = fileDoc.child(0).child(1).child(0);
+            Element temp2 = fileDoc.child(0).children().last().child(0);
+            Elements temp3 = fileDoc.child(0).children();
+            IR.Document queryDoc = new IR.Document(query,id,description);
             List<String> result = runSearch(queryDoc,corpusPath,withSemantic);
             queryResult.put(id,result);
 

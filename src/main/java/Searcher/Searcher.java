@@ -39,6 +39,8 @@ public class Searcher {
             System.out.println("Finishing parsing query: " +query.getDocNo());
             
             HashMap<String,String> termInText = parser.getTermsInText();
+            //((MainParse) parser).parse(query);
+            HashMap<String,String> descTest = parser.getTermsInText();
             HashMap<String,String> termswithPosting = new HashMap<>();
 
             if(withSemantic){
@@ -63,7 +65,7 @@ public class Searcher {
                     Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
                     List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches("internal", 5);
                     for (com.medallia.word2vec.Searcher.Match match:matches) {
-                        System.out.println(match.match());
+                        termInText.put(match.match(),"1");
                     }
 
                 } catch (IOException | com.medallia.word2vec.Searcher.UnknownWordException e) {
