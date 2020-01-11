@@ -41,6 +41,7 @@ public class Ranker {
      */
     public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery) {
         try {
+
             System.out.println("Ranker: ------------------Started Ranking " + searchedQuery.keySet().size() + " term in query-------------------");
             long startRanking = System.nanoTime();
             ArrayList<String> docListRanked;
