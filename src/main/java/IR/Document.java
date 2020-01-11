@@ -23,20 +23,21 @@ public class Document implements Serializable {
 
 
     private HashMap<String,Integer> termsDictonary;// Each term has an Integer that presets how many times this term is present in the IR.Document
-    private String docText;
+    //private String docText;
     private String docNo;
     private String docDate;
     private String[] textArray;
     private String maxTFTerm;
     private int maxTF;
     private boolean firstInsert;
+    private String[] headLine;
 
     public Document()
     {
         termsDictonary = new HashMap<>();
         docDate = "";
         docNo = "123";
-        docText = "gal123";
+        //docText = "gal123";
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;
@@ -44,21 +45,28 @@ public class Document implements Serializable {
 
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
-        docText = fileDocInCorpus.getElementsByTag("text").text();
+        //docText = fileDocInCorpus.getElementsByTag("text").text();
         docNo = fileDocInCorpus.getElementsByTag("docno").text();
         docDate = fileDocInCorpus.getElementsByTag("date1").text();
-        textArray = StringUtils.split(docText," =");
+        textArray = StringUtils.split(fileDocInCorpus.getElementsByTag("text").text()," =");
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;
-
+        if(docNo.substring(0,2).equals("FB")) {
+            headLine = StringUtils.split(fileDocInCorpus.getElementsByTag("ti").text(), " ");
+        }else if(docNo.substring(0,2).equals("FT") || docNo.substring(0,2).equals("LA")){
+            headLine = StringUtils.split(fileDocInCorpus.getElementsByTag("headline").text(), " ");
+        }
+        else{
+            headLine = null;
+        }
     }
 
     public Document(String query,String id){
         this.termsDictonary = new HashMap<>();
-        docText = query;
+        //docText = query;
         docNo = id;
-        textArray = StringUtils.split(docText," =");
+        textArray = StringUtils.split(query," =");
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;
@@ -122,9 +130,9 @@ public class Document implements Serializable {
         }
     }
 
-    public String getDocText() {
-        return docText;
-    }
+//    public String getDocText() {
+//        return docText;
+//    }
 
     /**
      * if the existingTerm is already in the termsDictionary its value is increased by 1

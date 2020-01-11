@@ -255,13 +255,15 @@ public class Controller implements Observer {
         try {
             fileToRead = null;//Means that we finish taking care of query using file and ready to enter new search using one of the options
             ArrayList<String> sortedKeys = new ArrayList<String>(queryResFile.keySet());
+            Collections.sort(sortedKeys);
             String column1Value = "QueryId";
             String column2Value = "Document";
 
             TableView tableView = getTableView(column1Value, column2Value);
 
             for (String query :sortedKeys) {
-                queryResFile.get(query).add(0,"Size: " +Integer.toString(  queryResFile.get(query).size()));
+                int size = queryResFile.get(query).size();
+                queryResFile.get(query).add(0,"Size: " + size);
                 for (String doc:queryResFile.get(query)) {
                     tableView.getItems().add(new queryFile(query,doc));
                 }
@@ -403,12 +405,13 @@ public class Controller implements Observer {
                     try {
 
                         BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(f, true));
-
-                        for (String res : queryResFile.keySet()) {
+                        ArrayList<String> sortedKeys = new ArrayList<String>(queryResFile.keySet());
+                        Collections.sort(sortedKeys);
+                        for (String res : sortedKeys) {
                             //queryResFile.get(res).remove(0);
                             for (String doc : queryResFile.get(res)) {
 
-                                String toWrite = res + "," + "0," + doc + "," + "1,1.1,og";
+                                String toWrite = res + " 0 " + doc + " 1 1.1 og";
                                 writeBuffer.append(toWrite);
                                 writeBuffer.newLine();
                             }
