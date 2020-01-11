@@ -41,9 +41,16 @@ public class Ranker {
      */
     public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery) {
         try {
-            ArrayList<String> docListRanked = new ArrayList<>();
+
+            System.out.println("Ranker: ------------------Started Ranking " + searchedQuery.keySet().size() + " term in query-------------------");
+            long startRanking = System.nanoTime();
+            ArrayList<String> docListRanked;
             query.putAll(searchedQuery);
+//            System.out.println("Ranker: getting HashMap<DocID,List<Pair<Term,TermTF in Doc>>>");
+            long startDocReverse = System.nanoTime();
             HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInQry = getDocToTerm(termsAndLinesFromPost);
+            long endDocReverse = System.nanoTime();
+//            System.out.println("Ranker: reversing Doc took: " + (endDocReverse - startDocReverse)/1000000000 + "s");
             DocumentIndexer docIndexer = DocumentIndexer.getInstance();
             docIndexer.loadDictionaryFromDisk();
             int M = docIndexer.getSizeOfDictionary();
@@ -52,6 +59,8 @@ public class Ranker {
 
 
             //Ranking All of the Docs using BM25
+//            System.out.println("Ranker: Start Ranknig specific " + docToTermsInQry.keySet().size() + " Docs");
+            long spcfcRank = System.nanoTime();
             for(String docId: docToTermsInQry.keySet())
             {
                 int docLength = docIndexer.getLengthOfDoc(docId);
@@ -63,13 +72,22 @@ public class Ranker {
                     int termDf = termsAndLinesFromPost.get(termAndTf.getKey()).split(";").length;
                     double cwq = Double.parseDouble(query.get(termAndTf.getKey()).split("#")[1]);
 
+                    long calcBM25 = System.nanoTime();
                     sumOfBM25 += calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq);
+//                    System.out.println("Calculation BM25 for "+ docId + ", took: " + (System.nanoTime() - calcBM25)/1000000000 + "s");
                 }
                 rankingQueue.add(new RankedDocument(docId,sumOfBM25));
             }
+            long spcfcRankEnd = System.nanoTime();
+//            System.out.println("Ranker: Ranking whole docs took: " + (spcfcRankEnd - spcfcRank)/1000000000 + "s");
 
             //Get only the 50 highest ranked docs
+//            System.out.println("Ranker: Getting 50Ranked docs");
+            long get50rank = System.nanoTime();
             docListRanked = get50RankedDocs(rankingQueue);
+            long get50rankEnd = System.nanoTime();
+//            System.out.println("Ranker: Getting 50Ranked took: " + (get50rankEnd - get50rank)/1000000000 + "s");
+            System.out.println("Ranker-----------Ranking Ended took: " + (get50rankEnd - startRanking)/1000000000 + "s--------------");
             return docListRanked;
 
         }
@@ -92,15 +110,15 @@ public class Ranker {
         ArrayList<String> listOfRankedDocs = new ArrayList<>();
         while(!rankingQueue.isEmpty())
         {
-            if(count50Docs > 50)
-            {
-                break;
-            }
+
             RankedDocument rd = rankingQueue.poll();
 
             listOfRankedDocs.add(rd.getDocId());
             count50Docs++;
-
+            if(count50Docs == 50)
+            {
+                break;
+            }
         }
 
         return listOfRankedDocs;
