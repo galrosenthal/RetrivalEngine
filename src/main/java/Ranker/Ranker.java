@@ -62,7 +62,7 @@ public class Ranker {
 //            System.out.println("Ranker: Start Ranknig specific " + docToTermsInQry.keySet().size() + " Docs");
             long spcfcRank = System.nanoTime();
 
-            double alpha = 0;
+            double alpha = 0.8;
             for(String docId: docToTermsInQry.keySet())
             {
                 String[] headLineOfDoc = docIndexer.getDocumentInfoOfDoc(docId).getHeadLine();
@@ -102,6 +102,10 @@ public class Ranker {
         return null;
     }
 
+    /**
+     * Calculating Rank for the Doc according to it HeadLine, if it does not have Head Line the rank is 0.
+     * @return the rank of the doc
+     */
     private double calcRankByHeadline(int docLength, String[] headLineOfDoc, int maxTfInDoc, int tfInDoc,String term) {
         if (headLineOfDoc == null ){
             return 0;
