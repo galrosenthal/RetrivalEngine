@@ -262,7 +262,8 @@ public class Controller implements Observer {
             TableView tableView = getTableView(column1Value, column2Value);
 
             for (String query :sortedKeys) {
-                queryResFile.get(query).add(0,"Size: " +Integer.toString(  queryResFile.get(query).size()));
+                int size = queryResFile.get(query).size();
+                queryResFile.get(query).add(0,"Size: " + size);
                 for (String doc:queryResFile.get(query)) {
                     tableView.getItems().add(new queryFile(query,doc));
                 }
