@@ -61,8 +61,12 @@ public class Ranker {
             //Ranking All of the Docs using BM25
 //            System.out.println("Ranker: Start Ranknig specific " + docToTermsInQry.keySet().size() + " Docs");
             long spcfcRank = System.nanoTime();
+
+            double alpha = 0;
             for(String docId: docToTermsInQry.keySet())
             {
+                String[] headLineOfDoc = docIndexer.getDocumentInfoOfDoc(docId).getHeadLine();
+                int maxTfInDoc = docIndexer.getDocumentInfoOfDoc(docId).getMaxTfOfTerm();
                 int docLength = docIndexer.getLengthOfDoc(docId);
                 double sumOfBM25 = 0;
                 ArrayList<Pair<String,Integer>> allTermsInDocQuery = docToTermsInQry.get(docId);
@@ -73,7 +77,7 @@ public class Ranker {
                     double cwq = Double.parseDouble(query.get(termAndTf.getKey()).split("#")[1]);
 
                     long calcBM25 = System.nanoTime();
-                    sumOfBM25 += calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq);
+                    sumOfBM25 += alpha*calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq) + (1-alpha)*calcRankByHeadline(docLength,headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf.getKey());
 //                    System.out.println("Calculation BM25 for "+ docId + ", took: " + (System.nanoTime() - calcBM25)/1000000000 + "s");
                 }
                 rankingQueue.add(new RankedDocument(docId,sumOfBM25));
@@ -96,6 +100,24 @@ public class Ranker {
         }
 
         return null;
+    }
+
+    private double calcRankByHeadline(int docLength, String[] headLineOfDoc, int maxTfInDoc, int tfInDoc,String term) {
+        if (headLineOfDoc == null ){
+            return 0;
+        }
+        double rankByHeadLine = 0;
+        int countTermLocationInHeadLine = 0;
+        for(String headTerm : headLineOfDoc)
+        {
+            countTermLocationInHeadLine++;
+            if(headTerm.equalsIgnoreCase(term))
+            {
+                rankByHeadLine += (double)countTermLocationInHeadLine/headLineOfDoc.length + (double)tfInDoc/maxTfInDoc;
+            }
+        }
+
+        return rankByHeadLine;
     }
 
     /**
