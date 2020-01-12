@@ -77,6 +77,11 @@ public class Document implements Serializable {
         return docDate;
     }
 
+
+    public String[] getHeadLine() {
+        return headLine;
+    }
+
     public String getDocNo() {
 
         return docNo;
@@ -119,6 +124,7 @@ public class Document implements Serializable {
         {
             maxTFTerm = newTerm;
             firstInsert = false;
+            maxTF = 1;
 
         }
         else

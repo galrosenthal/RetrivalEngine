@@ -15,6 +15,12 @@ public class Ranker {
     private static volatile Ranker mInstance;
     private HashMap<String,String> query;
 
+    private final double weightForQuery = 0.8;
+    private final double weightForDescription = 0.3;
+    private final double weightForSemantic = 0.6;
+    private final double weightQueryAndDescription = 1;
+
+
     private Ranker() {
         query = new HashMap<>();
     }
@@ -37,18 +43,25 @@ public class Ranker {
      * This Function is ranking the docs that are related to the term found in the query
      * @param termsAndLinesFromPost HashMap that contains all the terms and the posting file lines related to them
      * @param searchedQuery HashMap that contains all the term and the line with the tf in the query
+     * @param queryDescription
+     * @param descriptionTermsAndLines
+     * @param querySemantic
      * @return ArrayList<docId> which contains the 50 Most Ranked docs by BM25 formula
      */
-    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery) {
+    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery,
+                                           HashMap<String,String> queryDescription, HashMap<String,String> descriptionTermsAndLines,
+                                           HashMap<String,String> querySemantic, HashMap<String,String> semanticTermsAndLines) {
         try {
 
             System.out.println("Ranker: ------------------Started Ranking " + searchedQuery.keySet().size() + " term in query-------------------");
             long startRanking = System.nanoTime();
             ArrayList<String> docListRanked;
-            query.putAll(searchedQuery);
+//            query.putAll(searchedQuery);
 //            System.out.println("Ranker: getting HashMap<DocID,List<Pair<Term,TermTF in Doc>>>");
             long startDocReverse = System.nanoTime();
             HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInQry = getDocToTerm(termsAndLinesFromPost);
+            HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInDescription = getDocToTerm(descriptionTermsAndLines);
+            HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInSemantic = getDocToTerm(semanticTermsAndLines);
             long endDocReverse = System.nanoTime();
 //            System.out.println("Ranker: reversing Doc took: " + (endDocReverse - startDocReverse)/1000000000 + "s");
             DocumentIndexer docIndexer = DocumentIndexer.getInstance();
@@ -57,23 +70,64 @@ public class Ranker {
             double docAvgLength = docIndexer.getAvgLengthOfDoc();
             PriorityQueue<RankedDocument> rankingQueue = new PriorityQueue<>(Comparator.reverseOrder());
 
+            //Union the docs received from query and from description
+            Set<String> docFromQuerySet = docToTermsInQry.keySet();
+            Set<String> docFromDescriptionSet = docToTermsInDescription.keySet();
+            docFromQuerySet.addAll(docFromDescriptionSet);
+
+            //Union the HashMap of array lists
+            HashMap<String, ArrayList<Pair<String, Integer>>> unionQueryAndDescription = docToTermsInQry;
+            unionQueryAndDescription.putAll(docToTermsInDescription);
 
             //Ranking All of the Docs using BM25
 //            System.out.println("Ranker: Start Ranknig specific " + docToTermsInQry.keySet().size() + " Docs");
             long spcfcRank = System.nanoTime();
-            for(String docId: docToTermsInQry.keySet())
+
+            double alpha;
+            for(String docId: docFromQuerySet)
             {
+
+                String[] headLineOfDoc = docIndexer.getDocumentInfoOfDoc(docId).getHeadLine();
+                int maxTfInDoc = docIndexer.getDocumentInfoOfDoc(docId).getMaxTfOfTerm();
                 int docLength = docIndexer.getLengthOfDoc(docId);
                 double sumOfBM25 = 0;
-                ArrayList<Pair<String,Integer>> allTermsInDocQuery = docToTermsInQry.get(docId);
+                ArrayList<Pair<String,Integer>> allTermsInDocQuery = unionQueryAndDescription.get(docId);
                 for (Pair<String,Integer> termAndTf: allTermsInDocQuery)
                 {
+                    double cwq = 0;
+                    double termDf = 0;
+                    if(docToTermsInQry.containsKey(docId))
+                    {
+                        if(docToTermsInDescription.containsKey(docId))
+                        {
+                            alpha = weightQueryAndDescription;
+                            termDf += alpha*descriptionTermsAndLines.get(termAndTf.getKey()).split(";").length;
+                            cwq += Double.parseDouble(queryDescription.get(termAndTf.getKey()).split("#")[1]);;
+
+                        }
+                        else{
+                            alpha = weightForQuery;
+                        }
+                        cwq += Double.parseDouble(searchedQuery.get(termAndTf.getKey()).split("#")[1]);
+                        termDf += termsAndLinesFromPost.get(termAndTf.getKey()).split(";").length;
+                    }
+                    else if(docToTermsInDescription.containsKey(docId))
+                    {
+                        //Query is description
+                        cwq = Double.parseDouble(queryDescription.get(termAndTf.getKey()).split("#")[1]);;
+                        alpha = weightForDescription;
+                        termDf = alpha*descriptionTermsAndLines.get(termAndTf.getKey()).split(";").length;
+                    }
+                    else
+                    {
+                        alpha = weightForSemantic;
+                    }
                     int tfInDoc = termAndTf.getValue();
-                    int termDf = termsAndLinesFromPost.get(termAndTf.getKey()).split(";").length;
-                    double cwq = Double.parseDouble(query.get(termAndTf.getKey()).split("#")[1]);
+
+
 
                     long calcBM25 = System.nanoTime();
-                    sumOfBM25 += calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq);
+                    sumOfBM25 += alpha*calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq) + (1-alpha)*calcRankByHeadline(docLength,headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf.getKey());
 //                    System.out.println("Calculation BM25 for "+ docId + ", took: " + (System.nanoTime() - calcBM25)/1000000000 + "s");
                 }
                 rankingQueue.add(new RankedDocument(docId,sumOfBM25));
@@ -96,6 +150,29 @@ public class Ranker {
         }
 
         return null;
+    }
+
+    //TODO: change Title to JACARD
+    /**
+     * Calculating Rank for the Doc according to it HeadLine, if it does not have Head Line the rank is 0.
+     * @return the rank of the doc
+     */
+    private double calcRankByHeadline(int docLength, String[] headLineOfDoc, int maxTfInDoc, int tfInDoc,String term) {
+        if (headLineOfDoc == null ){
+            return 0;
+        }
+        double rankByHeadLine = 0;
+        int countTermLocationInHeadLine = 0;
+        for(String headTerm : headLineOfDoc)
+        {
+            countTermLocationInHeadLine++;
+            if(headTerm.equalsIgnoreCase(term))
+            {
+                rankByHeadLine += (double)countTermLocationInHeadLine/headLineOfDoc.length + (double)tfInDoc/maxTfInDoc;
+            }
+        }
+
+        return rankByHeadLine;
     }
 
     /**
@@ -135,7 +212,7 @@ public class Ranker {
      * @param cwq - The Specific Term Frequency in the Query
      * @return value of the BM25 summation
      */
-    private double calcBM25(int corpusSize, double docAvgLength, int docLength, int tfInDoc, int termDf,double cwq) {
+    private double calcBM25(int corpusSize, double docAvgLength, int docLength, int tfInDoc, double termDf,double cwq) {
         double k = 1.5;
         double b = 0.75;
         double sum = 0;
