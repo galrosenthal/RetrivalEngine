@@ -79,7 +79,10 @@ public class DocumentIndexer implements Runnable{
             throw new Exception("Could not find Docs Dictionary");
         }
 
-        calculateAvgLengthOfDocument();
+        if(avgLengthOfDoc == 0)
+        {
+            calculateAvgLengthOfDocument();
+        }
         return avgLengthOfDoc;
 
     }
