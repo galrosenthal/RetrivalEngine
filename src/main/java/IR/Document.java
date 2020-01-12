@@ -31,7 +31,6 @@ public class Document implements Serializable {
     private int maxTF;
     private boolean firstInsert;
     private String[] headLine;
-    private String description;
 
     public Document()
     {
@@ -42,7 +41,7 @@ public class Document implements Serializable {
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;
-        description = "";
+        textArray = null;
     }
 
     public Document(Element fileDocInCorpus) {
@@ -64,7 +63,7 @@ public class Document implements Serializable {
         }
     }
 
-    public Document(String query,String id,String description){
+    public Document(String query,String id){
         this.termsDictonary = new HashMap<>();
         //docText = query;
         docNo = id;
@@ -72,7 +71,6 @@ public class Document implements Serializable {
         maxTFTerm = "";
         maxTF = 0;
         firstInsert = true;
-        this.description = description;
     }
 
     public String getDocDate() {

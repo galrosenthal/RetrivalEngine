@@ -23,26 +23,33 @@ public class Searcher {
         this.corpusPath = corpusPath;
     }
 
-    public List<String> searchQuery(IR.Document query, boolean withSemantic){
+    public List<String> searchQuery(IR.Document query,IR.Document desc, boolean withSemantic){
         Ranker ranker = Ranker.getInstance();
-        String corpusPathAndLineDelim = "#";
+
         Path termFilePathTemp;
         Indexer myIndexer = Indexer.getInstance();
         List<String> result = new ArrayList<>();
 
         HashMap<String,String> corpusDictionary = myIndexer.getCorpusDictionary();
         if(corpusDictionary!=null){
-
+            HashMap<String, String> descInText;
             AParser parser = new MainParse();
+            AParser parser2 = new MainParse();
             parser.setPathToCorpus(corpusPath);
             ((MainParse) parser).parse(query);
             System.out.println("Finishing parsing query: " +query.getDocNo());
             
             HashMap<String,String> termInText = parser.getTermsInText();
-            //((MainParse) parser).parse(query);
-            HashMap<String,String> descTest = parser.getTermsInText();
-            HashMap<String,String> termswithPosting = new HashMap<>();
+            if(desc.getTextArray() != null) {
+                ((MainParse) parser2).parse(desc);
+                 descInText = parser2.getTermsInText();
+            }
+            else{
+                descInText = new HashMap<>();
 
+            }
+            HashMap<String,String> termswithPosting = new HashMap<>();
+            HashMap<String,String> termswithPostingDesc = new HashMap<>();
             if(withSemantic){
                 /**
                  * Datamuse API
@@ -76,10 +83,20 @@ public class Searcher {
             }
 
 
+            /**
+             * Getting posting line for query
+             */
+            String valueFromCorpus;
+            String corpusPathAndLineDelim = "#";
             for (String specificTermKey: termInText.keySet()) {
                 ArrayList<String> allTermsOfLetter = new ArrayList<>();
+                if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
+                    valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
+                }
+                else{
+                    valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
+                }
 
-                String valueFromCorpus = corpusDictionary.get(specificTermKey);
                 if (valueFromCorpus != null) {
                     String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
                     termFilePathTemp = Paths.get(splittedValue[0]);
@@ -88,13 +105,44 @@ public class Searcher {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    int lineNumberInFile = Integer.parseInt(corpusDictionary.get(specificTermKey).split(corpusPathAndLineDelim)[1]);
+                    int lineNumberInFile = Integer.parseInt(valueFromCorpus.split(corpusPathAndLineDelim)[1]);
                     termswithPosting.put(specificTermKey, allTermsOfLetter.get(lineNumberInFile-1));
 
                     //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
                 }
             }
+
+            /**
+             * Getting posting lines for description
+             */
+            valueFromCorpus = null;
+            if(desc.getTextArray()!=null){
+                for (String specificTermKey: descInText.keySet()) {
+                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
+                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
+                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
+                    }
+                    else{
+                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
+                    }
+
+                    if (valueFromCorpus != null) {
+                        String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
+                        termFilePathTemp = Paths.get(splittedValue[0]);
+                        try {
+                            allTermsOfLetter = (ArrayList<String>) Files.readAllLines(termFilePathTemp);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        int lineNumberInFile = Integer.parseInt(valueFromCorpus.split(corpusPathAndLineDelim)[1]);
+                        termswithPostingDesc.put(specificTermKey, allTermsOfLetter.get(lineNumberInFile-1));
+
+                        //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
+                    }
+                }
+            }
             System.out.println("Finishing posting query: " +query.getDocNo());
+            ranker.resetQuery();
             result =ranker.rankQueryDocs(termswithPosting,termInText);
             System.out.println("Finishing ranking query: " +query.getDocNo());
         }
