@@ -61,7 +61,7 @@ public class Ranker {
             long startDocReverse = System.nanoTime();
             HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInQry = getDocToTerm(termsAndLinesFromPost);
             HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInDescription = getDocToTerm(descriptionTermsAndLines);
-            HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInSemantic = getDocToTerm(semanticTermsAndLines);
+            //HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInSemantic = getDocToTerm(semanticTermsAndLines);
             long endDocReverse = System.nanoTime();
 //            System.out.println("Ranker: reversing Doc took: " + (endDocReverse - startDocReverse)/1000000000 + "s");
             DocumentIndexer docIndexer = DocumentIndexer.getInstance();

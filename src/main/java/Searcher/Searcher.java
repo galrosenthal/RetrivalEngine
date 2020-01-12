@@ -50,19 +50,22 @@ public class Searcher {
             }
             HashMap<String,String> termswithPosting = new HashMap<>();
             HashMap<String,String> termswithPostingDesc = new HashMap<>();
+
+            HashMap<String,String> termswithSemanticInText = new HashMap<>();
+            HashMap<String,String> termswithSemanticPosting = new HashMap<>();
+
             if(withSemantic){
+                String[] res;
                 /**
                  * Datamuse API
                  */
                 DatamuseQuery dQuery = new DatamuseQuery();
 
-                //for (String term: termInText.keySet()) {
-                //    String s = dQuery.findSimilar(term);
-               //     String[] res = JSONParse.parseWords(s);
-              //      for (String word:res) {
-              //          termInText.put(word,"1");
-              //      }
-             //   }
+                for (String term: termInText.keySet()) {
+                    String s = dQuery.findSimilar(term);
+                    res = JSONParse.parseWords(s);
+                }
+
 
                 /**
                  * Word2Vec model
@@ -71,9 +74,9 @@ public class Searcher {
                 try {
                     for (String term: termInText.keySet()) {
                         Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
-                        List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 5);
+                        List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 2);
                         for (com.medallia.word2vec.Searcher.Match match : matches) {
-                            termInText.put(match.match(), "1");
+                            
                         }
                     }
 
@@ -143,7 +146,7 @@ public class Searcher {
             }
             System.out.println("Finishing posting query: " +query.getDocNo());
             ranker.resetQuery();
-            result =ranker.rankQueryDocs(termswithPosting,termInText);
+            result =ranker.rankQueryDocs(termswithPosting,termInText,descInText,termswithPostingDesc,null,null);
             System.out.println("Finishing ranking query: " +query.getDocNo());
         }
 
