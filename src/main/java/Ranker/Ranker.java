@@ -3,6 +3,7 @@ package Ranker;
 import IR.DocumentInfo;
 import Indexer.*;
 import javafx.util.Pair;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -124,7 +125,7 @@ public class Ranker {
 
 
 
-
+//
 //
 //    /**
 //     * This Function is ranking the docs that are related to the term found in the query
@@ -146,8 +147,8 @@ public class Ranker {
 ////            query.putAll(searchedQuery);
 ////            System.out.println("Ranker: getting HashMap<DocID,List<Pair<Term,TermTF in Doc>>>");
 //            long startDocReverse = System.nanoTime();
-//            HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInQry = getDocToTerm(termsAndLinesFromPost);
-//            HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInDescription = getDocToTerm(descriptionTermsAndLines);
+//            HashMap<String, HashMap<String,Integer>> docToTermsInQry = getDocToTerm(termsAndLinesFromPost);
+//            HashMap<String, HashMap<String,Integer>> docToTermsInDescription = getDocToTerm(descriptionTermsAndLines);
 //            //HashMap<String, ArrayList<Pair<String, Integer>>> docToTermsInSemantic = getDocToTerm(semanticTermsAndLines);
 //            long endDocReverse = System.nanoTime();
 ////            System.out.println("Ranker: reversing Doc took: " + (endDocReverse - startDocReverse)/1000000000 + "s");
@@ -163,67 +164,14 @@ public class Ranker {
 //            docFromQuerySet.addAll(docFromDescriptionSet);
 //
 //            //Union the HashMap of array lists
-//            HashMap<String, ArrayList<Pair<String, Integer>>> unionQueryAndDescription = docToTermsInQry;
+//            HashMap<String, HashMap<String,Integer>> unionQueryAndDescription = docToTermsInQry;
 //            unionQueryAndDescription.putAll(docToTermsInDescription);
 //
 //            //Ranking All of the Docs using BM25
 ////            System.out.println("Ranker: Start Ranknig specific " + docToTermsInQry.keySet().size() + " Docs");
 //            long spcfcRank = System.nanoTime();
 //
-//            double alpha;
-//            for(String docId: docFromQuerySet)
-//            {
-//
-//                String[] headLineOfDoc = docIndexer.getDocumentInfoOfDoc(docId).getHeadLine();
-//                int maxTfInDoc = docIndexer.getDocumentInfoOfDoc(docId).getMaxTfOfTerm();
-//                int docLength = docIndexer.getLengthOfDoc(docId);
-//                double sumOfBM25 = 0;
-//                ArrayList<Pair<String,Integer>> allTermsInDocQuery = unionQueryAndDescription.get(docId);
-//                for (Pair<String,Integer> termAndTf: allTermsInDocQuery)
-//                {
-//                    double cwq = 0;
-//                    double termDf = 0;
-//                    if(docToTermsInQry.containsKey(docId))
-//                    {
-//                        if(docToTermsInDescription.containsKey(docId))
-//                        {
-//                            alpha = weightQueryAndDescription;
-////                            termDf += alpha*descriptionTermsAndLines.get(termAndTf.getKey()).split(";").length;
-//                            termDf += alpha*semiCloneSplitter.split(descriptionTermsAndLines.get(termAndTf.getKey())).length;
-////                            cwq += Double.parseDouble(queryDescription.get(termAndTf.getKey()).split("#")[1]);
-//                            cwq += Double.parseDouble(hashtagSplitter.split(queryDescription.get(termAndTf.getKey()))[1]);
-//                        }
-//                        else{
-//                            alpha = weightForQuery;
-////                        cwq += Double.parseDouble(searchedQuery.get(termAndTf.getKey()).split("#")[1]);
-//                            cwq += Double.parseDouble(hashtagSplitter.split(searchedQuery.get(termAndTf.getKey()))[1]);
-////                        termDf += termsAndLinesFromPost.get(termAndTf.getKey()).split(";").length;
-//                            termDf += semiCloneSplitter.split(termsAndLinesFromPost.get(termAndTf.getKey())).length;
-//                        }
-//                    }
-//                    else if(docToTermsInDescription.containsKey(docId))
-//                    {
-//                        //Query is description
-////                        cwq = Double.parseDouble(queryDescription.get(termAndTf.getKey()).split("#")[1]);;
-//                        cwq = Double.parseDouble(hashtagSplitter.split(queryDescription.get(termAndTf.getKey()))[1]);
-//                        alpha = weightForDescription;
-////                        termDf = alpha*descriptionTermsAndLines.get(termAndTf.getKey()).split(";").length;
-//                        termDf = alpha*semiCloneSplitter.split(descriptionTermsAndLines.get(termAndTf.getKey())).length;
-//                    }
-//                    else
-//                    {
-//                        alpha = weightForSemantic;
-//                    }
-//                    int tfInDoc = termAndTf.getValue();
-//
-//
-//
-//                    long calcBM25 = System.nanoTime();
-//                    sumOfBM25 += alpha*calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq) + (1-alpha)*calcRankByHeadline(docLength,headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf.getKey());
-////                    System.out.println("Calculation BM25 for "+ docId + ", took: " + (System.nanoTime() - calcBM25)/1000000000 + "s");
-//                }
-//                rankingQueue.add(new RankedDocument(docId,sumOfBM25));
-//            }
+//            rankingQAdding(termsAndLinesFromPost, searchedQuery, queryDescription, descriptionTermsAndLines, docToTermsInQry, docToTermsInDescription, docIndexer, M, docAvgLength, rankingQueue, docFromQuerySet, unionQueryAndDescription);
 //            long spcfcRankEnd = System.nanoTime();
 ////            System.out.println("Ranker: Ranking whole docs took: " + (spcfcRankEnd - spcfcRank)/1000000000 + "s");
 //
@@ -243,6 +191,88 @@ public class Ranker {
 //
 //        return null;
 //    }
+//
+//    private void rankingQAdding(HashMap<String, String> termsAndLinesFromPost, HashMap<String, String> searchedQuery, HashMap<String, String> queryDescription, HashMap<String, String> descriptionTermsAndLines, HashMap<String, HashMap<String, Integer>> docToTermsInQry, HashMap<String, HashMap<String, Integer>> docToTermsInDescription, DocumentIndexer docIndexer, int m, double docAvgLength, PriorityQueue<RankedDocument> rankingQueue, Set<String> docFromQuerySet, HashMap<String, HashMap<String, Integer>> unionQueryAndDescription) {
+//        for(String docId: docFromQuerySet)
+//        {
+//
+//            String[] headLineOfDoc = docIndexer.getDocumentInfoOfDoc(docId).getHeadLine();
+//            int maxTfInDoc = docIndexer.getDocumentInfoOfDoc(docId).getMaxTfOfTerm();
+//            int docLength = docIndexer.getLengthOfDoc(docId);
+//            double sumOfBM25 = 0;
+//            HashMap<String,Integer> allTermsInDocQuery = unionQueryAndDescription.get(docId);
+//            sumOfBM25 = getSumOfBM25(termsAndLinesFromPost, searchedQuery, queryDescription, descriptionTermsAndLines, docToTermsInQry, docToTermsInDescription, m, docAvgLength, unionQueryAndDescription, docId, headLineOfDoc, maxTfInDoc, docLength, sumOfBM25, allTermsInDocQuery);
+//            rankingQueue.add(new RankedDocument(docId,sumOfBM25));
+//        }
+//    }
+//
+//    private double getSumOfBM25(HashMap<String, String> termsAndLinesFromPost, HashMap<String, String> searchedQuery, HashMap<String, String> queryDescription, HashMap<String, String> descriptionTermsAndLines, HashMap<String, HashMap<String, Integer>> docToTermsInQry, HashMap<String, HashMap<String, Integer>> docToTermsInDescription, int m, double docAvgLength, HashMap<String, HashMap<String, Integer>> unionQueryAndDescription, String docId, String[] headLineOfDoc, int maxTfInDoc, int docLength, double sumOfBM25, HashMap<String, Integer> allTermsInDocQuery) {
+//        double alpha;
+//        for (String termAndTf: allTermsInDocQuery.keySet())
+//        {
+//            double cwq = 0;
+//            double termDf = 0;
+//            String[] descriptionTermsLinesSplitted ;
+//            String[] queryDescriptionSplitted ;
+//            String[] querySearchSplitted;
+//            String[] termsSplitted;
+//            if(docToTermsInQry.containsKey(docId))
+//            {
+//
+//                if(docToTermsInDescription.containsKey(docId))
+//                {
+//                    descriptionTermsLinesSplitted = descriptionTermsAndLines.get(termAndTf).split(";");
+//                    queryDescriptionSplitted = queryDescription.get(termAndTf).split("#");
+//                    alpha = weightQueryAndDescription;
+//                            termDf += alpha*descriptionTermsLinesSplitted.length;
+////                            termDf += (alpha * StringUtils.split(descriptionTermsAndLines.get(termAndTf),";").length);
+////                    termDf += alpha*semiCloneSplitter.split(descriptionTermsAndLines.get(termAndTf)).length;
+//                            cwq += Double.parseDouble(queryDescriptionSplitted[1]);
+////                    cwq += Double.parseDouble(StringUtils.split(queryDescription.get(termAndTf),"#")[1]);
+//                }
+//                else{
+//                    querySearchSplitted = searchedQuery.get(termAndTf).split("#");
+//                    termsSplitted = termsAndLinesFromPost.get(termAndTf).split(";");
+//                    alpha = weightForQuery;
+//                        cwq += Double.parseDouble(querySearchSplitted[1]);
+////                        cwq += Double.parseDouble(StringUtils.split(searchedQuery.get(termAndTf),"#")[1]);
+////                    cwq += Double.parseDouble(hashtagSplitter.split(searchedQuery.get(termAndTf))[1]);
+//                        termDf += termsSplitted.length;
+////                    termDf += semiCloneSplitter.split(termsAndLinesFromPost.get(termAndTf)).length;
+////                    termDf += StringUtils.split(termsAndLinesFromPost.get(termAndTf)).length;
+//                }
+//            }
+//            else if(docToTermsInDescription.containsKey(docId))
+//            {
+//                descriptionTermsLinesSplitted = descriptionTermsAndLines.get(termAndTf).split(";");
+//                queryDescriptionSplitted = queryDescription.get(termAndTf).split("#");
+//                //Query is description
+//                        cwq = Double.parseDouble(queryDescriptionSplitted[1]);
+////                cwq = Double.parseDouble(hashtagSplitter.split(queryDescription.get(termAndTf))[1]);
+////                cwq = Double.parseDouble(StringUtils.split(queryDescription.get(termAndTf))[1]);
+//                alpha = weightForDescription;
+//                        termDf = alpha*descriptionTermsLinesSplitted.length;
+////                termDf = alpha*semiCloneSplitter.split(descriptionTermsAndLines.get(termAndTf)).length;
+////                termDf = alpha*StringUtils.split(descriptionTermsAndLines.get(termAndTf)).length;
+//            }
+//            else
+//            {
+//                alpha = weightForSemantic;
+//            }
+//            int tfInDoc = unionQueryAndDescription.get(docId).get(termAndTf);
+//
+//
+//
+//            long calcBM25 = System.nanoTime();
+//            sumOfBM25 += alpha*calcBM25(m,docAvgLength,docLength,tfInDoc,termDf,cwq) + (1-alpha)*calcRankByHeadline(docLength,headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf);
+////                    System.out.println("Calculation BM25 for "+ docId + ", took: " + (System.nanoTime() - calcBM25)/1000000000 + "s");
+//        }
+//        return sumOfBM25;
+//    }
+
+
+
+
 
     //TODO: change Title to JACARD
     /**
