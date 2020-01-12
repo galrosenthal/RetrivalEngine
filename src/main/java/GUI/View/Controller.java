@@ -27,6 +27,7 @@ import java.util.*;
 public class Controller implements Observer {
 
 
+
     File fileToRead;
     ViewModel viewModel;
     Stage primaryStage;
@@ -35,6 +36,8 @@ public class Controller implements Observer {
     HashMap<String,Double> entityResult;
 
     @FXML
+    public CheckBox chh_addSemanticW2V;
+    public CheckBox chk_addSemanticDs;
     public javafx.scene.control.Button btn_strtPrs;
     public TextField txt_field_Corpus;
     public TextField txt_field_Posting;
@@ -305,7 +308,7 @@ public class Controller implements Observer {
      */
     public void loadDirectory(ActionEvent actionEvent) {
 
-        viewModel.loadDictinary(chk_Stemm.isSelected(),txt_field_Posting.getText());
+        viewModel.loadDictinary(chk_Stemm.isSelected(),txt_field_Posting.getText(),txt_field_Corpus.getText());
     }
 
     /**
@@ -317,7 +320,7 @@ public class Controller implements Observer {
             HashMap<String ,String> dic = viewModel.getDictionary();
 
             if(dic == null){
-                viewModel.loadDictinary(chk_Stemm.isSelected(),txt_field_Posting.getText());
+                viewModel.loadDictinary(chk_Stemm.isSelected(),txt_field_Posting.getText(),txt_field_Corpus.getText());
             }
             ArrayList<String> sortedKeys = new ArrayList<String>(dic.keySet());
             Collections.sort(sortedKeys);
@@ -358,8 +361,15 @@ public class Controller implements Observer {
         queryResFile = null;
         queryRes = null;
         //choice_box = new ComboBox();
+        int chooseSemantic = 0;
+        if(chh_addSemanticW2V.isSelected()){
+            chooseSemantic = 1;
+        }
+        else if(chk_addSemanticDs.isSelected()){
+            chooseSemantic = 2;
+        }
         if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
-            viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chk_addSemantic.isSelected());
+            viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chooseSemantic);
         }
         else if(txt_field_Corpus.getText().length() == 0){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -368,7 +378,7 @@ public class Controller implements Observer {
             alert.showAndWait();
         }
         else if(fileToRead != null){
-            viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chk_addSemantic.isSelected());
+            viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chooseSemantic);
         }
         else {
             Alert alert = new Alert(Alert.AlertType.ERROR);

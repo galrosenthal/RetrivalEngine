@@ -29,14 +29,18 @@ public class Model extends Observable implements IModel {
     HashMap<String,List<String>> queryResFile;
     List<String> queryRes;
     HashMap<String,Double> entities;
+    String corpusPath;
+    Searcher searcher;
 
     @Override
-    public void loadDictionary(boolean withStemm,String postingPath) {
+    public void loadDictionary(boolean withStemm,String postingPath,String corpusPath) {
         setPathToIndexer(postingPath, withStemm);
         Indexer myIndexer = Indexer.getInstance();
         boolean loadSucc = myIndexer.loadDictionary(withStemm);
         DocumentIndexer docIndex = DocumentIndexer.getInstance();
-        boolean loadDocSucc = docIndex.loadDictionaryFromDisk();;
+        boolean loadDocSucc = docIndex.loadDictionaryFromDisk();
+        this.corpusPath = corpusPath;
+        searcher = new Searcher(corpusPath);
         if(loadSucc && loadDocSucc){
             setChanged();
             notifyObservers(3);
@@ -56,6 +60,7 @@ public class Model extends Observable implements IModel {
      */
         public void startParse(String corpusPath, String postingPath, boolean withStemm){
         resetObject();
+        this.corpusPath = corpusPath;
         try
         {
             //FileUtils.cleanDirectory(new File(postingPath));
@@ -212,7 +217,7 @@ public class Model extends Observable implements IModel {
     }
 
     @Override
-    public void runSearchQuery(String query,String corpusPath,boolean withSemantic) {
+    public void runSearchQuery(String query,String corpusPath,int withSemantic) {
         List<String> result;
         ArrayList<String> resultAndId = new ArrayList<>();
         IR.Document queryDoc = new IR.Document(query,Integer.toString(id));
@@ -243,7 +248,7 @@ public class Model extends Observable implements IModel {
     }
 
     @Override
-    public void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic) {
+    public void runSearchUsingFile(File fileToRead,String corpusPath,int withSemantic) {
         HashMap<String,List<String>> queryResult = new HashMap<>();
         Document doc = null;
         String id;
@@ -271,8 +276,10 @@ public class Model extends Observable implements IModel {
         notifyObservers(5);
     }
 
-    private List<String> runSearch(IR.Document query,String corpusPath,IR.Document descDoc, boolean withSemantic) {
-        Searcher searcher = new Searcher(corpusPath);
+    private List<String> runSearch(IR.Document query,String corpusPath,IR.Document descDoc, int withSemantic) {
+        if(searcher == null){
+            searcher = new Searcher(corpusPath);
+        }
         List<String> result = searcher.searchQuery(query,descDoc, withSemantic);
 
         return result;

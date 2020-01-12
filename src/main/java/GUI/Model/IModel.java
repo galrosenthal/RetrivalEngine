@@ -12,15 +12,15 @@ public interface IModel {
 
     void setReset(String corpusPath, String postingPath);
 
-    void loadDictionary(boolean withStemm,String postPath);
+    void loadDictionary(boolean withStemm,String postPath,String corpusPath);
 
     public HashMap<String, String> getDictionary();
 
     public String getAlertToShowFinish();
 
-    void runSearchQuery(String text,String corpusPath,boolean withSemantic);
+    void runSearchQuery(String text,String corpusPath,int withSemantic);
 
-    void runSearchUsingFile(File fileToRead,String corpusPath,boolean withSemantic);
+    void runSearchUsingFile(File fileToRead,String corpusPath,int withSemantic);
 
     HashMap<String, List<String>> getqueryResUsingFile();
 

@@ -1,5 +1,6 @@
 package Searcher;
 
+import IR.Document;
 import com.medallia.word2vec.Word2VecModel;
 import com.medallia.word2vec.util.Common;
 import datamuse.*;
@@ -7,8 +8,11 @@ import Indexer.Indexer;
 import Parser.AParser;
 import Parser.MainParse;
 import Ranker.Ranker;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
@@ -18,24 +22,28 @@ import java.util.*;
 
 public class Searcher {
     String corpusPath;
+    Ranker ranker;
+    Indexer myIndexer;
+    HashMap<String,String> corpusDictionary;
 
     public Searcher(String corpusPath) {
         this.corpusPath = corpusPath;
+        ranker = Ranker.getInstance();
+        myIndexer = Indexer.getInstance();
+        corpusDictionary = myIndexer.getCorpusDictionary();
     }
 
-    public List<String> searchQuery(IR.Document query,IR.Document desc, boolean withSemantic){
-        Ranker ranker = Ranker.getInstance();
-
+    public List<String> searchQuery(IR.Document query,IR.Document desc, int withSemantic){
         Path termFilePathTemp;
-        Indexer myIndexer = Indexer.getInstance();
         List<String> result = new ArrayList<>();
 
-        HashMap<String,String> corpusDictionary = myIndexer.getCorpusDictionary();
+
         if(corpusDictionary!=null){
             HashMap<String, String> descInText;
             AParser parser = new MainParse();
             AParser parser2 = new MainParse();
             parser.setPathToCorpus(corpusPath);
+            parser2.setPathToCorpus(corpusPath);
             ((MainParse) parser).parse(query);
             System.out.println("Finishing parsing query: " +query.getDocNo());
             
@@ -54,34 +62,69 @@ public class Searcher {
             HashMap<String,String> termswithSemanticInText = new HashMap<>();
             HashMap<String,String> termswithSemanticPosting = new HashMap<>();
 
-            if(withSemantic){
-                String[] res;
-                /**
-                 * Datamuse API
-                 */
+            String[] res = null;
+
+            /**
+             * Datamuse API
+             */
+            if(withSemantic == 2) {
+
+
                 DatamuseQuery dQuery = new DatamuseQuery();
 
-                for (String term: termInText.keySet()) {
+                for (String term : termInText.keySet()) {
                     String s = dQuery.findSimilar(term);
                     res = JSONParse.parseWords(s);
                 }
+            }
 
+            /**
+             * Word2Vec model
+             */
+            else if(withSemantic == 1){
+                String word2Vec = "";
+                int i=0;
 
-                /**
-                 * Word2Vec model
-                 */
                 final String filename = "word2vec.c.output.model.txt";
                 try {
                     for (String term: termInText.keySet()) {
                         Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
                         List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 2);
                         for (com.medallia.word2vec.Searcher.Match match : matches) {
-                            
+                            word2Vec = word2Vec + " " + match.match();
+                            i++;
                         }
                     }
+                    res = StringUtils.split(word2Vec," ");
 
                 } catch (IOException | com.medallia.word2vec.Searcher.UnknownWordException e) {
-                    e.printStackTrace();
+                    System.out.println("Didnt found the word");
+                }
+            }
+            if(withSemantic!=0){
+                AParser parser3 = new MainParse();
+                parser3.setPathToCorpus(corpusPath);
+                IR.Document semanticDoc = new Document();
+                semanticDoc.setDocNo("1");
+                semanticDoc.setTextArray(res);
+                ((MainParse) parser3).parse(desc);
+                termswithSemanticInText = parser2.getTermsInText();
+
+                String valueFromCorpus;
+                String corpusPathAndLineDelim = "#";
+                for (String specificTermKey: termswithSemanticInText.keySet()) {
+                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
+                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
+                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
+                    }
+                    else{
+                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
+                    }
+
+                    if (valueFromCorpus != null) {
+
+                        termswithSemanticPosting.put(specificTermKey, getPostLine(valueFromCorpus));
+                    }
                 }
             }
 
@@ -101,15 +144,8 @@ public class Searcher {
                 }
 
                 if (valueFromCorpus != null) {
-                    String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
-                    termFilePathTemp = Paths.get(splittedValue[0]);
-                    try {
-                        allTermsOfLetter = (ArrayList<String>) Files.readAllLines(termFilePathTemp);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    int lineNumberInFile = Integer.parseInt(valueFromCorpus.split(corpusPathAndLineDelim)[1]);
-                    termswithPosting.put(specificTermKey, allTermsOfLetter.get(lineNumberInFile-1));
+
+                    termswithPosting.put(specificTermKey, getPostLine(valueFromCorpus));
 
                     //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
                 }
@@ -130,15 +166,7 @@ public class Searcher {
                     }
 
                     if (valueFromCorpus != null) {
-                        String[] splittedValue = valueFromCorpus.split(corpusPathAndLineDelim);
-                        termFilePathTemp = Paths.get(splittedValue[0]);
-                        try {
-                            allTermsOfLetter = (ArrayList<String>) Files.readAllLines(termFilePathTemp);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        int lineNumberInFile = Integer.parseInt(valueFromCorpus.split(corpusPathAndLineDelim)[1]);
-                        termswithPostingDesc.put(specificTermKey, allTermsOfLetter.get(lineNumberInFile-1));
+                        termswithPostingDesc.put(specificTermKey, getPostLine(valueFromCorpus));
 
                         //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
                     }
@@ -154,4 +182,26 @@ public class Searcher {
 
         return result;
     }
+
+    public String getPostLine(String valueFromCorpus){
+        String corpusPathAndLineDelim = "#";
+        Path termFilePathTemp;
+        String[] splittedValue = StringUtils.split(valueFromCorpus,corpusPathAndLineDelim);
+        termFilePathTemp = Paths.get(splittedValue[0]);
+        try {
+        BufferedReader bf = new BufferedReader(new FileReader(termFilePathTemp.toFile()));
+            int lineNumberInFile = Integer.parseInt(splittedValue[1]);
+            String wantedLine = "";
+            for (int i = 0; i < lineNumberInFile; i++) {
+                wantedLine = bf.readLine();
+            }
+
+            bf.close();
+            return wantedLine;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

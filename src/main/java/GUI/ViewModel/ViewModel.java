@@ -37,8 +37,8 @@ public class ViewModel extends Observable implements Observer {
 
     }
 
-    public void loadDictinary(boolean withStemm,String postPath) {
-        model.loadDictionary(withStemm,postPath);
+    public void loadDictinary(boolean withStemm,String postPath,String corpusPath) {
+        model.loadDictionary(withStemm,postPath,corpusPath);
     }
 
     public HashMap<String,String> getDictionary() {
@@ -49,11 +49,11 @@ public class ViewModel extends Observable implements Observer {
         return model.getAlertToShowFinish();
     }
 
-    public void runSearch(String text,String corpusPath, boolean withSemantic) {
+    public void runSearch(String text,String corpusPath, int withSemantic) {
         model.runSearchQuery(text,corpusPath,withSemantic);
     }
 
-    public void runSearch(File fileToRead,String corpusPath, boolean withSemantic) {
+    public void runSearch(File fileToRead,String corpusPath, int withSemantic) {
         model.runSearchUsingFile(fileToRead,corpusPath,withSemantic);
     }
 

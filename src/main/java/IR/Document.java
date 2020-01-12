@@ -44,6 +44,18 @@ public class Document implements Serializable {
         textArray = null;
     }
 
+    public void setDocNo(String docNo) {
+        this.docNo = docNo;
+    }
+
+    public void setDocDate(String docDate) {
+        this.docDate = docDate;
+    }
+
+    public void setTextArray(String[] textArray) {
+        this.textArray = textArray;
+    }
+
     public Document(Element fileDocInCorpus) {
         this.termsDictonary = new HashMap<>();
         //docText = fileDocInCorpus.getElementsByTag("text").text();
