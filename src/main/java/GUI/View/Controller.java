@@ -381,7 +381,7 @@ public class Controller implements Observer {
         }
         if( kValue.getText().length()>0)
         {
-            kValueFromStrinng = new Double(bValue.getText());
+            kValueFromStrinng = new Double(kValue.getText());
         }
         else
         {
@@ -393,7 +393,7 @@ public class Controller implements Observer {
         }
         if( alphaValue.getText().length()>0)
         {
-            alphaValueFromString = new Double(bValue.getText());
+            alphaValueFromString = new Double(alphaValue.getText());
         }
         else
         {

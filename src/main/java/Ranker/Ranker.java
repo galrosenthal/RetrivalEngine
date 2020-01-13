@@ -56,6 +56,7 @@ public class Ranker {
         try {
 
             System.out.println("Ranker: ------------------Started Ranking " + searchedQuery.keySet().size() + " term in query-------------------");
+            System.out.println("Ranker: -----------Alpha=" + alpha + "----b=" + b + "------k=" +k+"------------------");
             long startRanking = System.nanoTime();
             ArrayList<String> docListRanked;
             query.putAll(searchedQuery);
@@ -68,6 +69,7 @@ public class Ranker {
             docIndexer.loadDictionaryFromDisk();
             int M = docIndexer.getSizeOfDictionary();
             double docAvgLength = docIndexer.getAvgLengthOfDoc();
+            System.out.println("Ranker: -----------docAvgLen=" + docAvgLength+"----------------------");
             PriorityQueue<RankedDocument> rankingQueue = new PriorityQueue<>(Comparator.reverseOrder());
 
 
@@ -85,6 +87,7 @@ public class Ranker {
                 HashMap<String,Integer> allTermsInDocQuery = docToTermsInQry.get(docId);
                 for (String termAndTf: allTermsInDocQuery.keySet())
                 {
+
                     int tfInDoc = allTermsInDocQuery.get(termAndTf);
                     int termDf = termsAndLinesFromPost.get(termAndTf).split(";").length;
                     double cwq = Double.parseDouble(query.get(termAndTf).split("#")[1]);
