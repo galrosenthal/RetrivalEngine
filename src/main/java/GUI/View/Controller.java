@@ -4,6 +4,9 @@ import GUI.ViewModel.ViewModel;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -36,8 +39,8 @@ public class Controller implements Observer {
     HashMap<String,Double> entityResult;
 
     @FXML
-    public CheckBox chh_addSemanticW2V;
-    public CheckBox chk_addSemanticDs;
+    public RadioButton chk_addSemanticW2V;
+    public RadioButton chk_addSemanticDs;
     public javafx.scene.control.Button btn_strtPrs;
     public TextField txt_field_Corpus;
     public TextField txt_field_Posting;
@@ -55,6 +58,7 @@ public class Controller implements Observer {
     public CheckBox chk_addSemantic;
     public ComboBox choice_box;
     public Button btn_searchEntities;
+    public ToggleGroup tgl_Group;
 
     public void initialize(ViewModel viewModel, Stage primaryStage){
         this.viewModel = viewModel;
@@ -65,6 +69,42 @@ public class Controller implements Observer {
         btn_srchRun.setDisable(true);
         btn_saveQueryResult.setDisable(true);
         btn_searchEntities.setDisable(true);
+        tgl_Group = new ToggleGroup();
+        chk_addSemanticW2V.setToggleGroup(tgl_Group);
+        chk_addSemanticW2V.setSelected(false);
+        chk_addSemanticW2V.setUserData("Word2Vec semantic");
+        chk_addSemanticDs.setToggleGroup(tgl_Group);
+        chk_addSemanticDs.setSelected(false);
+        chk_addSemanticDs.setUserData("Add ds semantic");
+
+
+
+
+
+        tgl_Group.selectedToggleProperty().addListener(new ChangeListener<Toggle>(){
+
+            public void changed(ObservableValue<? extends Toggle> ov,
+                                Toggle old_toggle, Toggle new_toggle) {
+                if (tgl_Group.getSelectedToggle() != null) {
+//                        old_toggle.setSelected(false);
+                    if(old_toggle != null)
+                    {
+                        if(old_toggle.getUserData().toString().equals(new_toggle.getUserData().toString()))
+                        {
+                            System.out.println("Same Radio Button");
+                        }
+                        else
+                        {
+                            System.out.println("Not Same Button");
+                        }
+                    }
+                    new_toggle.setSelected(true);
+                    RadioButton rb = (RadioButton)tgl_Group.getSelectedToggle();
+                    rb.requestFocus();
+                }
+            }
+        });
+
     }
 
     /**
@@ -362,7 +402,7 @@ public class Controller implements Observer {
         queryRes = null;
         //choice_box = new ComboBox();
         int chooseSemantic = 0;
-        if(chh_addSemanticW2V.isSelected()){
+        if(chk_addSemanticW2V.isSelected()){
             chooseSemantic = 1;
         }
         else if(chk_addSemanticDs.isSelected()){

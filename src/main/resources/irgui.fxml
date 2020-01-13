@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -53,10 +54,10 @@
             <TextField fx:id="txt_search" prefHeight="0.0" prefWidth="131.0" promptText="Search" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Button fx:id="btn_browseQuery" mnemonicParsing="false" onAction="#choosePathToQueries" prefHeight="25.0" prefWidth="57.0" text="Browse" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <Button fx:id="btn_saveQueryResult" mnemonicParsing="false" onAction="#saveQueryResult" prefHeight="25.0" prefWidth="107.0" text="Save query result" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
-            <CheckBox fx:id="chk_addSemanticDs" mnemonicParsing="false" prefHeight="27.0" prefWidth="146.0" text="Add ds semantic" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Button fx:id="btn_searchEntities" mnemonicParsing="false" onAction="#searchEntities" text="Search Entities" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <ComboBox fx:id="choice_box" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <CheckBox fx:id="chh_addSemanticW2V" mnemonicParsing="false" text="Word2Vec semantic" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <RadioButton fx:id="chk_addSemanticW2V" mnemonicParsing="false" text="Word2Vec semantic" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <RadioButton fx:id="chk_addSemanticDs" mnemonicParsing="false" prefHeight="17.0" prefWidth="132.0" text="Add ds semantic" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          </children>
          <BorderPane.margin>
             <Insets right="20.0" />

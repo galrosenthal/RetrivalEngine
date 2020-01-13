@@ -85,6 +85,10 @@ public class Ranker {
                 HashMap<String,Integer> allTermsInDocQuery = docToTermsInQry.get(docId);
                 for (String termAndTf: allTermsInDocQuery.keySet())
                 {
+//                    if(termAndTf.equalsIgnoreCase("chunnel"))
+//                    {
+//                        termAndTf = "channel";
+//                    }
                     int tfInDoc = allTermsInDocQuery.get(termAndTf);
                     int termDf = termsAndLinesFromPost.get(termAndTf).split(";").length;
                     double cwq = Double.parseDouble(query.get(termAndTf).split("#")[1]);
