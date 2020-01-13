@@ -343,7 +343,7 @@ public class DocumentIndexer implements Runnable{
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            System.out.println("Error");
             return false;
         }
 

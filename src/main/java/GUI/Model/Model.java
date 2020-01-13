@@ -180,6 +180,12 @@ public class Model extends Observable implements IModel {
         try
         {
             if(corpusPath!=null && postingPath!=null){
+                File postingPathFile = new File(postingPath);
+                if(postingPathFile.listFiles().length == 0){
+                    setChanged();
+                    notifyObservers(8);
+
+                }
                 FileUtils.cleanDirectory(new File(postingPath));
                 FileUtils.cleanDirectory(new File("./dicTemp/"));
                 FileUtils.cleanDirectory(new File("./docsTempDir/"));

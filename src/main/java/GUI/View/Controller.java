@@ -173,7 +173,11 @@ public class Controller implements Observer {
                 showQueryResultUsingfFile();
                 btn_saveQueryResult.setDisable(false);
                 btn_searchEntities.setDisable(false);
+                chk_addSemanticDs.setDisable(false);
+                chh_addSemanticW2V.setDisable(false);
                 updateChoiceBox();
+                fileToRead = null;
+                txt_search.clear();
             }
 
             //query result using search text
@@ -183,12 +187,21 @@ public class Controller implements Observer {
                 btn_saveQueryResult.setDisable(false);
                 btn_searchEntities.setDisable(false);
                 updateChoiceBox();
+                chk_addSemanticDs.setDisable(false);
+                chh_addSemanticW2V.setDisable(false);
             }
 
             //rank entities
             else if(num == 7){
                 getEntityResult();
                 showEntitiesResult();
+            }
+            //Throw error of reset
+            else if(num==8){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setContentText("There is no files in the folder");
+                alert.setTitle("Reset Objects");
+                alert.showAndWait();
             }
         }
     }
@@ -458,6 +471,26 @@ public class Controller implements Observer {
     public void searchEntities(ActionEvent actionEvent) {
         String docNo = (String)choice_box.getValue();
         viewModel.searchEntities(docNo);
+    }
+
+    public void markCheckDsSemantic(ActionEvent actionEvent) {
+        if(chk_addSemanticDs.isSelected()){
+            chh_addSemanticW2V.setDisable(true);
+        }
+        else{
+            chh_addSemanticW2V.setDisable(false);
+        }
+
+    }
+
+    public void markCheckW2vSemantic(ActionEvent actionEvent) {
+        if(chh_addSemanticW2V.isSelected()){
+            chk_addSemanticDs.setDisable(true);
+        }
+        else{
+            chk_addSemanticDs.setDisable(false);
+        }
+
     }
 
     /**

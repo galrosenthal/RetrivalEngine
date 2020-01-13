@@ -74,11 +74,15 @@ public class Searcher {
 
                 for (String term : termInText.keySet()) {
                     String s = dQuery.findSimilar(term);
-                    res = JSONParse.parseWords(s);
-                    arraWords = arraWords + " " + res[0] + " " + res[1];
-                }
+                    if(!s.equals("[]")){
+                        res = JSONParse.parseWords(s);
+                        arraWords = arraWords + " " + res[0] + " " + res[1];
+                    }
 
-                res = StringUtils.split(arraWords," ");
+                }
+                if(res!=null) {
+                    res = StringUtils.split(arraWords, " ");
+                }
             }
 
             /**
@@ -109,8 +113,12 @@ public class Searcher {
                 IR.Document semanticDoc = new Document();
                 semanticDoc.setDocNo("1");
                 semanticDoc.setTextArray(res);
-                ((MainParse) parser3).parse(semanticDoc);
-                termswithSemanticInText = parser3.getTermsInText();
+                if(res!= null){
+                    ((MainParse) parser3).parse(semanticDoc);
+                    termswithSemanticInText = parser3.getTermsInText();
+                    termInText.putAll(termswithSemanticInText);
+                }
+
 
 //                String valueFromCorpus;
 //                String corpusPathAndLineDelim = "#";
@@ -128,7 +136,7 @@ public class Searcher {
 //                        termswithSemanticPosting.put(specificTermKey, getPostLine(valueFromCorpus));
 //                    }
 //                }
-                termInText.putAll(termswithSemanticInText);
+
             }
 
 
