@@ -50,9 +50,7 @@ public class Ranker {
      * @param searchedQuery HashMap that contains all the term and the line with the tf in the query
      * @return ArrayList<docId> which contains the 50 Most Ranked docs by BM25 formula
      */
-    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery,
-                                           HashMap<String,String> queryDescription, HashMap<String,String> descriptionTermsAndLines,
-                                           HashMap<String,String> querySemantic, HashMap<String,String> semanticTermsAndLines) {
+    public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery) {
         try {
 
             System.out.println("Ranker: ------------------Started Ranking " + searchedQuery.keySet().size() + " term in query-------------------");
