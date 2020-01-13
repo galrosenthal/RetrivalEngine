@@ -336,7 +336,7 @@ public class Ranker {
      */
     private double calcBM25(int corpusSize, double docAvgLength, int docLength, int tfInDoc, double termDf,double cwq) {
         double k = 1.8;
-        double b = 0.7;
+        double b = 0.75;
         double sum = 0;
         sum = cwq*(((k+1)*tfInDoc)/(tfInDoc+k*(1-b+b*docLength/docAvgLength)))*(Math.log((double) (corpusSize+1)/(termDf)));
 
