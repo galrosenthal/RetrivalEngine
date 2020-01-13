@@ -841,6 +841,7 @@ public class MainParse extends AParser {
      */
     public boolean parsePhrases(String word){
         boolean isParse = false;
+        boolean isIncrement = false;
         int numOfWords=0;
         StringBuilder wordB = new StringBuilder(word);
         StringBuilder sentence = new StringBuilder("");
@@ -864,6 +865,7 @@ public class MainParse extends AParser {
             }
             if(i.get() < splitedText.length-1){
                 wordB = new StringBuilder(splitedText[i.addAndGet(1)]);
+                isIncrement = true;
                 //wordB = chopDownFisrtChar(wordB);
             }
             else{
@@ -876,9 +878,11 @@ public class MainParse extends AParser {
             numOfWords=0;
             sentence.setLength(0);
             isParse = true;
-            i.decrementAndGet();
         }
 
+        if(isIncrement){
+            i.decrementAndGet();
+        }
 
         return isParse;
     }

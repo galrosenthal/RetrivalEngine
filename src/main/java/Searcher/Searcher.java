@@ -48,14 +48,14 @@ public class Searcher {
             System.out.println("Finishing parsing query: " +query.getDocNo());
             
             HashMap<String,String> termInText = parser.getTermsInText();
-            if(desc.getTextArray() != null) {
-                ((MainParse) parser2).parse(desc);
-                 descInText = parser2.getTermsInText();
-            }
-            else{
-                descInText = new HashMap<>();
-
-            }
+//            if(desc.getTextArray() != null) {
+//                ((MainParse) parser2).parse(desc);
+//                 descInText = parser2.getTermsInText();
+//            }
+//            else{
+//                descInText = new HashMap<>();
+//
+//            }
             HashMap<String,String> termswithPosting = new HashMap<>();
             HashMap<String,String> termswithPostingDesc = new HashMap<>();
 
@@ -69,13 +69,16 @@ public class Searcher {
              */
             if(withSemantic == 2) {
 
-
+                String arraWords = "";
                 DatamuseQuery dQuery = new DatamuseQuery();
 
                 for (String term : termInText.keySet()) {
                     String s = dQuery.findSimilar(term);
                     res = JSONParse.parseWords(s);
+                    arraWords = arraWords + " " + res[0] + " " + res[1];
                 }
+
+                res = StringUtils.split(arraWords," ");
             }
 
             /**
@@ -83,19 +86,18 @@ public class Searcher {
              */
             else if(withSemantic == 1){
                 String word2Vec = "";
-                int i=0;
 
                 final String filename = "word2vec.c.output.model.txt";
                 try {
                     for (String term: termInText.keySet()) {
                         Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
-                        List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 2);
+                        List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 3);
                         for (com.medallia.word2vec.Searcher.Match match : matches) {
                             word2Vec = word2Vec + " " + match.match();
-                            i++;
                         }
+                        res = StringUtils.split(word2Vec," ");
                     }
-                    res = StringUtils.split(word2Vec," ");
+
 
                 } catch (IOException | com.medallia.word2vec.Searcher.UnknownWordException e) {
                     System.out.println("Didnt found the word");
@@ -107,25 +109,26 @@ public class Searcher {
                 IR.Document semanticDoc = new Document();
                 semanticDoc.setDocNo("1");
                 semanticDoc.setTextArray(res);
-                ((MainParse) parser3).parse(desc);
-                termswithSemanticInText = parser2.getTermsInText();
+                ((MainParse) parser3).parse(semanticDoc);
+                termswithSemanticInText = parser3.getTermsInText();
 
-                String valueFromCorpus;
-                String corpusPathAndLineDelim = "#";
-                for (String specificTermKey: termswithSemanticInText.keySet()) {
-                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
-                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
-                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
-                    }
-                    else{
-                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
-                    }
-
-                    if (valueFromCorpus != null) {
-
-                        termswithSemanticPosting.put(specificTermKey, getPostLine(valueFromCorpus));
-                    }
-                }
+//                String valueFromCorpus;
+//                String corpusPathAndLineDelim = "#";
+//                for (String specificTermKey: termswithSemanticInText.keySet()) {
+//                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
+//                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
+//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
+//                    }
+//                    else{
+//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
+//                    }
+//
+//                    if (valueFromCorpus != null) {
+//
+//                        termswithSemanticPosting.put(specificTermKey, getPostLine(valueFromCorpus));
+//                    }
+//                }
+                termInText.putAll(termswithSemanticInText);
             }
 
 
@@ -154,27 +157,27 @@ public class Searcher {
             /**
              * Getting posting lines for description
              */
-            valueFromCorpus = null;
-            if(desc.getTextArray()!=null){
-                for (String specificTermKey: descInText.keySet()) {
-                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
-                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
-                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
-                    }
-                    else{
-                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
-                    }
-
-                    if (valueFromCorpus != null) {
-                        termswithPostingDesc.put(specificTermKey, getPostLine(valueFromCorpus));
-
-                        //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
-                    }
-                }
-            }
+//            valueFromCorpus = null;
+//            if(desc.getTextArray()!=null){
+//                for (String specificTermKey: descInText.keySet()) {
+//                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
+//                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
+//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
+//                    }
+//                    else{
+//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
+//                    }
+//
+//                    if (valueFromCorpus != null) {
+//                        termswithPostingDesc.put(specificTermKey, getPostLine(valueFromCorpus));
+//
+//                        //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
+//                    }
+//                }
+//            }
             System.out.println("Finishing posting query: " +query.getDocNo());
             ranker.resetQuery();
-            result =ranker.rankQueryDocs(termswithPosting,termInText,descInText,termswithPostingDesc,null,null);
+            result =ranker.rankQueryDocs(termswithPosting,termInText);
             System.out.println("Finishing ranking query: " +query.getDocNo());
         }
 
