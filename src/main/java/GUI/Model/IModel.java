@@ -18,9 +18,9 @@ public interface IModel {
 
     public String getAlertToShowFinish();
 
-    void runSearchQuery(String text,String corpusPath,int withSemantic);
+    void runSearchQuery(String text,String corpusPath,int withSemantic,double b,double alpha,double k);
 
-    void runSearchUsingFile(File fileToRead,String corpusPath,int withSemantic);
+    void runSearchUsingFile(File fileToRead,String corpusPath,int withSemantic,double b,double alpha,double k);
 
     HashMap<String, List<String>> getqueryResUsingFile();
 

@@ -33,7 +33,7 @@ public class Searcher {
         corpusDictionary = myIndexer.getCorpusDictionary();
     }
 
-    public List<String> searchQuery(IR.Document query,IR.Document desc, int withSemantic){
+    public List<String> searchQuery(IR.Document query,IR.Document desc, int withSemantic,double b,double alpha, double k){
         Path termFilePathTemp;
         List<String> result = new ArrayList<>();
 
@@ -174,7 +174,7 @@ public class Searcher {
             }
             System.out.println("Finishing posting query: " +query.getDocNo());
             ranker.resetQuery();
-            result =ranker.rankQueryDocs(termswithPosting,termInText,descInText,termswithPostingDesc,null,null);
+            result =ranker.rankQueryDocs(termswithPosting,termInText,descInText,termswithPostingDesc,null,null,b,alpha,k);
             System.out.println("Finishing ranking query: " +query.getDocNo());
         }
 

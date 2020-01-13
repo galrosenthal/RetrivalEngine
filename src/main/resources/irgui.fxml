@@ -33,6 +33,7 @@
           <RowConstraints maxHeight="120.66664123535156" minHeight="0.0" prefHeight="58.66666666666666" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="92.66666666666669" minHeight="10.0" prefHeight="35.33336385091144" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="103.33331298828125" minHeight="10.0" prefHeight="99.99996948242188" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="103.33331298828125" minHeight="10.0" prefHeight="99.99996948242188" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <Button fx:id="btn_srchRun" mnemonicParsing="false" onAction="#RunSearch" prefHeight="33.0" prefWidth="122.0" text="Run" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
@@ -57,6 +58,9 @@
             <Button fx:id="btn_searchEntities" mnemonicParsing="false" onAction="#searchEntities" text="Search Entities" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <ComboBox fx:id="choice_box" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <CheckBox fx:id="chh_addSemanticW2V" mnemonicParsing="false" text="Word2Vec semantic" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="bValue" prefHeight="1.0" prefWidth="151.0" promptText="enter b value" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+            <TextField fx:id="alphaValue" layoutX="209.0" layoutY="390.0" prefHeight="1.0" prefWidth="151.0" promptText="enter alpha value" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+            <TextField fx:id="kValue" layoutX="209.0" layoutY="395.0" prefHeight="1.0" prefWidth="151.0" promptText="enter k value" GridPane.columnIndex="3" GridPane.rowIndex="8" />
          </children>
          <BorderPane.margin>
             <Insets right="20.0" />

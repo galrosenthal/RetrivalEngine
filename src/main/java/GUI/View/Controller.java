@@ -19,6 +19,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -40,6 +41,9 @@ public class Controller implements Observer {
     public CheckBox chk_addSemanticDs;
     public javafx.scene.control.Button btn_strtPrs;
     public TextField txt_field_Corpus;
+    public TextField bValue;
+    public TextField kValue;
+    public TextField alphaValue;
     public TextField txt_field_Posting;
     public CheckBox chk_Stemm;
     public Button btn_reset;
@@ -360,6 +364,46 @@ public class Controller implements Observer {
     public void RunSearch(ActionEvent actionEvent) {
         queryResFile = null;
         queryRes = null;
+        double bValueFromString=0.8;
+        double kValueFromStrinng=1;
+        double alphaValueFromString=0.8;
+        if( bValue.getText().length()>0)
+        {
+            bValueFromString = new Double(bValue.getText());
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to run the query search, Please choose b Value");
+            alert.setTitle("Could not run query");
+            alert.showAndWait();
+            return;
+        }
+        if( kValue.getText().length()>0)
+        {
+            kValueFromStrinng = new Double(bValue.getText());
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to run the query search, Please choose k Value");
+            alert.setTitle("Could not run query");
+            alert.showAndWait();
+            return;
+        }
+        if( alphaValue.getText().length()>0)
+        {
+            alphaValueFromString = new Double(bValue.getText());
+        }
+        else
+        {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to run the query search, Please choose alpha Value");
+            alert.setTitle("Could not run query");
+            alert.showAndWait();
+            return;
+        }
+
         //choice_box = new ComboBox();
         int chooseSemantic = 0;
         if(chh_addSemanticW2V.isSelected()){
@@ -369,7 +413,9 @@ public class Controller implements Observer {
             chooseSemantic = 2;
         }
         if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
-            viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chooseSemantic);
+
+
+            viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chooseSemantic,bValueFromString, alphaValueFromString, kValueFromStrinng);
         }
         else if(txt_field_Corpus.getText().length() == 0){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -378,7 +424,7 @@ public class Controller implements Observer {
             alert.showAndWait();
         }
         else if(fileToRead != null){
-            viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chooseSemantic);
+            viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chooseSemantic,bValueFromString, alphaValueFromString, kValueFromStrinng);
         }
         else {
             Alert alert = new Alert(Alert.AlertType.ERROR);

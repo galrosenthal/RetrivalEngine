@@ -49,12 +49,12 @@ public class ViewModel extends Observable implements Observer {
         return model.getAlertToShowFinish();
     }
 
-    public void runSearch(String text,String corpusPath, int withSemantic) {
-        model.runSearchQuery(text,corpusPath,withSemantic);
+    public void runSearch(String text,String corpusPath, int withSemantic,double b,double alpha,double k) {
+        model.runSearchQuery(text,corpusPath,withSemantic,b,alpha,k);
     }
 
-    public void runSearch(File fileToRead,String corpusPath, int withSemantic) {
-        model.runSearchUsingFile(fileToRead,corpusPath,withSemantic);
+    public void runSearch(File fileToRead,String corpusPath, int withSemantic,double b,double alpha,double k) {
+        model.runSearchUsingFile(fileToRead,corpusPath,withSemantic,b,alpha,k);
     }
 
     public HashMap<String, List<String>> getqueryResUsingFile() {

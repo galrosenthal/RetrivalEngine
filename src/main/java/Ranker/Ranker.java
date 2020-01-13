@@ -52,7 +52,7 @@ public class Ranker {
      */
     public ArrayList<String> rankQueryDocs(HashMap<String,String> termsAndLinesFromPost,HashMap<String,String> searchedQuery,
                                            HashMap<String,String> queryDescription, HashMap<String,String> descriptionTermsAndLines,
-                                           HashMap<String,String> querySemantic, HashMap<String,String> semanticTermsAndLines) {
+                                           HashMap<String,String> querySemantic, HashMap<String,String> semanticTermsAndLines,double b,double alpha, double k) {
         try {
 
             System.out.println("Ranker: ------------------Started Ranking " + searchedQuery.keySet().size() + " term in query-------------------");
@@ -75,7 +75,7 @@ public class Ranker {
 //            System.out.println("Ranker: Start Ranknig specific " + docToTermsInQry.keySet().size() + " Docs");
             long spcfcRank = System.nanoTime();
 
-            double alpha = 0.8;
+//            double alpha = 0.85;
             for(String docId: docToTermsInQry.keySet())
             {
                 String[] headLineOfDoc = docIndexer.getDocumentInfoOfDoc(docId).getHeadLine();
@@ -90,7 +90,7 @@ public class Ranker {
                     double cwq = Double.parseDouble(query.get(termAndTf).split("#")[1]);
 
                     long calcBM25 = System.nanoTime();
-                    sumOfBM25 += alpha*calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq) + (1-alpha)*calcRankByHeadline(docLength,headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf);
+                    sumOfBM25 += alpha*calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq,b,k) + (1-alpha)*calcRankByHeadline(docLength,headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf);
 //                    System.out.println("Calculation BM25 for "+ docId + ", took: " + (System.nanoTime() - calcBM25)/1000000000 + "s");
                 }
                 rankingQueue.add(new RankedDocument(docId,sumOfBM25));
@@ -334,10 +334,11 @@ public class Ranker {
      * @param cwq - The Specific Term Frequency in the Query
      * @return value of the BM25 summation
      */
-    private double calcBM25(int corpusSize, double docAvgLength, int docLength, int tfInDoc, double termDf,double cwq) {
-        double k = 1.8;
-        double b = 0.7;
+    private double calcBM25(int corpusSize, double docAvgLength, int docLength, int tfInDoc, double termDf,double cwq, double b,double k) {
+//        double k = 1.81;
+//        double b = 0.865;
         double sum = 0;
+//        docAvgLength *= 2;
         sum = cwq*(((k+1)*tfInDoc)/(tfInDoc+k*(1-b+b*docLength/docAvgLength)))*(Math.log((double) (corpusSize+1)/(termDf)));
 
         return sum;

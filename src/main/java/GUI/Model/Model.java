@@ -217,12 +217,12 @@ public class Model extends Observable implements IModel {
     }
 
     @Override
-    public void runSearchQuery(String query,String corpusPath,int withSemantic) {
+    public void runSearchQuery(String query,String corpusPath,int withSemantic,double b,double alpha,double k) {
         List<String> result;
         ArrayList<String> resultAndId = new ArrayList<>();
         IR.Document queryDoc = new IR.Document(query,Integer.toString(id));
         id++;
-        result = runSearch(queryDoc,corpusPath,new IR.Document(),withSemantic);
+        result = runSearch(queryDoc,corpusPath,new IR.Document(),withSemantic,b,alpha,k);
         //((ArrayList)result).add(Integer.toString(id));
         resultAndId.addAll(result);
         resultAndId.add(Integer.toString(id));
@@ -248,7 +248,7 @@ public class Model extends Observable implements IModel {
     }
 
     @Override
-    public void runSearchUsingFile(File fileToRead,String corpusPath,int withSemantic) {
+    public void runSearchUsingFile(File fileToRead,String corpusPath,int withSemantic,double b,double alpha,double k) {
         HashMap<String,List<String>> queryResult = new HashMap<>();
         Document doc = null;
         String id;
@@ -267,7 +267,7 @@ public class Model extends Observable implements IModel {
             String description = fileDoc.child(0).child(1).childNode(0).toString();
             IR.Document descDoc = new IR.Document(description,id);
             IR.Document queryDoc = new IR.Document(query,id);
-            List<String> result = runSearch(queryDoc,corpusPath,descDoc,withSemantic);
+            List<String> result = runSearch(queryDoc,corpusPath,descDoc,withSemantic,b,alpha,k);
             queryResult.put(id,result);
 
         }
@@ -276,11 +276,11 @@ public class Model extends Observable implements IModel {
         notifyObservers(5);
     }
 
-    private List<String> runSearch(IR.Document query,String corpusPath,IR.Document descDoc, int withSemantic) {
+    private List<String> runSearch(IR.Document query,String corpusPath,IR.Document descDoc, int withSemantic, double b,double alpha,double k) {
         if(searcher == null){
             searcher = new Searcher(corpusPath);
         }
-        List<String> result = searcher.searchQuery(query,descDoc, withSemantic);
+        List<String> result = searcher.searchQuery(query,descDoc, withSemantic,b,alpha,k);
 
         return result;
     }
