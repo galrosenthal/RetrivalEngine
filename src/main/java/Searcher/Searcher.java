@@ -38,7 +38,7 @@ public class Searcher {
     }
 
     public List<String> searchQuery(IR.Document query, int withSemantic){
-        Path termFilePathTemp;
+
         List<String> result = new ArrayList<>();
 
 
@@ -54,71 +54,14 @@ public class Searcher {
             HashMap<String,String> termInText = parser.getTermsInText();
 
             HashMap<String,String> termswithPosting = new HashMap<>();
-            HashMap<String,String> termswithPostingDesc = new HashMap<>();
 
             HashMap<String,String> termswithSemanticInText = new HashMap<>();
-            HashMap<String,String> termswithSemanticPosting = new HashMap<>();
-
-            String[] res = null;
-
-            /**
-             * Datamuse API
-             */
-            if(withSemantic == 2) {
-
-                String arraWords = "";
-                DatamuseQuery dQuery = new DatamuseQuery();
-
-                for (String term : termInText.keySet()) {
-                    String s = dQuery.findSimilar(term);
-                    if(!s.equals("[]")){
-                        res = JSONParse.parseWords(s);
-                        arraWords = arraWords + " " + res[0] + " " + res[1];
-                    }
-
-                }
-                if(res!=null) {
-                    res = StringUtils.split(arraWords, " ");
-                }
-            }
-
-            /**
-             * Word2Vec model
-             */
-            else if(withSemantic == 1){
-                String word2Vec = "";
-
-                final String filename = "word2vec.c.output.model.txt";
-                try {
-                    for (String term: termInText.keySet()) {
-                        Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
-                        List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 3);
-                        for (com.medallia.word2vec.Searcher.Match match : matches) {
-                            word2Vec = word2Vec + " " + match.match();
-                        }
-                        res = StringUtils.split(word2Vec," ");
-                    }
 
 
-                } catch (IOException | com.medallia.word2vec.Searcher.UnknownWordException e) {
-                    System.out.println("Didnt found the word");
-                }
-            }
+            termswithSemanticInText = AddSemantic(withSemantic, termInText);
 
-            /**
-             * the User chose to add semantic to the query
-             */
-            if(withSemantic!=0){
-                AParser parser3 = new MainParse();
-                parser3.setPathToCorpus(corpusPath);
-                IR.Document semanticDoc = new Document();
-                semanticDoc.setDocNo("1");
-                semanticDoc.setTextArray(res);
-                if(res!= null){
-                    ((MainParse) parser3).parse(semanticDoc);
-                    termswithSemanticInText = parser3.getTermsInText();
-                    termInText.putAll(termswithSemanticInText);
-                }
+            if(withSemantic != 0){
+                termInText.putAll(termswithSemanticInText);
             }
 
 
@@ -152,6 +95,81 @@ public class Searcher {
         }
 
         return result;
+    }
+
+    /**
+     * The method responsible of the semantic model adding. she get int which is the decision if the user want to add
+     * semantic to the query. if he does this method adding relevant words to the query.
+     * @param withSemantic
+     * @param termInText
+     * @return the hasmap with the new words
+     */
+    private HashMap<String, String> AddSemantic(int withSemantic, HashMap<String, String> termInText) {
+        String[] res = null;
+
+        HashMap<String, String> termswithSemanticInText = new HashMap<>();
+
+        /**
+         * Datamuse API
+         */
+        if(withSemantic == 2) {
+
+            String arraWords = "";
+            DatamuseQuery dQuery = new DatamuseQuery();
+
+            for (String term : termInText.keySet()) {
+                String s = dQuery.findSimilar(term);
+                if(!s.equals("[]")){
+                    res = JSONParse.parseWords(s);
+                    arraWords = arraWords + " " + res[0] + " " + res[1];
+                }
+
+            }
+            if(res!=null) {
+                res = StringUtils.split(arraWords, " ");
+            }
+        }
+
+        /**
+         * Word2Vec model
+         */
+        else if(withSemantic == 1){
+            String word2Vec = "";
+
+            final String filename = "word2vec.c.output.model.txt";
+            try {
+                for (String term: termInText.keySet()) {
+                    Word2VecModel model = Word2VecModel.fromTextFile(new File(filename));
+                    List<com.medallia.word2vec.Searcher.Match> matches = model.forSearch().getMatches(term, 3);
+                    for (com.medallia.word2vec.Searcher.Match match : matches) {
+                        word2Vec = word2Vec + " " + match.match();
+                    }
+                    res = StringUtils.split(word2Vec," ");
+                }
+
+
+            } catch (IOException | com.medallia.word2vec.Searcher.UnknownWordException e) {
+                System.out.println("Didnt found the word");
+            }
+        }
+
+        /**
+         * the User chose to add semantic to the query
+         */
+        if(withSemantic!=0){
+            AParser parser3 = new MainParse();
+            parser3.setPathToCorpus(corpusPath);
+            Document semanticDoc = new Document();
+            semanticDoc.setDocNo("1");
+            semanticDoc.setTextArray(res);
+            if(res!= null){
+                ((MainParse) parser3).parse(semanticDoc);
+                termswithSemanticInText = parser3.getTermsInText();
+
+            }
+        }
+
+        return termswithSemanticInText;
     }
 
     /**

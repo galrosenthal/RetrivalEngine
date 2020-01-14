@@ -491,8 +491,16 @@ public class Controller implements Observer {
      * @param actionEvent
      */
     public void searchEntities(ActionEvent actionEvent) {
-        String docNo = (String)choice_box.getValue();
-        viewModel.searchEntities(docNo);
+        if((String)choice_box.getValue() == null){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setContentText("Error While Trying to search for entities, Please choose document first");
+            alert.setTitle("Could not search for entities");
+            alert.showAndWait();
+        }
+        else {
+            String docNo = (String) choice_box.getValue();
+            viewModel.searchEntities(docNo);
+        }
     }
 
     /**
