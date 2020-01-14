@@ -1,9 +1,8 @@
 package Ranker;
 
 import IR.DocumentInfo;
-import Indexer.*;
-import javafx.util.Pair;
-import org.apache.commons.lang3.StringUtils;
+import Indexer.DocumentIndexer;
+import Indexer.Indexer;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -272,7 +271,6 @@ public class Ranker {
 
 
 
-    //TODO: change Title to JACARD
     /**
      * Calculating Rank for the Doc according to it HeadLine, if it does not have Head Line the rank is 0.
      * @return the rank of the doc
