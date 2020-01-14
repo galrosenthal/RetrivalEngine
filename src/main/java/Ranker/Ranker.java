@@ -1,9 +1,8 @@
 package Ranker;
 
 import IR.DocumentInfo;
-import Indexer.*;
-import javafx.util.Pair;
-import org.apache.commons.lang3.StringUtils;
+import Indexer.DocumentIndexer;
+import Indexer.Indexer;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -88,7 +87,7 @@ public class Ranker {
                     double cwq = Double.parseDouble(query.get(termAndTf).split("#")[1]);
 
                     long calcBM25 = System.nanoTime();
-                    sumOfBM25 += alpha*calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq) + (1-alpha)*calcRankByHeadline(docLength,headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf);
+                    sumOfBM25 += alpha*calcBM25(M,docAvgLength,docLength,tfInDoc,termDf,cwq) + (1-alpha)*calcRankByHeadline(headLineOfDoc,maxTfInDoc,tfInDoc,termAndTf);
 //                    System.out.println("Calculation BM25 for "+ docId + ", took: " + (System.nanoTime() - calcBM25)/1000000000 + "s");
                 }
                 rankingQueue.add(new RankedDocument(docId,sumOfBM25));
@@ -272,12 +271,11 @@ public class Ranker {
 
 
 
-    //TODO: change Title to JACARD
     /**
      * Calculating Rank for the Doc according to it HeadLine, if it does not have Head Line the rank is 0.
      * @return the rank of the doc
      */
-    private double calcRankByHeadline(int docLength, String[] headLineOfDoc, int maxTfInDoc, int tfInDoc,String term) {
+    private double calcRankByHeadline(String[] headLineOfDoc, int maxTfInDoc, int tfInDoc,String term) {
         if (headLineOfDoc == null ){
             return 0;
         }
@@ -343,7 +341,7 @@ public class Ranker {
 
 
     /**
-     * Creates a HashMap of the docIds to an ArrayList<Pair<Term,TermTF in Doc>>
+     * Creates a HashMap of the docIds to an HashMap<Term,TermTF in Doc>
      * @param termsAndLinesFromPost a HashMap<Term,Line From Posting File*>
      * @return the HashMap that was created
      * line in posting file looks like this, ex':
@@ -423,7 +421,7 @@ public class Ranker {
             int totalTf =  myIndexer.getTotalTF(entity);
 
             double rankOfEntity = (double)(tf)/(totalTf) + (tf)/(docLength) + (double) (tf)/(docEntitys.size());
-            RankedEntity entty = new RankedEntity(entity,rankOfEntity,totalTf);
+            RankedEntity entty = new RankedEntity(entity,rankOfEntity);
 
             entitiesPriorirtyQ.add(entty);
         }

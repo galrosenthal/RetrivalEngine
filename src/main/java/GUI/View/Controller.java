@@ -25,9 +25,6 @@ import java.util.*;
  * Controller of the JavaFx, Runs all the logic for viewing
  */
 public class Controller implements Observer {
-
-
-
     File fileToRead;
     ViewModel viewModel;
     Stage primaryStage;
