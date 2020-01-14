@@ -20,6 +20,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * Class responsible for parsing the queries, reading the lines from the posting files and sending the data to the ranker,
+ * Also responsible for adding semantic model if the user choose.
+ */
 public class Searcher {
     String corpusPath;
     Ranker ranker;
@@ -33,7 +37,7 @@ public class Searcher {
         corpusDictionary = myIndexer.getCorpusDictionary();
     }
 
-    public List<String> searchQuery(IR.Document query,IR.Document desc, int withSemantic){
+    public List<String> searchQuery(IR.Document query, int withSemantic){
         Path termFilePathTemp;
         List<String> result = new ArrayList<>();
 
@@ -48,14 +52,7 @@ public class Searcher {
             System.out.println("Finishing parsing query: " +query.getDocNo());
             
             HashMap<String,String> termInText = parser.getTermsInText();
-//            if(desc.getTextArray() != null) {
-//                ((MainParse) parser2).parse(desc);
-//                 descInText = parser2.getTermsInText();
-//            }
-//            else{
-//                descInText = new HashMap<>();
-//
-//            }
+
             HashMap<String,String> termswithPosting = new HashMap<>();
             HashMap<String,String> termswithPostingDesc = new HashMap<>();
 
@@ -107,6 +104,10 @@ public class Searcher {
                     System.out.println("Didnt found the word");
                 }
             }
+
+            /**
+             * the User chose to add semantic to the query
+             */
             if(withSemantic!=0){
                 AParser parser3 = new MainParse();
                 parser3.setPathToCorpus(corpusPath);
@@ -118,25 +119,6 @@ public class Searcher {
                     termswithSemanticInText = parser3.getTermsInText();
                     termInText.putAll(termswithSemanticInText);
                 }
-
-
-//                String valueFromCorpus;
-//                String corpusPathAndLineDelim = "#";
-//                for (String specificTermKey: termswithSemanticInText.keySet()) {
-//                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
-//                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
-//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
-//                    }
-//                    else{
-//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
-//                    }
-//
-//                    if (valueFromCorpus != null) {
-//
-//                        termswithSemanticPosting.put(specificTermKey, getPostLine(valueFromCorpus));
-//                    }
-//                }
-
             }
 
 
@@ -162,38 +144,21 @@ public class Searcher {
                 }
             }
 
-            /**
-             * Getting posting lines for description
-             */
-//            valueFromCorpus = null;
-//            if(desc.getTextArray()!=null){
-//                for (String specificTermKey: descInText.keySet()) {
-//                    ArrayList<String> allTermsOfLetter = new ArrayList<>();
-//                    if(corpusDictionary.containsKey(specificTermKey.toLowerCase())){
-//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toLowerCase());
-//                    }
-//                    else{
-//                        valueFromCorpus = corpusDictionary.get(specificTermKey.toUpperCase());
-//                    }
-//
-//                    if (valueFromCorpus != null) {
-//                        termswithPostingDesc.put(specificTermKey, getPostLine(valueFromCorpus));
-//
-//                        //System.out.println(allTermsOfLetter.get(lineNumberInFile-1));
-//                    }
-//                }
-//            }
+
             System.out.println("Finishing posting query: " +query.getDocNo());
             ranker.resetQuery();
             result =ranker.rankQueryDocs(termswithPosting,termInText);
             System.out.println("Finishing ranking query: " +query.getDocNo());
         }
 
-       // result= Arrays.asList("doc1","doc2","doc3");
-
         return result;
     }
 
+    /**
+     * get the the path to the posting file from the dictionary and read the line from the posting file and give it back
+     * @param valueFromCorpus
+     * @return
+     */
     public String getPostLine(String valueFromCorpus){
         String corpusPathAndLineDelim = "#";
         Path termFilePathTemp;

@@ -206,6 +206,9 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Shows the entities for the chosen document we want to see that the ranker find and ranked them
+     */
     private void showEntitiesResult() {
         ArrayList<String> sortedKeys = new ArrayList<String>(entityResult.keySet());
         String column1Value = "Entity";
@@ -226,6 +229,9 @@ public class Controller implements Observer {
         entityResult = viewModel.getEntityResult();
     }
 
+    /**
+     * When the query results come back the combo box update and fill with the retrieval results
+     */
     private void updateChoiceBox() {
         choice_box.getItems().clear();
         choice_box.setVisibleRowCount(10);
@@ -292,6 +298,11 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Adding the tableView to the stackPane and shows them in a new scene
+     * @param tableView
+     * @param s
+     */
     private void insertStackPaneAndShow(TableView tableView, String s) {
         StackPane stkPane = new StackPane();
         stkPane.getChildren().add(tableView);
@@ -302,6 +313,12 @@ public class Controller implements Observer {
         stage.show();
     }
 
+    /**
+     * Creating tableView by the according names of the columns
+     * @param column1Value
+     * @param column2Value
+     * @return
+     */
     private TableView getTableView(String column1Value, String column2Value) {
         TableView tableView = new TableView<>();
         TableColumn<String, Map> column1 = new TableColumn(column1Value);
@@ -468,11 +485,21 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * When the user chose document to see his 5 best entities, this method runs ans call the viewModel which call
+     * the model who runs the ranker for the entities
+     * @param actionEvent
+     */
     public void searchEntities(ActionEvent actionEvent) {
         String docNo = (String)choice_box.getValue();
         viewModel.searchEntities(docNo);
     }
 
+    /**
+     * This method runs when the user check the box of datamuse semantic, and disable the W2V semantic or do the
+     * opposite if he unchecked
+     * @param actionEvent
+     */
     public void markCheckDsSemantic(ActionEvent actionEvent) {
         if(chk_addSemanticDs.isSelected()){
             chh_addSemanticW2V.setDisable(true);
@@ -483,6 +510,11 @@ public class Controller implements Observer {
 
     }
 
+    /**
+     * This method runs when the user check the box of Word2Vec semantic, and disable the datamus semantic or do
+     * the opposite if he unchecked
+     * @param actionEvent
+     */
     public void markCheckW2vSemantic(ActionEvent actionEvent) {
         if(chh_addSemanticW2V.isSelected()){
             chk_addSemanticDs.setDisable(true);
@@ -494,7 +526,7 @@ public class Controller implements Observer {
     }
 
     /**
-     * Wrapper class that is used for entering the data of the dictionary to the tableview and
+     * Wrapper class that is used for entering the data of the dictionary to the tableView and
      * presents them
      */
     public static class Map{
@@ -531,6 +563,10 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Wrapper class that is used for entering the data of the query to the tableView and
+     * presents them
+     */
     public static class queryFile {
         private SimpleStringProperty queryId;
         private SimpleStringProperty document;
@@ -565,6 +601,10 @@ public class Controller implements Observer {
         }
     }
 
+    /**
+     * Wrapper class that is used for entering the data of the entities to the tableView and
+     * presents them
+     */
     public static class EntityMap{
         private SimpleStringProperty entity;
         private SimpleDoubleProperty rank;

@@ -222,13 +222,19 @@ public class Model extends Observable implements IModel {
         return alertToShow;
     }
 
+    /**
+     * Getting the query from the search bar, creating Document who represents the query and sending it to runSearch method who calls the searcher
+     * @param query
+     * @param corpusPath
+     * @param withSemantic
+     */
     @Override
     public void runSearchQuery(String query,String corpusPath,int withSemantic) {
         List<String> result;
         ArrayList<String> resultAndId = new ArrayList<>();
         IR.Document queryDoc = new IR.Document(query,Integer.toString(id));
         id++;
-        result = runSearch(queryDoc,corpusPath,new IR.Document(),withSemantic);
+        result = runSearch(queryDoc,corpusPath,withSemantic);
         //((ArrayList)result).add(Integer.toString(id));
         resultAndId.addAll(result);
         resultAndId.add(Integer.toString(id));
@@ -238,6 +244,10 @@ public class Model extends Observable implements IModel {
         notifyObservers(6);
     }
 
+    /**
+     * Sends the ranker the docNo we want the ranked entities
+     * @param docNo
+     */
     @Override
     public void searchEntities(String docNo) {
         Ranker ranker = Ranker.getInstance();
@@ -253,6 +263,12 @@ public class Model extends Observable implements IModel {
         return entities;
     }
 
+    /**
+     * Getting the query from the search file, running on each query creating Document who represents the query and sending it to runSearch method who calls the searcher
+     * @param fileToRead
+     * @param corpusPath
+     * @param withSemantic
+     */
     @Override
     public void runSearchUsingFile(File fileToRead,String corpusPath,int withSemantic) {
         HashMap<String,List<String>> queryResult = new HashMap<>();
@@ -273,7 +289,7 @@ public class Model extends Observable implements IModel {
             String description = fileDoc.child(0).child(1).childNode(0).toString();
             IR.Document descDoc = new IR.Document(description,id);
             IR.Document queryDoc = new IR.Document(query,id);
-            List<String> result = runSearch(queryDoc,corpusPath,descDoc,withSemantic);
+            List<String> result = runSearch(queryDoc,corpusPath,withSemantic);
             queryResult.put(id,result);
 
         }
@@ -282,11 +298,18 @@ public class Model extends Observable implements IModel {
         notifyObservers(5);
     }
 
-    private List<String> runSearch(IR.Document query,String corpusPath,IR.Document descDoc, int withSemantic) {
+    /**
+     * The methpd whp calls the searcher with specific query
+     * @param query
+     * @param corpusPath
+     * @param withSemantic
+     * @return
+     */
+    private List<String> runSearch(IR.Document query,String corpusPath, int withSemantic) {
         if(searcher == null){
             searcher = new Searcher(corpusPath);
         }
-        List<String> result = searcher.searchQuery(query,descDoc, withSemantic);
+        List<String> result = searcher.searchQuery(query, withSemantic);
 
         return result;
     }
