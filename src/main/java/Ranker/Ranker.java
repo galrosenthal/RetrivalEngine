@@ -421,7 +421,7 @@ public class Ranker {
             int totalTf =  myIndexer.getTotalTF(entity);
 
             double rankOfEntity = (double)(tf)/(totalTf) + (tf)/(docLength) + (double) (tf)/(docEntitys.size());
-            RankedEntity entty = new RankedEntity(entity,rankOfEntity,totalTf);
+            RankedEntity entty = new RankedEntity(entity,rankOfEntity);
 
             entitiesPriorirtyQ.add(entty);
         }

@@ -10,6 +10,11 @@ public class RankedDocument implements Comparable<RankedDocument>
     private String docId;
     private double bm25Value;
 
+    /**
+     * Contructs a Ranked Document with its Name and specific rank
+     * @param docId - The Document Name
+     * @param bm25Value - The Document Rank
+     */
     public RankedDocument(String docId, double bm25Value) {
         this.docId = docId;
         this.bm25Value = bm25Value;
@@ -19,17 +24,14 @@ public class RankedDocument implements Comparable<RankedDocument>
         return docId;
     }
 
+    /**
+     * Used to compare 2 RankedDocument object by their rank
+     * @param rankedDocument The other RankedDocument to compare to
+     * @return value by {@link Double}.compare function
+     */
     @Override
     public int compareTo(RankedDocument rankedDocument)
     {
-        if(this.bm25Value > rankedDocument.bm25Value)
-        {
-            return 1;
-        }
-        if(bm25Value < rankedDocument.bm25Value)
-        {
-            return -1;
-        }
-        return 0;
+        return Double.compare(this.bm25Value, rankedDocument.bm25Value);
     }
 }
