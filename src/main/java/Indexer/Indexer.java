@@ -293,15 +293,15 @@ public class Indexer implements Runnable {
 
         String corpusPathAndLineDelim = "#";
         String termDocListDelim = "#";
-        Path termFilePath = getFileForTerm(sortedKeys.get(0));
+        Path termFilePath =  getFileForTerm(sortedKeys.get(0));
         List<String> allTermsOfLetter = new ArrayList<>();
 
 
         /**Creates the Post file if not exists*/
-        if(termFilePath.toFile().exists())
+        if(Paths.get(pathToPostFolder + termFilePath).toFile().exists())
         {
             try{
-                allTermsOfLetter = Files.readAllLines(termFilePath);
+                allTermsOfLetter = Files.readAllLines(Paths.get(pathToPostFolder + termFilePath.toString()));
             }
             catch (Exception e)
             {
@@ -312,7 +312,6 @@ public class Indexer implements Runnable {
         /**For each term inside the new HashMap, inserting it to the Corpus Dictionary considering many conditions*/
         for (String termKey :
                 sortedKeys){
-
 
             Path termFilePathTemp;
 
@@ -375,14 +374,15 @@ public class Indexer implements Runnable {
 
                 /**Change file path to the new letter post file*/
                 termFilePath = termFilePathTemp;
-                if (termFilePath.toFile().exists())
+
+                if (Paths.get(pathToPostFolder + termFilePath).toFile().exists())
                 {
                     /**If the file exits read all lines from it so we can append to it and changes specific lines in it*/
                     try {
 
 //                        System.out.println("Reading all lines from file: " + termFilePath.toFile().getPath());
 //                        allTermsOfLetter = new ArrayList<>();
-                        allTermsOfLetter = Files.readAllLines(termFilePath);
+                        allTermsOfLetter = Files.readAllLines(Paths.get(pathToPostFolder + termFilePath.toString()));
                         termFilePath.toFile().delete();
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -426,6 +426,7 @@ public class Indexer implements Runnable {
                 int lineNumberInFile = Integer.parseInt(corpusDictionary.get(specificTermKey).split(corpusPathAndLineDelim)[1]);
                 StringBuilder addNewHashMapLineToExisting = new StringBuilder();
                 String docListWithoutParserName = removeParserName(termKey,newMap.get(termKey),termDocListDelim,";");
+
                 addNewHashMapLineToExisting.append(allTermsOfLetter.get(lineNumberInFile-1)).append(";").append(docListWithoutParserName);
                 //Gets and set new Total TF
                 int totalTF = sumTotalTF(specificTermKey,newMap.get(termKey),corpusPathAndLineDelim);
@@ -613,8 +614,8 @@ public class Indexer implements Runnable {
         {
             termKey = termKey.substring(1);
         }
-        String pathToTerm = pathToPostFolder+"/"+termKey.toLowerCase().charAt(0);
-        Path realPathOfTermFile = Paths.get(pathToTerm);
+        String pathToTerm = "/"+termKey.toLowerCase().charAt(0);
+        Path realPathOfTermFile = Paths.get(pathToPostFolder+pathToTerm);
         if(!realPathOfTermFile.toFile().exists())
         {
             try {
@@ -641,6 +642,7 @@ public class Indexer implements Runnable {
      */
     private void writePostFileOfLetter(Path termFilePath, List<String> allTermsOfLetter)
     {
+        termFilePath = Paths.get(pathToPostFolder + termFilePath.toString());
         try {
             if(!termFilePath.toFile().exists())
             {
@@ -675,6 +677,7 @@ public class Indexer implements Runnable {
      * @return the index of the file needs to be written
      */
     private synchronized int getIndexInFolder(Path pathToFolder) {
+        pathToFolder = Paths.get(pathToPostFolder+pathToFolder.toString());
         File dir = pathToFolder.toFile();
         File[] directoryListing = dir.listFiles();
         int indexOfFile = -1, numOfFilesInDir = 0;

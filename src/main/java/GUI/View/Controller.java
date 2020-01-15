@@ -395,8 +395,8 @@ public class Controller implements Observer {
         else if(chk_addSemanticDs.isSelected()){
             chooseSemantic = 2;
         }
-        if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Corpus.getText().length() > 0){
-            viewModel.runSearch(txt_search.getText(),txt_field_Corpus.getText(),chooseSemantic);
+        if(txt_search.getText().length() > 0 && fileToRead == null && txt_field_Posting.getText().length() > 0){
+            viewModel.runSearch(txt_search.getText(),txt_field_Posting.getText(),chooseSemantic);
         }
         else if(txt_field_Corpus.getText().length() == 0){
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -405,7 +405,7 @@ public class Controller implements Observer {
             alert.showAndWait();
         }
         else if(fileToRead != null){
-            viewModel.runSearch(fileToRead,txt_field_Corpus.getText(),chooseSemantic);
+            viewModel.runSearch(fileToRead,txt_field_Posting.getText(),chooseSemantic);
         }
         else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
