@@ -880,9 +880,9 @@ public class MainParse extends AParser {
             isParse = true;
         }
 
-        if(isIncrement){
-            i.decrementAndGet();
-        }
+//        if(isIncrement){
+//            i.decrementAndGet();
+//        }
 
         return isParse;
     }
