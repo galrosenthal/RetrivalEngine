@@ -183,7 +183,7 @@ public class Searcher {
         String[] splittedValue = StringUtils.split(valueFromCorpus,corpusPathAndLineDelim);
         termFilePathTemp = Paths.get(splittedValue[0]);
         try {
-        BufferedReader bf = new BufferedReader(new FileReader(termFilePathTemp.toFile()));
+        BufferedReader bf = new BufferedReader(new FileReader(corpusPath+termFilePathTemp.toFile()));
             int lineNumberInFile = Integer.parseInt(splittedValue[1]);
             String wantedLine = "";
             for (int i = 0; i < lineNumberInFile; i++) {

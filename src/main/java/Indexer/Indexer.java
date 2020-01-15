@@ -653,7 +653,7 @@ public class Indexer implements Runnable {
                 Files.createFile(termFilePath);
             }
 
-            BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(termFilePath.toFile(),true));
+            BufferedWriter writeBuffer = new BufferedWriter(new FileWriter(termFilePath.toFile()));
             for (String line :
                     allTermsOfLetter) {
                 writeBuffer.append(line);

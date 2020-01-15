@@ -851,7 +851,7 @@ public class MainParse extends AParser {
 
             if((lastChar < 'a' || lastChar > 'z') && (lastChar < 'A' || lastChar > 'Z')){
                 sentence.append(chopDownLastCharPunc(wordB.toString()));
-//                numOfWords++;
+                numOfWords++;
                 if(numOfWords > 1 && numOfWords < 5){
                     parsedTermInsert(sentence.substring(0, sentence.length() - 1), d,"parsePhrases");
                     isParse = true;
@@ -880,9 +880,9 @@ public class MainParse extends AParser {
             isParse = true;
         }
 
-//        if(isIncrement){
-//            i.decrementAndGet();
-//        }
+        if(isIncrement){
+            i.decrementAndGet();
+        }
 
         return isParse;
     }

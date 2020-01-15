@@ -30,6 +30,7 @@ public class Model extends Observable implements IModel {
     List<String> queryRes;
     HashMap<String,Double> entities;
     String corpusPath;
+    String postingPath;
     Searcher searcher;
 
     @Override
@@ -40,7 +41,8 @@ public class Model extends Observable implements IModel {
         DocumentIndexer docIndex = DocumentIndexer.getInstance();
         boolean loadDocSucc = docIndex.loadDictionaryFromDisk();
         this.corpusPath = corpusPath;
-        searcher = new Searcher(corpusPath);
+
+        searcher = new Searcher(this.postingPath);
         if(loadSucc && loadDocSucc){
             setChanged();
             notifyObservers(3);
@@ -140,7 +142,6 @@ public class Model extends Observable implements IModel {
        if(IndexerThreads[0].isAlive()){
            System.out.println("I am alive");
        }
-
         setChanged();
         notifyObservers(1);
     }
@@ -153,13 +154,18 @@ public class Model extends Observable implements IModel {
     private void setPathToIndexer(String postingPath, boolean withStemm)
     {
         try {
+                String path ="";
             if (withStemm) {
-                Indexer.getInstance().setPathToPostFiles(postingPath + "/postingWithStemm");
-                DocumentIndexer.getInstance().setPathToPostFolder(postingPath + "/postingWithStemm");
+                path = postingPath + "/postingWithStemm";
+
+
             } else {
-                Indexer.getInstance().setPathToPostFiles(postingPath + "/postingNoStemm");
-                DocumentIndexer.getInstance().setPathToPostFolder(postingPath + "/postingNoStemm");
+                path = postingPath + "/postingNoStemm";
+
             }
+            Indexer.getInstance().setPathToPostFiles(path);
+            DocumentIndexer.getInstance().setPathToPostFolder(path);
+            this.postingPath = path;
         }
         catch (Exception e)
         {
@@ -307,7 +313,7 @@ public class Model extends Observable implements IModel {
      */
     private List<String> runSearch(IR.Document query,String corpusPath, int withSemantic) {
         if(searcher == null){
-            searcher = new Searcher(corpusPath);
+            searcher = new Searcher(postingPath);
         }
         List<String> result = searcher.searchQuery(query, withSemantic);
 
